@@ -151,6 +151,11 @@
     </findStrings>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="JasonFitch &lt;weihuanhuan1107@vip.qq.com&gt;" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GradleLocalSettings">
@@ -1077,12 +1082,20 @@
       <workItem from="1530618256475" duration="769000" />
       <workItem from="1530688417382" duration="5696000" />
       <workItem from="1530694600521" duration="1097000" />
-      <workItem from="1530696064754" duration="1216000" />
+      <workItem from="1530696064754" duration="1277000" />
     </task>
+    <task id="LOCAL-00001" summary="vcs init">
+      <created>1530697341184</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1530697341184</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="132736000" />
+    <option name="totallyTimeSpent" value="132797000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1187,6 +1200,8 @@
     <ignored-roots>
       <path value="$PROJECT_DIR$" />
     </ignored-roots>
+    <MESSAGE value="vcs init" />
+    <option name="LAST_COMMIT_MESSAGE" value="vcs init" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
