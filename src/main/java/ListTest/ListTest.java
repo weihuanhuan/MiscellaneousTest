@@ -15,5 +15,8 @@ public class ListTest
         Thread thread = null;
         threads.add(thread);
         System.out.println(threads.size());
+
+        Thread[] arrThread = null;
+        threads.toArray(arrThread);
     }
 }

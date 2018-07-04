@@ -44,6 +44,7 @@ public class JDBCMysql
         hm.keySet().containsAll(null);   //NullPointerException
 
         // asm3 is Interface
+
         new org.objectweb.asm.ClassVisitor()
         {
             @Override
