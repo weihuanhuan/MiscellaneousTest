@@ -9,7 +9,7 @@
         <module name="BEStest" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.8">
+    <bytecodeTargetLevel>
       <module name="BEStest" target="1.8" />
     </bytecodeTargetLevel>
   </component>
