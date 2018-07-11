@@ -27,4 +27,12 @@ hs_err_pid*
 out/
 target/
 *.iml
+**/
 
+!bat/
+!Configuratoin/
+!src/
+!web/
+!.gitignore
+!pom.xml
+!README.md
