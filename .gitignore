@@ -29,9 +29,14 @@ target/
 *.iml
 **/
 
+
+!bat/
 !bat/**/
+!Configuratoin/
 !Configuratoin/**/
+!src/
 !src/**/
+!web/
 !web/**/
 !.gitignore
 !pom.xml
