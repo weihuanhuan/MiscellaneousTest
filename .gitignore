@@ -29,10 +29,10 @@ target/
 *.iml
 **/
 
-!bat/
-!Configuratoin/
-!src/
-!web/
+!bat/**/
+!Configuratoin/**/
+!src/**/
+!web/**/
 !.gitignore
 !pom.xml
 !README.md
