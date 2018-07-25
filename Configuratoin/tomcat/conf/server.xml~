@@ -49,7 +49,7 @@
             type="javax.sql.DataSource"
             maxTotal="100" maxIdle="30" maxWaitMillis="10000"
             username="root" password="123456" 
-            driverClassName="com.mysql.jdbc.river"
+            driverClassName="com.mysql.jdbc.Driver"
             url="jdbc:mysql://localhost:3306/javatest"
     />
 
@@ -75,6 +75,16 @@
          Java AJP  Connector: /docs/config/ajp.html
          APR (HTTP/AJP) Connector: /docs/apr.html
          Define a non-SSL/TLS HTTP/1.1 Connector on port 8080
+    -->
+    <!--
+        <Connector port="8080" protocol="org.apache.coyote.http11.Http11AprProtocol"
+
+        <Connector port="8080" protocol="org.apache.coyote.http11.Http11NioProtocol"
+
+        <Connector port="8080" protocol="org.apache.coyote.http11.Http11Nio2Protocol"
+
+        <Connector port="8080" protocol="HTTP/1.1"
+
     -->
     <Connector port="8080" protocol="HTTP/1.1"
                connectionTimeout="20000"

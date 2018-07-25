@@ -22,5 +22,15 @@
         <servlet-name>servlet</servlet-name>
         <url-pattern>/servlet</url-pattern>
     </servlet-mapping>
-    
+
+    <servlet>
+        <servlet-name>request</servlet-name>
+        <servlet-class>Servlet.RequestTest</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>request</servlet-name>
+        <url-pattern>/request</url-pattern>
+    </servlet-mapping>
+
 </web-app>
