@@ -11,6 +11,6 @@
     <title>$Title$</title>
   </head>
   <body>
-  index jsp page
+  index jap page
   </body>
 </html>
