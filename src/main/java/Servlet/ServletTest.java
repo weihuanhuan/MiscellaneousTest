@@ -26,10 +26,13 @@ public class ServletTest extends HttpServlet
             Context initContext = new InitialContext();
 //            Context envContext  = null;
 //            envContext = (Context)initContext.lookup("java:/comp/env");
-//            DataSource datasource = (DataSource)envContext.lookup("jdbc/Server");
+//            DataSource datasource = (DataSource)initContext.lookup("java:/comp/env/jdbc/Context");
 
+//            DataSource datasource = (DataSource)initContext.lookup("java:/comp/env/jdbc/Server");
 
-            DataSource datasource = (DataSource)initContext.lookup("java:/comp/env/jdbc/Reference");
+            DataSource datasource = (DataSource)initContext.lookup("java:/comp/env/jdbc/Hikari");
+
+//            DataSource datasource = (DataSource)initContext.lookup("java:/comp/env/jdbc/Reference");
 
             Connection con = datasource.getConnection();
             if(null ==con)
