@@ -22,7 +22,5 @@ public class RestfulTest
         WebTarget wt = client.target("http://2001:db8:0:f101::1:6900/rest");
         //需要加上[]否则回出现异常 java.net.MalformedURLException
 
-
-
     }
 }
