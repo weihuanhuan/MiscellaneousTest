@@ -8,6 +8,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,7 +17,8 @@ import javax.sql.DataSource;
 /**
  * Created by JasonFitch on 7/2/2018.
  */
-public class ServletTest extends HttpServlet
+@WebServlet(urlPatterns = "/datasource",name = "datasource")
+public class DatasourceTest extends HttpServlet
 {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException

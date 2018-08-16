@@ -53,7 +53,7 @@ public class IPTest extends HttpServlet
 
             OutputStream os = client_local.getOutputStream();
             PrintWriter pw = new PrintWriter(os);
-            pw.println(ss_local.getLocalSocketAddress().toString());
+            pw.println(ss_local.getLocalSocketAddress().toString()+"\nByServlet");
             pw.flush();
 
             client_local.close();

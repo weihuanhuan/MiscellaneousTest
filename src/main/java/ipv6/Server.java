@@ -65,7 +65,7 @@ public class Server
 
                 OutputStream os =client_local.getOutputStream();
                 PrintWriter pw = new PrintWriter(os);
-                pw.println(ss_local.getLocalSocketAddress().toString());
+                pw.println(ss_local.getLocalSocketAddress().toString()+"\nByApplication");
                 pw.flush();
                 client_local.close();
             }

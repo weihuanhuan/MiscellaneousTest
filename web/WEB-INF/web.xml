@@ -5,23 +5,12 @@
          version="3.1">
 
     <description>MySQL Test App</description>
-    <resource-ref>
-        <description>DB Connection</description>
-        <res-ref-name>jdbc/Server</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
-    
-    
-    <servlet>
-        <servlet-name>servlet</servlet-name>
-        <servlet-class>Servlet.ServletTest</servlet-class>
-    </servlet>
-    
-    <servlet-mapping>
-        <servlet-name>servlet</servlet-name>
-        <url-pattern>/servlet</url-pattern>
-    </servlet-mapping>
+    <!--<resource-ref>-->
+        <!--<description>DB Connection</description>-->
+        <!--<res-ref-name>jdbc/Server</res-ref-name>-->
+        <!--<res-type>javax.sql.DataSource</res-type>-->
+        <!--<res-auth>Container</res-auth>-->
+    <!--</resource-ref>-->
 
     <servlet>
         <servlet-name>request</servlet-name>
