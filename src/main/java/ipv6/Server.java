@@ -16,8 +16,6 @@ import javax.ws.rs.client.WebTarget;
 /**
  * Created by JasonFitch on 8/13/2018.
  */
-
-
 public class Server
 {
     public static void main(String[] args)
@@ -32,7 +30,7 @@ public class Server
         Runtime rt = Runtime.getRuntime();
         try
         {
-            InetAddress ipv6 = Inet6Address.getByName("0.0.0.0");
+            InetAddress ipv6 = Inet6Address.getByName("::");
             //绑定地址 [::] 或者是 0.0.0.0 将会同时监听 IPv4 和 IPv6
 //            同时 JDK对于 IPv6 是不是用 [ ] 包裹都可以准确的识别。
             ServerSocket ss = new ServerSocket(65001, 10, ipv6);
@@ -49,35 +47,27 @@ public class Server
             BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String line;
             while ((line = br.readLine()) != null)
-            {
-                if (line.contains("65001")|| line.contains("65010"))
-                {
+                if (line.contains("65001") || line.contains("65010"))
                     System.out.println(line);
-                }
-            }
 
-            while(true)
+            while (true)
             {
                 Socket client_local = ss_local.accept();
 
-                if(null != client_local)
+                if (null != client_local)
                     System.out.println(client_local.toString());
 
-                OutputStream os =client_local.getOutputStream();
+                OutputStream os = client_local.getOutputStream();
                 PrintWriter pw = new PrintWriter(os);
-                pw.println(ss_local.getLocalSocketAddress().toString()+"\nByApplication");
+                pw.println(ss_local.getLocalSocketAddress().toString() + "\nByApplication");
                 pw.flush();
                 client_local.close();
             }
-
-
-
 
         } catch (IOException e)
         {
             e.printStackTrace();
         }
-
 
     }
 }
