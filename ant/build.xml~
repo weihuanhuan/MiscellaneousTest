@@ -1,0 +1,18 @@
+<!DOCTYPE project [
+<!ENTITY extXML SYSTEM "./ext/ext.xml" >
+]>
+
+<project name="main" default="all" basedir="." >
+  
+  &extXML;    
+
+  <target name="all" depends="extTaskdef" >
+    <echo message="entrancing main all" />
+    <ant dir="./sub" target="all" />
+  </target>
+
+  <target name="missDepend" depends="" >
+    <echo message="entrancing main missDepend" />
+  </target>
+
+</project>
