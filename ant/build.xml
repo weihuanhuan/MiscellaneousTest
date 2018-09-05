@@ -7,8 +7,11 @@
   &extXML;    
 
   <target name="all" depends="extTaskdef" >
+    <record name="${basedir}/main-basedir.log" action="start" loglevel="verbose" />
     <echo message="entrancing main all" />
     <ant dir="./sub" target="all" />
+    <record name="./main-currentdir.log" action="start" loglevel="verbose" />
+    <antcall  target="missDepend"/>
     <echo message="exiting main all" />
   </target>
 

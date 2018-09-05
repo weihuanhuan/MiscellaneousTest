@@ -8,19 +8,19 @@
 
   <target name="all" depends="extTaskdef" >
       <echo message="entrancing sub all" />
-      <antcall target="for" />
+      <antcall target="sub-for" />
       <echo message="exiting sub all" />
   </target>
 
-    <target name="for" depends="" >
+    <target name="sub-for" depends="" >
         <echo message="entrancing sub for" />
         <echo message="${basedir},traversal dir" />
         <tstamp>
             <format property="time" pattern="yyyy-MM-dd HH:mm:ss" />
         </tstamp>
         <echo message="${time}" />
-        <record name="${basedir}/ant-basedir.log" action="start" loglevel="verbose" />
-        <record name="./ant-currentdir.log" action="start" loglevel="verbose" />
+        <record name="${basedir}/sub-basedir.log" action="start" loglevel="verbose" />
+        <record name="./sub-currentdir.log" action="start" loglevel="verbose" />
         <!-- 指定目录时文件夹必须存在，否则异常
             C:\Users\JasonFitch\Desktop\Github\BEStest\ant\sub\build.xml:21: Problems opening file using a recorder entry 
 
