@@ -1,0 +1,49 @@
+<!DOCTYPE project [
+<!ENTITY extXML SYSTEM "../ext/ext.xml" >
+]>
+
+<project name="executor" default="all" basedir="." >
+  
+  &extXML;    
+
+  <target name="all" depends="extTaskdef" >
+      <antcall target="run" />
+      <antcall target="clean" />
+  </target>
+    
+  <target name="init">
+    <property file="${basedir}/build.properties" />
+  </target>
+
+  <target name="compile" depends="init">
+    <mkdir dir="${buildDir}" /> 
+    <javac srcdir="${srcDir}"
+           destdir="${buildDir}"
+           source="1.8"
+           target="1.8"
+           encoding="UTF-8"
+    />
+  </target>
+    
+  <target name="package" depends="compile">
+      <jar destfile="${jarDir}/${jarFilename}"
+           basedir="${buildDir}"
+      />
+  </target>
+
+  <target name="run" depends="package">
+      <java classname="RuntimeTest.ProcessTest" fork="true" >
+          <classpath>
+              <pathelement location="${jarDir}/${jarFilename}" />
+          </classpath>
+          <arg value="F:/JetBrains/IntelliJ IDEA/BEStest/ant/executor/start.bat" />
+          <jvmarg value="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=28001" />
+    </java>
+  </target>
+    
+  <target name="clean" depends="init">
+      <delete dir="${buildDir}" />
+      <delete dir="${jarDir}" />
+  </target>
+
+</project>
