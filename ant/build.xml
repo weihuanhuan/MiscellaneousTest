@@ -9,10 +9,20 @@
   <target name="all" depends="extTaskdef" >
     <record name="${basedir}/main-basedir.log" action="start" loglevel="verbose" />
     <echo message="entrancing main all" />
+
     <ant dir="./sub" target="all" />
-    <record name="./main-currentdir.log" action="start" loglevel="verbose" />
+    
+    <record name="./main-currentdir.log" action="start" />
+    <!-- 
+         如果没有指定stop则记录日志到ant程序结束为止 
+         且，文件记录的日至级别和控制台的日志级别是独立，
+         即文件记录的日志级别只看loglevel，默认：no change；console只看调用ant命令时的参数
+    -->
     <antcall  target="missDepend"/>
+
     <echo message="exiting main all" />
+    <record name="${basedir}/main-basedir.log" action="stop" loglevel="verbose" />
+
   </target>
 
   <target name="missDepend" depends="" >
