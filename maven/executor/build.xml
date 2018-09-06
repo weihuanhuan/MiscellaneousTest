@@ -22,22 +22,29 @@
            source="1.8"
            target="1.8"
            encoding="UTF-8"
+           debug="true"
+           debuglevel="source,lines"
     />
   </target>
     
   <target name="package" depends="compile">
-      <jar destfile="${jarDir}/${jarFilename}"
+      <jar destfile="${jarFilePath}"
            basedir="${buildDir}"
       />
   </target>
 
   <target name="run" depends="package">
-      <java classname="RuntimeTest.ProcessTest" fork="true" >
+      <java classname="${mainClass}" fork="${forkBoolean}" >
           <classpath>
-              <pathelement location="${jarDir}/${jarFilename}" />
+              <pathelement location="${jarFilePath}" />
           </classpath>
-          <arg value="F:/JetBrains/IntelliJ IDEA/BEStest/ant/executor/start.bat" />
-          <jvmarg value="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=28001" />
+          <arg value="${startFilePath}" />
+          <arg value="${argument1}" />
+          <jvmarg value="${jvmXdebug}" />
+          <jvmarg value="${jvmXrunjdwp}" />
+          <!--
+               这里的俩个JVM参数必须分开写，写在一起没有效果。 
+          -->
     </java>
   </target>
     
