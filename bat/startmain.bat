@@ -8,7 +8,7 @@ pause>nul
 
 REM start命令会将第一个带双引号的参数理解为新cmd的标题，start /? 精简版 START ["title"]  [command/program] [parameters]，
 REM 注意第一个可选的参数，call 命令没有这个问题。
-REM so，直接 start "%~dp0%\startchild.bat" 相当与开启一个 标题为 %~dp0%\startchild.bat 的新窗口，而不是运行 %~dp0%\startchild.bat 脚本
+REM so，直接 start "%~dp0%\startchild.bat" 相当与开启一个 标题为 %~dp0%\startchild.bat 的新的cmd子进程，而不是运行 %~dp0%\startchild.bat 脚本
 
 REM 同时，也要注意窗口的名字不能是 【变量扩展+字母】的组合  如：%~dp0%abc不可以，但是数字可以，如：%~dp0%123,
 REM 否则，这个选项的字母部分忽略，同时和不执行扩展的下一个选项连接起来一起作为标题，为什么？

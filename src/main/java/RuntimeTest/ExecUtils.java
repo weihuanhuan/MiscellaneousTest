@@ -75,13 +75,45 @@ public class ExecUtils
             {
                 System.out.println("execute:" + execute);
                 process = Runtime.getRuntime().exec(execute);
+//                process 会开启一个子进程来执行任务 ,并将子进程的 IO 定向到本进程，即子进程的父进程。详情产看 class Process
+//                如果是嵌套调用也是一样，只要不另开新进程所以的子进程的 IO 都会定向过来。
+//                如 Java(exec) -> cmd, 重定向 cmd 到 java
+//                如 java(exec) -> cmd -> tomcat, 重定向 tomcat 到 cmd ，cmd 到 java
+//                这个任务不是阻塞的执行，除非调用其 java.lang.Process.waitFor() 方法
             }
 
             StreamPumper inputPumper = new StreamPumper(process.getInputStream(), message, "thread-pumper-input");
             StreamPumper errorPumper = new StreamPumper(process.getErrorStream(), message, "thread-pumper-error");
             inputPumper.start();
             errorPumper.start();
-            //放在 if 外面，防止在不用阻塞等待子进程返回结果时，子进程的输出流没有及时读取，导致系统缓冲区填满，使得子进程输出阻塞。
+//            即使没有必要读取子进程的IO流，也要将读取IO流的操作放在 if 外面，或者丢到一个线程中单独执行
+//            防止在不用阻塞等待子进程返回结果时，子进程的输出流没有及时读取，导致系统缓冲区填满，使得子进程输出阻塞。
+//            或者被调用的子进程【不要】将IO流输出定位到 console 上也可以，因为子进程只有console的流会自动定位到父进程
+//            如下所示, 不读取子进程的IO流，导致日志打印到console的阻塞问题
+
+//            "main" #1 prio=5 os_prio=0 tid=0x0000000002023800 nid=0x1870 runnable [0x0000000                                                                                                                                                                                               001fde000]
+//            java.lang.Thread.State: RUNNABLE
+//            at java.io.FileOutputStream.writeBytes(Native Method)
+//            at java.io.FileOutputStream.write(FileOutputStream.java:326)
+//            at java.io.BufferedOutputStream.write(BufferedOutputStream.java:122)
+//            - locked <0x00000000ec521838> (a java.io.BufferedOutputStream)
+//            at java.io.PrintStream.write(PrintStream.java:480)
+//            - locked <0x00000000ec521818> (a java.io.PrintStream)
+//            at sun.nio.cs.StreamEncoder.writeBytes(StreamEncoder.java:221)
+//            at sun.nio.cs.StreamEncoder.implFlushBuffer(StreamEncoder.java:291)
+//            at sun.nio.cs.StreamEncoder.implFlush(StreamEncoder.java:295)
+//            at sun.nio.cs.StreamEncoder.flush(StreamEncoder.java:141)
+//            - locked <0x00000000ec5c29d8> (a java.io.OutputStreamWriter)
+//            at java.io.OutputStreamWriter.flush(OutputStreamWriter.java:229)
+//            at java.util.logging.StreamHandler.flush(StreamHandler.java:259)
+//            - locked <0x00000000ec5b9648> (a java.util.logging.ConsoleHandler)
+//            at java.util.logging.ConsoleHandler.publish(ConsoleHandler.java:117)
+//            at java.util.logging.Logger.log(Logger.java:738)
+//            at java.util.logging.Logger.doLog(Logger.java:765)
+//            at java.util.logging.Logger.logp(Logger.java:931)
+//            at org.apache.juli.logging.DirectJDKLog.log(DirectJDKLog.java:180)
+//            at org.apache.juli.logging.DirectJDKLog.info(DirectJDKLog.java:123)
+
 
             if (redirect)
             {
