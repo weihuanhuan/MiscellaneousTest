@@ -25,7 +25,7 @@ public class FileContextTest {
         RandomAccessFile javaConfigFile = null;
         try {
 
-            String javaConfigStr = "RandomAccessFile.bat";
+            String javaConfigStr = "RandomAccessFile.log";
             javaConfigFile = new RandomAccessFile(javaConfigStr, "rw");
             insertMapForFile(javaConfigFile, properties);
 

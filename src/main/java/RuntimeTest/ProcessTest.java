@@ -10,7 +10,7 @@ public class ProcessTest
     {
         try
         {
-            String execute = "F:/JetBrains/IntelliJ IDEA/BEStest/ant/executor/start.bat";
+            String execute = "F:/JetBrains/IntelliJ IDEA/BEStest/maven/executor/start.bat";
 
             if (args.length == 0 || args[0].equals(""))
             {
@@ -34,6 +34,7 @@ public class ProcessTest
         }
         try
         {
+            System.out.println("please press enter to continue.");
             System.in.read();
 
         } catch (IOException e)
