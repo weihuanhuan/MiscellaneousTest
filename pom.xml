@@ -121,6 +121,13 @@
             <version>2.27</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.xbean/xbean-reflect -->
+        <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-reflect</artifactId>
+            <version>3.18</version>
+        </dependency>
+
     </dependencies>
 
 
