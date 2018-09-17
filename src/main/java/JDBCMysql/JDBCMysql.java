@@ -1,5 +1,6 @@
 package JDBCMysql;
 
+import org.apache.commons.pool2.impl.GenericObjectPool;
 import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Attribute;
@@ -18,6 +19,13 @@ public class JDBCMysql
 {
     public static void main(String[] args)
     {
+//      org.apache.commons.pool2.impl.GenericObjectPool.borrowObject(long)
+//            org.apache.commons.pool2.impl.BaseGenericObjectPool.destroyedByBorrowValidationCount 增加
+//      org.apache.commons.pool2.impl.GenericObjectPool.evict()
+//            org.apache.commons.pool2.impl.BaseGenericObjectPool.destroyedByEvictorCount  增加
+//      org.apache.commons.pool2.impl.GenericObjectPool.destroy()
+//            org.apache.commons.pool2.impl.BaseGenericObjectPool.destroyedCount 增加
+//            org.apache.commons.pool2.impl.GenericObjectPool.createCount        减少
 
         try
         {
