@@ -1,4 +1,4 @@
-package apachebeanutils;
+package apache.commons;
 
 import org.apache.commons.beanutils.BeanUtils;
 
@@ -7,7 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Created by JasonFitch on 2/25/2018.
  */
-public class ApacheBeanUtils
+public class BeanUtilsTest
 {
     public static void main(String[] args)
     {
@@ -23,12 +23,12 @@ public class ApacheBeanUtils
             Object interCopied = BeanUtils.cloneBean(interBean);
             System.out.println("interCopied" + interCopied.toString());
             /*
-    java.lang.IllegalAccessException: Class org.apache.commons.beanutils.BeanUtilsBean can not access a member of class apachebeanutils.InterBean with modifiers ""
+    java.lang.IllegalAccessException: Class org.apache.commons.beanutils.BeanUtilsBean can not access a member of class InterBean with modifiers ""
 	    at sun.reflect.Reflection.ensureMemberAccess(Reflection.java:102)
 	    at java.lang.Class.newInstance(Class.java:436)
 	    at org.apache.commons.beanutils.BeanUtilsBean.cloneBean(BeanUtilsBean.java:180)
 	    at org.apache.commons.beanutils.BeanUtils.cloneBean(BeanUtils.java:108)
-	    at apachebeanutils.ApacheBeanUtils.main(ApacheBeanUtils.java:21)
+	    at BeanUtilsTest.main(BeanUtilsTest.java:21)
 
             * */
 

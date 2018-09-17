@@ -1,4 +1,4 @@
-package apachebeanutils;
+package apache.commons;
 
 /**
  * Created by JasonFitch on 2/25/2018.
