@@ -1,7 +1,11 @@
 package regularexpression;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.EmptyStackException;
+import java.util.Scanner;
+import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -9,19 +13,20 @@ import java.util.regex.Pattern;
  * Created by JasonFitch on 1/29/2018.
  */
 public class RegularExpression {
+
     public static void main(String[] args) {
 
-        String str2 = "1, 0,\n2,\n3,\n,";
+        String   str2    = "1, 0,\n2,\n3,\n,";
         String[] result2 = str2.split("(,$)");
         System.out.println(Arrays.deepToString(result2) + result2.length);
         System.out.println("-----------------------------------------------------");
-        String str3 = "1, 0,\r\n2,\r\n3,\r\n,";
+        String   str3    = "1, 0,\r\n2,\r\n3,\r\n,";
         String[] result3 = str3.split("(,$)");
         System.out.println(Arrays.deepToString(result3) + result3.length);
         System.out.println("-----------------------------------------------------");
 //      \r\n and \n is not a end of line for RegularExpression
 
-        String str1 = "1, 0,\r\n2,\r\n3,\r\n,";
+        String   str1    = "1, 0,\r\n2,\r\n3,\r\n,";
         String[] result1 = str1.split("(,\\n)|(,\\r\\n)");
         System.out.println(Arrays.deepToString(result1) + result1.length);
         for (int i = 0; i < result1.length; ++i) {
@@ -44,9 +49,9 @@ public class RegularExpression {
         System.out.println(System.getProperty("java.class.path"));
 
 
-        System.out.println("-----------------------------------------------------");
-        String jvmStr = "JVM_OPTIONS=%JVM_OPTIONS% -Dkey=value";
-        String regex = ".*JVM_OPTIONS=.*JVM_OPTIONS.*\\s+-D(.*)=(.*)";
+        System.out.println("-------------jvmStr---------------------");
+        String  jvmStr  = "JVM_OPTIONS=%JVM_OPTIONS% -Dkey=value";
+        String  regex   = ".*JVM_OPTIONS=.*JVM_OPTIONS.*\\s+-D(.*)=(.*)";
         boolean isMatch = jvmStr.matches(regex);
         System.out.println(isMatch);
 
@@ -55,8 +60,29 @@ public class RegularExpression {
         if (matcher.find()) {
             int count = matcher.groupCount();
             System.out.println(matcher.groupCount());
-            for (int i = 0; i < count+1;++i)
-            System.out.println(matcher.group(i));
+            for (int i = 0; i < count + 1; ++i)
+                System.out.println(matcher.group(i));
+        }
+
+
+        System.out.println("-------------appendReplacement---------------------");
+        StringBuffer stringBuffer = new StringBuffer();
+        matcher.reset();
+        while (matcher.find()) {
+                matcher.appendReplacement(stringBuffer,matcher.group().toUpperCase());
+        }
+        matcher.appendTail(stringBuffer);
+        System.out.println(stringBuffer.toString());
+
+        System.out.println("-------------Scanner---------------------");
+        Scanner scanner = new Scanner(new BufferedReader(new StringReader(jvmStr)));
+        scanner.useDelimiter(System.lineSeparator());
+        //注意修改定界符，因为Scanner只会依据 定界符 来读取下一个分词，
+        // 如果正则表达式中含有定界符的匹配，那么Scanner 的 hasNext() 方法将永远返回false
+        while (scanner.hasNext(pattern)) {
+            scanner.next(pattern);
+            MatchResult matchResult = scanner.match();
+            System.out.println(matchResult.group());
         }
 
     }
