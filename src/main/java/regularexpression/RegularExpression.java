@@ -84,6 +84,6 @@ public class RegularExpression {
             MatchResult matchResult = scanner.match();
             System.out.println(matchResult.group());
         }
-
+        
     }
 }
