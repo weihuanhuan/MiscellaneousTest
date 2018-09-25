@@ -48,7 +48,8 @@ public class ReflectTest
                         try
                         {
                             constructor.setAccessible(true);
-                            instance = constructor.newInstance();
+                            instance = constructor.newInstance();   //有可变数量的参数，这里没写而已。
+//                            clazz.newInstance();   //一定是无参的。
 //                          注意构造器的 java.lang.reflect.Constructor.newInstance() 方法是有【Object ... 】类型的参数的，
 //                          可以传递初始化参数的，调用时必须要匹配参数。而，java.lang.Class.newInstance() 方法不可以传递参数，只能调用无参构造函数
                             System.out.println(instance);
@@ -63,6 +64,12 @@ public class ReflectTest
                     Object value = field.get(instance);
                     System.out.println(value);
                 }
+
+                clazz.getInterfaces();
+                //按照顺序返回这个类实现的接口
+                clazz.getDeclaredClasses();
+                //返回这个类内部声明的所有访问权限的 类，接口，除了那些继承来的类和接口.
+
             }
         } catch (InstantiationException e)
         {
