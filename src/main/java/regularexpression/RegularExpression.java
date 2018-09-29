@@ -50,18 +50,23 @@ public class RegularExpression {
 
 
         System.out.println("-------------jvmStr---------------------");
-        String  jvmStr  = "JVM_OPTIONS=%JVM_OPTIONS% -Dkey=value";
-        String  regex   = ".*JVM_OPTIONS=.*JVM_OPTIONS.*\\s+-D(.*)=(.*)";
-        boolean isMatch = jvmStr.matches(regex);
+        String  jvmStr1  = "JVM_OPTIONS=%JVM_OPTIONS% -Dkey=value";
+        String  regex1  = ".*JVM_OPTIONS=.*JVM_OPTIONS.*\\s+-D(.*)=(.*)";
+        //尤其贪婪匹配,会将最后一个等号之前的内容全部捕获。
+        String  jvmStr2  = "JVM_OPTIONS=%JVM_OPTIONS% -Dkey=value=";
+        String  regex2   = ".*JVM_OPTIONS=.*JVM_OPTIONS.*\\s+-D(((?!=).)*)=(.*)";
+        //使用正向否定预查，将不包括 = 的第一个捕获组取出。
+        boolean isMatch = jvmStr1.matches(regex1);
         System.out.println(isMatch);
 
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(jvmStr);
+        Pattern pattern = Pattern.compile(regex1);
+        Matcher matcher = pattern.matcher(jvmStr2);
+        //注意将 regex1 来匹配 jvmStr2 时匹配的内容
         if (matcher.find()) {
             int count = matcher.groupCount();
             System.out.println(matcher.groupCount());
             for (int i = 0; i < count + 1; ++i)
-                System.out.println(matcher.group(i));
+                System.out.println("i="+i+":"+matcher.group(i));
         }
 
 
@@ -75,7 +80,7 @@ public class RegularExpression {
         System.out.println(stringBuffer.toString());
 
         System.out.println("-------------Scanner---------------------");
-        Scanner scanner = new Scanner(new BufferedReader(new StringReader(jvmStr)));
+        Scanner scanner = new Scanner(new BufferedReader(new StringReader(jvmStr1)));
         scanner.useDelimiter(System.lineSeparator());
         //注意修改定界符，因为Scanner只会依据 定界符 来读取下一个分词，
         // 如果正则表达式中含有定界符的匹配，那么Scanner 的 hasNext() 方法将永远返回false

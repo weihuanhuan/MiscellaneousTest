@@ -2,6 +2,7 @@ package RuntimeTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 
 public class ProcessBuilderTest {
 
@@ -16,6 +17,11 @@ public class ProcessBuilderTest {
             String         cmdExecute     = "\"cmd\", \"/C\", \"tree C:/ /f\"";
             String         execute        = "F:/JetBrains/IntelliJ IDEA/BEStest/maven/executor/start.bat";
             ProcessBuilder processBuilder = new ProcessBuilder(execute);
+
+            Map<String,String> envs= processBuilder.environment();
+            envs.put("ENVKEY","ENVVALUE");
+
+
             processBuilder.redirectErrorStream(true);
             processBuilder.redirectOutput(ProcessBuilder.Redirect.to(subOutputFile));
             System.out.println(processBuilder.redirectOutput());
