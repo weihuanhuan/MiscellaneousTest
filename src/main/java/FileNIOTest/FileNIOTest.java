@@ -2,6 +2,7 @@ package FileNIOTest;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.FileVisitor;
@@ -12,6 +13,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.EnumSet;
+import java.util.concurrent.Executors;
 
 /**
  * Created by JasonFitch on 10/8/2018.
@@ -21,8 +23,8 @@ public class FileNIOTest {
     public static void main(String[] args) {
 
         String appName = "app";
-        String srcDir = "/nioCopy"+ File.separator+appName;
-        String destDir = "/nioCopy/deploy"+File.separator+appName;
+        String srcDir = "/nioCopy" + File.separator + appName;
+        String destDir = "/nioCopy/deploy" + File.separator + appName;
 
         Path srcPath = Paths.get(srcDir);
         Path destPath = Paths.get(destDir);
@@ -34,7 +36,9 @@ public class FileNIOTest {
         Path relativePath2 = srcPath.relativize(srcPath);
         System.out.println(relativePath2); // src to src ---> 返回空的Path
 
-        System.out.println(destPath.getParent());
+        System.out.println(destPath.getParent()); // /niCopy/deploy
+
+        System.out.println(Files.notExists(srcPath));
 
         EnumSet<FileVisitOption> options = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
 
@@ -60,22 +64,46 @@ class CopyTreeExtends extends SimpleFileVisitor<Path> {
         this.dest = dest;
     }
 
+    private void filesCopy(Path path, Path destDir, StandardCopyOption replaceExisting) throws IOException {
+
+        try {
+
+            Files.copy(path, destDir, replaceExisting);
+        } catch (DirectoryNotEmptyException dirNotEmptyEx) {
+            System.out.println("dir :"+destDir+ " not empty");
+        }
+
+        //此copy命令是将 source 拷贝为 target ，而不是将 source 拷贝到 target目录下面，
+        // 即不是 target/source的形式，是 source ---> target 的形式.
+    }
+
     @Override
     public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
         Path destDir = dest.resolve(src.relativize(dir));
         System.out.println("walking  dir :" + dir + " to" + destDir);
-        Files.copy(dir, destDir, StandardCopyOption.REPLACE_EXISTING);
-        //此copy命令是将 source 拷贝为 target ，而不是将 source 拷贝到 target目录下面，
-        // 即不是 target/source的形式，是 source ---> target 的形式.
+
+        filesCopy(dir, destDir, StandardCopyOption.REPLACE_EXISTING);
+
         return FileVisitResult.CONTINUE;
     }
+
 
     @Override
     public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
         Path destFile = dest.resolve(src.relativize(file));
         System.out.println("walking file :" + file + " to" + destFile);
-        Files.copy(file, dest.resolve(src.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
+
+        filesCopy(file, destFile, StandardCopyOption.REPLACE_EXISTING);
+
         return FileVisitResult.CONTINUE;
+    }
+
+    @Override
+    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        if (exc != null) {
+            throw exc;
+        }
+        return super.postVisitDirectory(dir, exc);
     }
 }
 
