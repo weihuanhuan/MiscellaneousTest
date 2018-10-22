@@ -1,4 +1,4 @@
-package FileNIOTest;
+package FileTest.FileNIOTest;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,7 +13,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.EnumSet;
-import java.util.concurrent.Executors;
 
 /**
  * Created by JasonFitch on 10/8/2018.

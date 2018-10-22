@@ -1,4 +1,4 @@
-package derbyutility;
+package derbyembedded.derbyutility;
 
 /**
  * Created by JasonFitch on 1/22/2018.

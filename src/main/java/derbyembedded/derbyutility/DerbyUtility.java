@@ -1,7 +1,6 @@
-package derbyutility;
+package derbyembedded.derbyutility;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 
 /**
  * Created by JasonFitch on 1/22/2018.

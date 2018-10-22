@@ -1,4 +1,4 @@
-package FileContextModified;
+package FileTest.FileContextModified;
 
 import java.io.File;
 import java.io.FileInputStream;
