@@ -12,8 +12,14 @@ public class SystemTest {
             System.out.println(name + " = " + System.getProperty((String) name));
         }
         System.out.println("------------------------------------------------");
-        System.out.println(System.getProperty(("user.dir")));
+        String userdir = System.getProperty("user.dir");
+        System.out.println("#####user.dir:"+userdir);
+        String javahome = System.getProperty("java.home");
+        System.out.println("#####java.home:"+javahome);
+
+        System.setProperty("java.home","C:/java");
+        String javahomeMod = System.getProperty("java.home");
+        System.out.println("#####java.homeMod:"+javahomeMod);
 
     }
-
 }

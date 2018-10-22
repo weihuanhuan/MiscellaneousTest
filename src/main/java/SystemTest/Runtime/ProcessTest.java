@@ -1,4 +1,4 @@
-package RuntimeTest;
+package SystemTest.Runtime;
 
 
 import java.io.IOException;

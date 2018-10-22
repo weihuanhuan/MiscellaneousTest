@@ -1,4 +1,4 @@
-package Redirect;
+package SystemTest.Redirect;
 
 import java.io.IOException;
 import java.io.OutputStream;
