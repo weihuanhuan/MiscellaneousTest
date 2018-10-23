@@ -22,6 +22,7 @@ import javax.net.ServerSocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocket;
+
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 
@@ -30,29 +31,30 @@ import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
  */
 public class BCServerMain {
 
-    private static String SERVER_KEY_STORE = "c:/Users/JasonFitch/server_ks";
+    private static String SERVER_KEY_STORE          = "c:/Users/JasonFitch/server_ks";
     private static String SERVER_KEY_STORE_PASSWORD = "123123";
 
 
     public static void main(String[] args) throws IOException, NoSuchProviderException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, CertificateException {
         addBouncyCastleProvicer();
-        String providerName = ".*BC.*";
-        String type = ".*keystore.*";
-        String algorithm = ".*";
-        queryBouncyCastleProvicer(providerName,type,algorithm);
+        String modeControl  = "(?i)";
+        String providerName = ".*.*";
+        String type         = ".*Keystore.*";
+        String algorithm    = ".*.*";
+        queryBouncyCastleProvicer(modeControl, providerName, type, algorithm);
 
-        SSLContext bcSSL = SSLContext.getInstance("TLS", "BCJSSE");
 
         KeyStore ks = KeyStore.getInstance("BKS", "BC");
         ks.load(new FileInputStream(SERVER_KEY_STORE), null);
 
-        KeyManagerFactory kf = KeyManagerFactory.getInstance("SunX509", "BC");
+        KeyManagerFactory kf = KeyManagerFactory.getInstance("X.509", "BCJSSE");
         kf.init(ks, SERVER_KEY_STORE_PASSWORD.toCharArray());
 
+        SSLContext bcSSL = SSLContext.getInstance("TLS", "BCJSSE");
         bcSSL.init(kf.getKeyManagers(), null, null);
 
-        ServerSocketFactory factory = bcSSL.getServerSocketFactory();
-        ServerSocket serverSocket = factory.createServerSocket(8443);
+        ServerSocketFactory factory      = bcSSL.getServerSocketFactory();
+        ServerSocket        serverSocket = factory.createServerSocket(8443);
 
 
         ((SSLServerSocket) serverSocket).setNeedClientAuth(false);
@@ -64,7 +66,7 @@ public class BCServerMain {
             Socket clientSocket = serverSocket.accept();
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
+            PrintWriter    writer = new PrintWriter(clientSocket.getOutputStream());
 
             String data = reader.readLine();
             writer.println(data);
@@ -87,9 +89,9 @@ public class BCServerMain {
 
     }
 
-    private static void queryBouncyCastleProvicer(String providerName, String type, String algorithm) {
+    private static void queryBouncyCastleProvicer(String modeControl, String providerName, String type, String algorithm) {
 
-        String regex = "^" + providerName + ":" + ".*" + type + ".*" + algorithm + ".*";
+        String  regex   = modeControl + "^" + providerName + ":" + ".*" + type + ".*" + algorithm + ".*";
         Pattern compile = Pattern.compile(regex);
 
         for (Provider provider : Security.getProviders()) {
@@ -99,14 +101,14 @@ public class BCServerMain {
                 System.out.println("##################################################################");
                 int i = 0;
                 for (Provider.Service service : provider.getServices()) {
-                    String result = service.toString();
+                    String  result  = service.toString();
                     Matcher matcher = compile.matcher(result);
                     if (matcher.find()) {
                         ++i;
                         System.out.println(result);
                     }
                 }
-                System.out.println("Found [" + providerName + type + algorithm + "] Service Count:" + i);
+                System.out.println("In mode " + modeControl + " found [" + providerName + type + algorithm + "] service count:" + i);
             }
         }
     }
