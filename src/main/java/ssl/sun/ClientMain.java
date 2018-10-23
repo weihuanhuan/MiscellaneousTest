@@ -29,7 +29,7 @@ public class ClientMain {
 
 class SSLClient {
 
-    private static String CLIENT_KEY_STORE = "c:/Users/JasonFitch/client_ks";
+    private static String CLIENT_KEY_STORE          = "c:/Users/JasonFitch/client_ks";
     private static String CLIENT_KEY_STORE_PASSWORD = "456456";
 
     public static void init() throws Exception {
@@ -40,6 +40,21 @@ class SSLClient {
         SSLClient client = new SSLClient();
 //        Socket s = client.clientWithoutCert();
         Socket s = client.clientWithCert();
+//        在认证客户端时，如果服务器缺失对客户端的认证，会出现如下异常：
+//        javax.net.ssl.SSLException: Connection has been shutdown: javax.net.ssl.SSLException: java.net.SocketException: Software caused connection abort: recv failed
+//            at sun.security.ssl.SSLSocketImpl.checkEOF(SSLSocketImpl.java:1533)
+//        Caused by: javax.net.ssl.SSLException: java.net.SocketException: Software caused connection abort: recv failed
+//            at sun.security.ssl.Alerts.getSSLException(Alerts.java:208)
+//        Caused by: java.net.SocketException: Software caused connection abort: recv failed
+//            at java.net.SocketInputStream.socketRead0(Native Method)
+//        在调试SSL连接时会有如下信息：
+//        main, Exception while waiting for close java.net.SocketException: Software caused connection abort: recv failed
+//        main, handling exception: java.net.SocketException: Software caused connection abort: recv failed
+//        %% Invalidated:  [Session-1, TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384]
+//        main, SEND TLSv1.2 ALERT:  fatal, description = unexpected_message
+//        main, WRITE: TLSv1.2 Alert, length = 80
+//        main, Exception sending alert: java.net.SocketException: Software caused connection abort: socket write error
+//        main, called closeSocket()
 
         PrintWriter writer = new PrintWriter(s.getOutputStream());
         BufferedReader reader = new BufferedReader(new InputStreamReader(s
@@ -48,6 +63,8 @@ class SSLClient {
         writer.flush();
         System.out.println(reader.readLine());
 
+        reader.close();
+        writer.close();
         s.close();
     }
 

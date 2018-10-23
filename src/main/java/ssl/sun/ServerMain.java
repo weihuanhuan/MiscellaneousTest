@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.security.KeyStore;
@@ -52,6 +53,7 @@ class SSLServer extends Thread {
             String data = reader.readLine();
             writer.println(data);
             writer.close();
+            reader.close();
             socket.close();
         } catch (IOException e) {
         }
@@ -73,9 +75,10 @@ class SSLServer extends Thread {
 
 
         ServerSocketFactory factory = context.getServerSocketFactory();
-        ServerSocket _socket = factory.createServerSocket(8443);
-        ((SSLServerSocket) _socket).setNeedClientAuth(false);
-//        ((SSLServerSocket) _socket).setNeedClientAuth(true);
+        ServerSocket _socket = factory.createServerSocket(8443,50,InetAddress.getByName("localhost"));
+//        ((SSLServerSocket) _socket).setNeedClientAuth(false);
+        ((SSLServerSocket) _socket).setNeedClientAuth(true);
+
 
         while (true) {
             System.out.println("##########waiting for client on port 8443 ...##########");

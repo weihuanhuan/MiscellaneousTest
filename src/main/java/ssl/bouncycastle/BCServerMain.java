@@ -43,7 +43,7 @@ public class BCServerMain {
 
         SSLContext bcSSL = SSLContext.getInstance("TLS", "BCJSSE");
 
-        KeyStore ks = KeyStore.getInstance("BouncyCastle", "BC");
+        KeyStore ks = KeyStore.getInstance("BKS", "BC");
         ks.load(new FileInputStream(SERVER_KEY_STORE), null);
 
         KeyManagerFactory kf = KeyManagerFactory.getInstance("SunX509", "BC");
