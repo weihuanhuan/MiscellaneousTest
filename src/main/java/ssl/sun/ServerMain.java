@@ -1,4 +1,4 @@
-package ssl.standard;
+package ssl.sun;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -75,7 +75,7 @@ class SSLServer extends Thread {
         ServerSocketFactory factory = context.getServerSocketFactory();
         ServerSocket _socket = factory.createServerSocket(8443);
         ((SSLServerSocket) _socket).setNeedClientAuth(false);
-        ((SSLServerSocket) _socket).setNeedClientAuth(true);
+//        ((SSLServerSocket) _socket).setNeedClientAuth(true);
 
         while (true) {
             System.out.println("##########waiting for client on port 8443 ...##########");

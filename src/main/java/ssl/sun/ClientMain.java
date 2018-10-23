@@ -1,4 +1,4 @@
-package ssl.standard;
+package ssl.sun;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -35,7 +35,7 @@ class SSLClient {
     public static void init() throws Exception {
         // Set the key store to use for validating the server cert.
         System.setProperty("javax.net.ssl.trustStore", CLIENT_KEY_STORE);
-//        System.setProperty("javax.net.debug", "ssl,handshake");
+        System.setProperty("javax.net.debug", "ssl,handshake");
 
         SSLClient client = new SSLClient();
 //        Socket s = client.clientWithoutCert();
