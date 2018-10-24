@@ -39,7 +39,7 @@ public class BCServerMain {
         addBouncyCastleProvicer();
         String modeControl  = "(?i)";
         String providerName = ".*.*";
-        String type         = ".*Keystore.*";
+        String type         = ".*random.*";
         String algorithm    = ".*.*";
         queryBouncyCastleProvicer(modeControl, providerName, type, algorithm);
 
