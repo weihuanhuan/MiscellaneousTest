@@ -37,10 +37,10 @@ import javax.crypto.*;
 import javax.crypto.spec.PSource;
 import javax.crypto.spec.OAEPParameterSpec;
 
-import sun.security.rsa.*;
-import sun.security.jca.Providers;
-import sun.security.internal.spec.TlsRsaPremasterSecretParameterSpec;
-import sun.security.util.KeyUtil;
+import gm.security.rsa.*;
+import gm.security.jca.Providers;
+import gm.security.internal.spec.TlsRsaPremasterSecretParameterSpec;
+import gm.security.util.KeyUtil;
 
 /**
  * RSA cipher implementation. Supports RSA en/decryption and signing/verifying

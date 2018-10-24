@@ -43,7 +43,7 @@ import javax.crypto.ShortBufferException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.*;
 
-import sun.security.util.KeyUtil;
+import gm.security.util.KeyUtil;
 
 /**
  * This class implements the Diffie-Hellman key agreement protocol between

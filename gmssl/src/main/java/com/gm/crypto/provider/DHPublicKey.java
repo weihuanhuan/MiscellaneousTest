@@ -33,7 +33,7 @@ import java.security.InvalidKeyException;
 import java.security.ProviderException;
 import java.security.PublicKey;
 import javax.crypto.spec.DHParameterSpec;
-import sun.security.util.*;
+import gm.security.util.*;
 
 
 /**

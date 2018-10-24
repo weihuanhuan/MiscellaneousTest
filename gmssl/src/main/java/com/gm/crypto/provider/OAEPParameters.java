@@ -27,8 +27,8 @@ package com.gm.crypto.provider;
 
 import java.math.BigInteger;
 import java.io.*;
-import sun.security.util.*;
-import sun.security.x509.*;
+import gm.security.util.*;
+import gm.security.x509.*;
 import java.security.AlgorithmParametersSpi;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;

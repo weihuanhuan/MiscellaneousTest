@@ -31,7 +31,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 
-import sun.security.internal.spec.*;
+import gm.security.internal.spec.*;
 
 import static com.gm.crypto.provider.TlsPrfGenerator.*;
 

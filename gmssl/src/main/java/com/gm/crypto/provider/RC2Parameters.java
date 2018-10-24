@@ -31,7 +31,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.InvalidParameterSpecException;
 import javax.crypto.spec.RC2ParameterSpec;
 import sun.misc.HexDumpEncoder;
-import sun.security.util.*;
+import gm.security.util.*;
 
 /**
  * This class implements the parameter set used with RC2

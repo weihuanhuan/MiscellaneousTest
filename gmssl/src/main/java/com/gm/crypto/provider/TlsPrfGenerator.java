@@ -33,7 +33,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
 
-import sun.security.internal.spec.TlsPrfParameterSpec;
+import gm.security.internal.spec.TlsPrfParameterSpec;
 
 /**
  * KeyGenerator implementation for the TLS PRF function.

@@ -43,8 +43,8 @@ import javax.crypto.CipherSpi;
 import javax.crypto.SecretKey;
 import javax.crypto.SealedObject;
 import javax.crypto.spec.*;
-import sun.security.x509.AlgorithmId;
-import sun.security.util.ObjectIdentifier;
+import gm.security.x509.AlgorithmId;
+import gm.security.util.ObjectIdentifier;
 
 /**
  * This class implements a protection mechanism for private keys. In JCE, we

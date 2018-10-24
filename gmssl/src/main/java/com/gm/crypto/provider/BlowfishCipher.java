@@ -27,7 +27,7 @@ package com.gm.crypto.provider;
 
 import java.security.*;
 import java.security.spec.*;
-import sun.security.util.*;
+import gm.security.util.*;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 import javax.crypto.BadPaddingException;

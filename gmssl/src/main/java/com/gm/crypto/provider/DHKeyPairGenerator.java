@@ -32,8 +32,8 @@ import java.security.spec.InvalidParameterSpecException;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.DHGenParameterSpec;
 
-import sun.security.provider.ParameterCache;
-import static sun.security.util.SecurityProviderConstants.DEF_DH_KEY_SIZE;
+import gm.security.provider.ParameterCache;
+import static gm.security.util.SecurityProviderConstants.DEF_DH_KEY_SIZE;
 
 /**
  * This class represents the key pair generator for Diffie-Hellman key pairs.

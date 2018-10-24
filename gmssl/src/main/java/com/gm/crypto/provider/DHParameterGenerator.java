@@ -31,7 +31,7 @@ import java.security.spec.*;
 import javax.crypto.spec.DHParameterSpec;
 import javax.crypto.spec.DHGenParameterSpec;
 
-import static sun.security.util.SecurityProviderConstants.DEF_DH_KEY_SIZE;
+import static gm.security.util.SecurityProviderConstants.DEF_DH_KEY_SIZE;
 
 /*
  * This class generates parameters for the Diffie-Hellman algorithm.

@@ -33,7 +33,7 @@ import java.security.PrivateKey;
 import java.security.InvalidKeyException;
 import java.security.ProviderException;
 import javax.crypto.spec.DHParameterSpec;
-import sun.security.util.*;
+import gm.security.util.*;
 
 /**
  * A private key in PKCS#8 format for the Diffie-Hellman key agreement

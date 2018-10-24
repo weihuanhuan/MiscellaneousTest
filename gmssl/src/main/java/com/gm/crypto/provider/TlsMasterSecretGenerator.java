@@ -30,8 +30,8 @@ import java.security.spec.AlgorithmParameterSpec;
 
 import javax.crypto.*;
 
-import sun.security.internal.interfaces.TlsMasterSecret;
-import sun.security.internal.spec.TlsMasterSecretParameterSpec;
+import gm.security.internal.interfaces.TlsMasterSecret;
+import gm.security.internal.spec.TlsMasterSecretParameterSpec;
 
 import static com.gm.crypto.provider.TlsPrfGenerator.*;
 

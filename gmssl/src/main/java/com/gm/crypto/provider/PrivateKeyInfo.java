@@ -27,8 +27,8 @@ package com.gm.crypto.provider;
 
 import java.math.*;
 import java.io.*;
-import sun.security.x509.AlgorithmId;
-import sun.security.util.*;
+import gm.security.x509.AlgorithmId;
+import gm.security.util.*;
 
 
 /**
