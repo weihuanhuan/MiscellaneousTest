@@ -15,17 +15,16 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class GMClientMain {
 
-    private static String CLIENT_KEY_STORE = "c:/Users/JasonFitch/client_ks";
+    private static String CLIENT_KEY_STORE          = "c:/Users/JasonFitch/client_ks";
     private static String CLIENT_KEY_STORE_PASSWORD = "456456";
 
     public static void main(String[] args) throws Exception {
         ProviderUtil.insertProvicer();
-        String modeControl = "(?i)";
+        String modeControl  = "(?i)";
         String providerName = ".*";
-        String type = ".*keystore.*";
-        String algorithm = ".*jceks.*";
+        String type         = ".*keystore.*";
+        String algorithm    = ".*jceks.*";
         ProviderUtil.queryProvicer(modeControl, providerName, type, algorithm);
-
 
         System.setProperty("javax.net.ssl.trustStore", CLIENT_KEY_STORE);
         System.setProperty("javax.net.debug", "ssl,handshake");
@@ -33,23 +32,18 @@ public class GMClientMain {
         Socket s = clientWithoutCert();
 //        Socket s = clientWithCert();
 
-        PrintWriter writer = new PrintWriter(s.getOutputStream());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(s
-                .getInputStream()));
-        writer.println("hello");
+        PrintWriter    writer = new PrintWriter(s.getOutputStream());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        writer.println("########################gmssl success hello#######################");
         writer.flush();
         System.out.println(reader.readLine());
 
         reader.close();
         writer.close();
         s.close();
-
-
     }
 
-
     private static Socket clientWithoutCert() throws Exception {
-
         SocketFactory sf = SSLSocketFactory.getDefault();
         System.out.println("##########connecting to server on prot 8443 without cert...##########");
         Socket s = sf.createSocket("localhost", 8443);
@@ -57,22 +51,18 @@ public class GMClientMain {
     }
 
     private static Socket clientWithCert() throws Exception {
-
-        SSLContext context = SSLContext.getInstance("TLS", "SunJSSE");
-
         KeyStore ks = KeyStore.getInstance("jceks", "SunJCE");
         ks.load(new FileInputStream(CLIENT_KEY_STORE), null);
 
         KeyManagerFactory kf = KeyManagerFactory.getInstance("SunX509", "SunJSSE");
         kf.init(ks, CLIENT_KEY_STORE_PASSWORD.toCharArray());
 
+        SSLContext context = SSLContext.getInstance("TLS", "SunJSSE");
         context.init(kf.getKeyManagers(), null, null);
 
         SocketFactory factory = context.getSocketFactory();
         System.out.println("##########connecting to server on prot 8443 with cert...##########");
         Socket s = factory.createSocket("localhost", 8443);
         return s;
-
     }
 }
-

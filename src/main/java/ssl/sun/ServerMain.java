@@ -21,19 +21,12 @@ public class ServerMain {
 
     public static void main(String[] args) {
 
-        //动态注册
-//        java.security.Provider provider = new javaxt.ssl.SSLProvider();
-//        java.security.Security.addProvider(provider);
-//        SSLContext sslc = SSLContext.getInstance("TLS", "SSLProvider");
-
         try {
             SSLServer.init();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
-
 }
 
 class SSLServer extends Thread {
@@ -60,10 +53,7 @@ class SSLServer extends Thread {
     }
 
     public static void init() throws Exception {
-
         System.setProperty("javax.net.ssl.trustStore", SERVER_KEY_STORE);
-
-        SSLContext context = SSLContext.getInstance("TLS");
 
         KeyStore ks = KeyStore.getInstance("jceks");
         ks.load(new FileInputStream(SERVER_KEY_STORE), null);
@@ -71,14 +61,13 @@ class SSLServer extends Thread {
         KeyManagerFactory kf = KeyManagerFactory.getInstance("SunX509");
         kf.init(ks, SERVER_KEY_STORE_PASSWORD.toCharArray());
 
+        SSLContext context = SSLContext.getInstance("TLS");
         context.init(kf.getKeyManagers(), null, null);
-
 
         ServerSocketFactory factory = context.getServerSocketFactory();
         ServerSocket _socket = factory.createServerSocket(8443,50,InetAddress.getByName("localhost"));
 //        ((SSLServerSocket) _socket).setNeedClientAuth(false);
         ((SSLServerSocket) _socket).setNeedClientAuth(true);
-
 
         while (true) {
             System.out.println("##########waiting for client on port 8443 ...##########");

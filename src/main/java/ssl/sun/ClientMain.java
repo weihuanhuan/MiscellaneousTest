@@ -17,13 +17,11 @@ import javax.net.ssl.SSLSocketFactory;
 public class ClientMain {
 
     public static void main(String[] args) {
-
         try {
             SSLClient.init();
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }
 
@@ -69,7 +67,6 @@ class SSLClient {
     }
 
     private Socket clientWithoutCert() throws Exception {
-
         SocketFactory sf = SSLSocketFactory.getDefault();
         System.out.println("##########connecting to server on prot 8443 without cert...##########");
         Socket s = sf.createSocket("localhost", 8443);
@@ -77,22 +74,19 @@ class SSLClient {
     }
 
     private Socket clientWithCert() throws Exception {
-
-        SSLContext context = SSLContext.getInstance("TLS");
-
         KeyStore ks = KeyStore.getInstance("jceks");
         ks.load(new FileInputStream(CLIENT_KEY_STORE), null);
 
         KeyManagerFactory kf = KeyManagerFactory.getInstance("SunX509");
         kf.init(ks, CLIENT_KEY_STORE_PASSWORD.toCharArray());
 
+        SSLContext context = SSLContext.getInstance("TLS");
         context.init(kf.getKeyManagers(), null, null);
 
         SocketFactory factory = context.getSocketFactory();
         System.out.println("##########connecting to server on prot 8443 with cert...##########");
         Socket s = factory.createSocket("localhost", 8443);
         return s;
-
     }
 
 }
