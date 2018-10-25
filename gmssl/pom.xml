@@ -11,5 +11,21 @@
 
     <artifactId>gmssl</artifactId>
 
+    <!--<dependencies>-->
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.bouncycastle</groupId>-->
+            <!--<artifactId>bcprov-jdk15on</artifactId>-->
+            <!--<version>1.60</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/org.bouncycastle/bctls-jdk15on &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>org.bouncycastle</groupId>-->
+            <!--<artifactId>bctls-jdk15on</artifactId>-->
+            <!--<version>1.60</version>-->
+        <!--</dependency>-->
+        <!---->
+    <!--</dependencies>-->
 
 </project>
