@@ -70,6 +70,8 @@ public final class TlsMasterSecretGenerator extends KeyGeneratorSpi {
         protocolVersion = (spec.getMajorVersion() << 8)
             | spec.getMinorVersion();
         if ((protocolVersion < 0x0300) || (protocolVersion > 0x0303)) {
+            if(0x0101 == protocolVersion)
+                return;
             throw new InvalidAlgorithmParameterException(
                 "Only SSL 3.0, TLS 1.0/1.1/1.2 supported");
         }
