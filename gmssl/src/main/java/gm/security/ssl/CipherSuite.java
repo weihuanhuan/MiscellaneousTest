@@ -623,6 +623,8 @@ final class CipherSuite implements Comparable<CipherSuite> {
         new BulkCipher(CIPHER_AES_GCM,  AEAD_CIPHER,     16, 12,  4, true);
     final static BulkCipher B_AES_256_GCM =
         new BulkCipher(CIPHER_AES_GCM,  AEAD_CIPHER,     32, 12,  4, true);
+    final static BulkCipher B_SM4_128_ECB =
+            new BulkCipher(CIPHER_SM4_ECB,  BLOCK_CIPHER,16, 16,  0, true);
 
     // MACs
     final static MacAlg M_NULL    = new MacAlg("NULL",     0,   0,   0);
@@ -647,7 +649,8 @@ final class CipherSuite implements Comparable<CipherSuite> {
         P_NONE(     "NONE",  0,   0),
         P_SHA256("SHA-256", 32,  64),
         P_SHA384("SHA-384", 48, 128),
-        P_SHA512("SHA-512", 64, 128);  // not currently used.
+        P_SHA512("SHA-512", 64, 128),  // not currently used.
+        P_SM3(       "SM3", 32,  16);
 
         // PRF characteristics
         private final String prfHashAlg;
@@ -938,6 +941,7 @@ final class CipherSuite implements Comparable<CipherSuite> {
         int max = ProtocolVersion.LIMIT_MAX_VALUE;
         int tls11 = ProtocolVersion.TLS11.v;
         int tls12 = ProtocolVersion.TLS12.v;
+        int gmssl10 = ProtocolVersion.GMSSL10.v;
 
         //  ID           Key Exchange   Cipher     A  obs  suprt  PRF
         //  ======       ============   =========  =  ===  =====  ========
@@ -949,6 +953,10 @@ final class CipherSuite implements Comparable<CipherSuite> {
         // priority of cipher suites in GCM mode for a while as GCM
         // technologies mature in the industry.  Eventually we'll move
         // the GCM suites here.
+
+        // ECC_SM4_SM3
+        add("ECC_SM4_SM3",
+                0xe013, --p, K_ECDHE_ECDSA, B_SM4_128_ECB, T, max, gmssl10, P_SM3);
 
         // AES_256(CBC)
         add("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",

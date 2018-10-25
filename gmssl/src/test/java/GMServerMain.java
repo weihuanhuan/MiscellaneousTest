@@ -28,11 +28,6 @@ public class GMServerMain {
 
     public static void main(String[] args) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, NoSuchProviderException, IOException {
         ProviderUtil.insertProvicer();
-        String modeControl  = "(?i)";
-        String providerName = ".*";
-        String type         = ".*keystore.*";
-        String algorithm    = ".*jceks.*";
-        ProviderUtil.queryProvicer(modeControl, providerName, type, algorithm);
 
         KeyStore ks = KeyStore.getInstance("jceks", "SunJCE");
         ks.load(new FileInputStream(SERVER_KEY_STORE), null);

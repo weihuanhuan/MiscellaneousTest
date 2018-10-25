@@ -791,7 +791,8 @@ public abstract class SSLContextImpl extends SSLContextSpi {
                                 ProtocolVersion.SSL30,
                                 ProtocolVersion.TLS10,
                                 ProtocolVersion.TLS11,
-                                ProtocolVersion.TLS12
+                                ProtocolVersion.TLS12,
+                                ProtocolVersion.GMSSL10
                         };
                     }
                 } else {
