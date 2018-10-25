@@ -19,14 +19,14 @@ public class Test {
     public static void main(String[] args) throws NoSuchProviderException, KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
         ProviderUtil.insertProvicer();
         String modeControl = "(?i)";
-        String providerName = ".*SunJCE.*";
-        String type = ".*KeyGenerator.*";
-        String algorithm = ".*.*";
+        String providerName = "(BC|BCJSSE)";
+        String type = ".*.*";
+        String algorithm = ".*ECDH.*";
         ProviderUtil.queryProvicer(modeControl, providerName, type, algorithm);
 
 
 
-        KeyStore ks = KeyStore.getInstance("jceks","SunJCE");
+        KeyStore ks = KeyStore.getInstance("BKS-V1","BC");
         ks.load(new FileInputStream(SERVER_KEY_STORE), null);
 
     }

@@ -153,6 +153,8 @@ final class JsseJce {
      * without padding.
      */
     final static String CIPHER_AES_GCM = "AES/GCM/NoPadding";
+
+    final static String CIPHER_SM4_ECB = "SM4/ECB/NoPadding";
     /**
      * JCA identifier string for DSA, i.e. a DSA with SHA-1.
      */
