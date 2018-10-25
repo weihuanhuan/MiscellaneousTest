@@ -75,19 +75,26 @@ public final class ProtocolVersion implements Comparable<ProtocolVersion> {
     // TLS 1.2
     final static ProtocolVersion TLS12 = new ProtocolVersion(0x0303, "TLSv1.2");
 
+    // GMSSL 1.0
+    final static ProtocolVersion GMSSL10 = new ProtocolVersion(0x0101, "GMSSLv1.0");
+
     private static final boolean FIPS = SunJSSE.isFIPS();
 
     // minimum version we implement (SSL 3.0)
-    final static ProtocolVersion MIN = FIPS ? TLS10 : SSL30;
+//    final static ProtocolVersion MIN = FIPS ? TLS10 : SSL30;
+    final static ProtocolVersion MIN = GMSSL10;
 
     // maximum version we implement (TLS 1.2)
-    final static ProtocolVersion MAX = TLS12;
+//    final static ProtocolVersion MAX = TLS12;
+    final static ProtocolVersion MAX = GMSSL10;
 
     // ProtocolVersion to use by default (TLS 1.2)
-    final static ProtocolVersion DEFAULT = TLS12;
+//    final static ProtocolVersion DEFAULT = TLS12;
+    final static ProtocolVersion DEFAULT = GMSSL10;
 
     // Default version for hello messages (SSLv2Hello)
-    final static ProtocolVersion DEFAULT_HELLO = FIPS ? TLS10 : SSL30;
+//    final static ProtocolVersion DEFAULT_HELLO = FIPS ? TLS10 : SSL30;
+    final static ProtocolVersion DEFAULT_HELLO = GMSSL10;
 
     // Available protocols
     //
@@ -109,7 +116,8 @@ public final class ProtocolVersion implements Comparable<ProtocolVersion> {
         Set<ProtocolVersion> protocols = new HashSet<>(5);
 
         ProtocolVersion[] pvs = new ProtocolVersion[] {
-                SSL20Hello, SSL30, TLS10, TLS11, TLS12};
+//                SSL20Hello, SSL30, TLS10, TLS11, TLS12};
+                GMSSL10};
         for (ProtocolVersion p : pvs) {
             if (SSLAlgorithmConstraints.DEFAULT_SSL_ONLY.permits(
                     EnumSet.of(CryptoPrimitive.KEY_AGREEMENT),
@@ -142,6 +150,8 @@ public final class ProtocolVersion implements Comparable<ProtocolVersion> {
             return TLS12;
         } else if (v == SSL20Hello.v) {
             return SSL20Hello;
+        } else if (v == GMSSL10.v) {
+            return GMSSL10;
         } else {
             int major = (v >>> 8) & 0xFF;
             int minor = v & 0xFF;
@@ -183,6 +193,8 @@ public final class ProtocolVersion implements Comparable<ProtocolVersion> {
             return TLS12;
         } else if (name.equals(SSL20Hello.name)) {
             return SSL20Hello;
+        } else if (name.equals(GMSSL10.name)) {
+            return GMSSL10;
         } else {
             throw new IllegalArgumentException(name);
         }
