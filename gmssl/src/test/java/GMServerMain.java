@@ -27,6 +27,7 @@ public class GMServerMain {
     private static String SERVER_KEY_STORE_PASSWORD = "123123";
 
     public static void main(String[] args) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, NoSuchProviderException, IOException {
+        ProviderUtil.deleteProvider();
         ProviderUtil.insertProvicer();
 
         KeyStore ks = KeyStore.getInstance("jceks", "SunJCE");

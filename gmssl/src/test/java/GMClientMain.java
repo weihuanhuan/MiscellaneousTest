@@ -19,6 +19,7 @@ public class GMClientMain {
     private static String CLIENT_KEY_STORE_PASSWORD = "456456";
 
     public static void main(String[] args) throws Exception {
+        ProviderUtil.deleteProvider();
         ProviderUtil.insertProvicer();
 
         System.setProperty("javax.net.debug", "ssl,handshake");

@@ -1203,6 +1203,26 @@ class ECDH_ServerKeyExchange extends ServerKeyExchange {
     }
 }
 
+static final class ECC_ServerKeyExchange extends ServerKeyExchange{
+
+
+
+    @Override
+    int messageLength() {
+        return 0;
+    }
+
+    @Override
+    void send(HandshakeOutStream s) throws IOException {
+
+    }
+
+    @Override
+    void print(PrintStream p) throws IOException {
+
+    }
+}
+
 static final class DistinguishedName {
 
     /*

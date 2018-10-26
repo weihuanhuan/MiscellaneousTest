@@ -43,7 +43,6 @@ public class BCServerMain {
         String algorithm    = ".*.*";
         queryBouncyCastleProvicer(modeControl, providerName, type, algorithm);
 
-
         KeyStore ks = KeyStore.getInstance("BKS", "BC");
         ks.load(new FileInputStream(SERVER_KEY_STORE), null);
 
@@ -56,12 +55,10 @@ public class BCServerMain {
         ServerSocketFactory factory      = bcSSL.getServerSocketFactory();
         ServerSocket        serverSocket = factory.createServerSocket(8443);
 
-
         ((SSLServerSocket) serverSocket).setNeedClientAuth(false);
 //        ((SSLServerSocket) serverSocket).setNeedClientAuth(true);
 
         while (true) {
-
             System.out.println("##########waiting for client on port 8443 ...##########");
             Socket clientSocket = serverSocket.accept();
 
@@ -72,25 +69,19 @@ public class BCServerMain {
             writer.println(data);
             writer.close();
             clientSocket.close();
-
-
         }
 
     }
 
     private static void addBouncyCastleProvicer() {
-
         java.security.Provider bouncyCastleProvider = new BouncyCastleProvider();
         java.security.Security.addProvider(bouncyCastleProvider);
 
         java.security.Provider bouncyCastleJsseProvider = new BouncyCastleJsseProvider();
         java.security.Security.addProvider(bouncyCastleJsseProvider);
-
-
     }
 
     private static void queryBouncyCastleProvicer(String modeControl, String providerName, String type, String algorithm) {
-
         String  regex   = modeControl + "^" + providerName + ":" + ".*" + type + ".*" + algorithm + ".*";
         Pattern compile = Pattern.compile(regex);
 

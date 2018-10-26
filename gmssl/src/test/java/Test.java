@@ -17,6 +17,7 @@ public class Test {
     private static String SERVER_KEY_STORE_PASSWORD = "123123";
 
     public static void main(String[] args) throws NoSuchProviderException, KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+        ProviderUtil.deleteProvider();
         ProviderUtil.insertProvicer();
         String modeControl = "(?i)";
         String providerName = "(BC|BCJSSE)";
@@ -26,7 +27,7 @@ public class Test {
 
 
 
-        KeyStore ks = KeyStore.getInstance("BKS-V1","BC");
+        KeyStore ks = KeyStore.getInstance("BKS","BC");
         ks.load(new FileInputStream(SERVER_KEY_STORE), null);
 
     }

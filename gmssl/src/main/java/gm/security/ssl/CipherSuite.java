@@ -145,6 +145,8 @@ final class CipherSuite implements Comparable<CipherSuite> {
             macAlg = M_NULL;
         } else if (name.endsWith("_SCSV")) {
             macAlg = M_NULL;
+        } else if (name.endsWith("_SM3")) {
+            macAlg = M_NULL;
         } else {
             throw new IllegalArgumentException
                     ("Unknown MAC algorithm for ciphersuite " + name);
@@ -340,6 +342,8 @@ final class CipherSuite implements Comparable<CipherSuite> {
         K_ECDHE_ECDSA("ECDHE_ECDSA", ALLOW_ECC, true),
         K_ECDHE_RSA  ("ECDHE_RSA",   ALLOW_ECC, true),
         K_ECDH_ANON  ("ECDH_anon",   ALLOW_ECC, true),
+
+        K_ECC        ("ECC",         true,     false),
 
         // Kerberos cipher suites
         K_KRB5       ("KRB5", true,             false),
@@ -935,7 +939,7 @@ final class CipherSuite implements Comparable<CipherSuite> {
          *    signature algorithm, in the order of ECDHE-ECDSA, ECDHE-RSA,
          *    RSA, ECDH-ECDSA, ECDH-RSA, DHE-RSA, DHE-DSS.
          */
-        int p = DEFAULT_SUITES_PRIORITY * 2;
+        int p = DEFAULT_SUITES_PRIORITY * 2+1;
 
         // shorten names to fit the following table cleanly.
         int max = ProtocolVersion.LIMIT_MAX_VALUE;
@@ -954,9 +958,9 @@ final class CipherSuite implements Comparable<CipherSuite> {
         // technologies mature in the industry.  Eventually we'll move
         // the GCM suites here.
 
-        // ECC_SM4_SM3
+//         ECC_SM4_SM3
         add("ECC_SM4_SM3",
-                0xe013, --p, K_ECDHE_ECDSA, B_SM4_128_ECB, T, max, gmssl10, P_SM3);
+                0xe013, (--p)-p, K_ECC, B_SM4_128_ECB, T, max, gmssl10, P_SM3);
 
         // AES_256(CBC)
         add("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",

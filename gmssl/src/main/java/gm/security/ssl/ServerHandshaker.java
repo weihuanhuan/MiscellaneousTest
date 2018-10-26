@@ -971,6 +971,8 @@ final class ServerHandshaker extends Handshaker {
             // ServerKeyExchange not used for fixed ECDH
             m3 = null;
             break;
+        case K_ECC:
+            m3 = new ECC_ServerKeyExchange();
         default:
             throw new RuntimeException("internal error: " + keyExchange);
         }
@@ -1369,6 +1371,11 @@ final class ServerHandshaker extends Handshaker {
             if (setupEphemeralECDHKeys() == false) {
                 return false;
             }
+            break;
+        case K_ECC:
+//            if (setupPrivateKeyAndChain("") == false) {
+//                return false;
+//            }
             break;
         default:
             // internal error, unknown key exchange
