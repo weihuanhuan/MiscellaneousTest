@@ -15,24 +15,11 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class GMClientMain {
 
-    private static String CLIENT_KEY_STORE          = "c:/Users/JasonFitch/client_ks";
-    private static String CLIENT_KEY_STORE_PASSWORD = "456456";
-
     public static void main(String[] args) throws Exception {
         ProviderUtil.deleteProvider();
         ProviderUtil.insertProvicer();
 
         System.setProperty("javax.net.debug", "ssl,handshake");
-        System.setProperty("javax.net.ssl.trustStore", CLIENT_KEY_STORE);
-//        如果不设置这个系统属性则会抛出如下异常:
-//        Exception in thread "main" javax.net.ssl.SSLException: Connection has been shutdown: javax.net.ssl.SSLHandshakeException: gm.security.validator.ValidatorException: PKIX path building failed: java.security.cert.CertPathBuilderException: Unable to find certificate chain.
-//                at gm.security.ssl.SSLSocketImpl.checkEOF(SSLSocketImpl.java:1533)
-//        Caused by: javax.net.ssl.SSLHandshakeException: gm.security.validator.ValidatorException: PKIX path building failed: java.security.cert.CertPathBuilderException: Unable to find certificate chain.
-//                at gm.security.ssl.Alerts.getSSLException(Alerts.java:192)
-//        Caused by: gm.security.validator.ValidatorException: PKIX path building failed: java.security.cert.CertPathBuilderException: Unable to find certificate chain.
-//                at gm.security.validator.PKIXValidator.doBuild(PKIXValidator.java:397)
-//        Caused by: java.security.cert.CertPathBuilderException: Unable to find certificate chain.
-//                at org.bouncycastle.jce.provider.PKIXCertPathBuilderSpi.engineBuild(Unknown Source)
 
         Socket s = clientWithoutCert();
 //        Socket s = clientWithCert();
@@ -56,11 +43,11 @@ public class GMClientMain {
     }
 
     private static Socket clientWithCert() throws Exception {
-        KeyStore ks = KeyStore.getInstance("jceks", "SunJCE");
-        ks.load(new FileInputStream(CLIENT_KEY_STORE), null);
+        KeyStore ks = KeyStore.getInstance("PKCS12", "BC");
+        ks.load(new FileInputStream(Contants.CLIENT_KEY_STORE), Contants.CLIENT_KEY_STORE_PASSWORD.toCharArray());
 
         KeyManagerFactory kf = KeyManagerFactory.getInstance("SunX509", "SunJSSE");
-        kf.init(ks, CLIENT_KEY_STORE_PASSWORD.toCharArray());
+        kf.init(ks, Contants.CLIENT_KEY_STORE_PASSWORD.toCharArray());
 
         SSLContext context = SSLContext.getInstance("TLS", "SunJSSE");
         context.init(kf.getKeyManagers(), null, null);

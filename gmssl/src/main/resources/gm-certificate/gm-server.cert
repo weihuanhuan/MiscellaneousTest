@@ -1,0 +1,55 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            aa:cc:76:b0:9c:23:41:9f
+    Signature Algorithm: sm2sign-with-sm3
+        Issuer: C=CN, ST=Some-State, L=ln, O=Internet Widgits Pty Ltd, OU=ou, CN=localhost/emailAddress=email
+        Validity
+            Not Before: Oct 26 10:00:14 2018 GMT
+            Not After : Oct 23 10:00:14 2028 GMT
+        Subject: C=CN, ST=Some-State, O=Internet Widgits Pty Ltd, OU=ou, CN=localhost/emailAddress=email
+        Subject Public Key Info:
+            Public Key Algorithm: id-ecPublicKey
+                Public-Key: (256 bit)
+                pub:
+                    04:c2:a4:55:c8:b2:54:f7:26:6c:ff:56:34:ef:2a:
+                    4b:eb:e1:24:71:0a:67:b8:07:fb:20:a7:02:71:0b:
+                    4f:30:15:3f:15:6d:41:93:02:b7:82:67:d5:d8:7a:
+                    1c:9c:f5:3b:b4:b2:08:37:b4:f9:b3:2a:4c:e1:47:
+                    7e:c3:6b:45:fc
+                ASN1 OID: sm2p256v1
+                NIST CURVE: SM2
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Key Usage: 
+                Key Encipherment
+            Netscape Comment: 
+                GmSSL Generated Certificate
+            X509v3 Subject Key Identifier: 
+                57:94:40:05:8D:73:73:6F:2D:99:0D:81:63:20:E0:08:64:B5:E3:35
+            X509v3 Authority Key Identifier: 
+                keyid:31:8C:4C:BE:50:B7:C7:B3:9E:83:2D:85:B8:20:77:92:78:BE:5C:00
+
+    Signature Algorithm: sm2sign-with-sm3
+         30:45:02:21:00:f5:18:36:1b:67:3d:d8:5a:6c:46:53:f4:d1:
+         2d:0e:f6:ba:65:83:fe:eb:f0:c6:72:fa:a4:1b:98:35:46:50:
+         df:02:20:33:b1:58:a9:f9:4f:de:e0:bb:99:2b:df:35:d8:e4:
+         47:c5:6c:ac:d8:7e:87:9f:ad:b5:90:f0:45:95:a9:02:e9
+-----BEGIN CERTIFICATE-----
+MIIChTCCAiugAwIBAgIJAKrMdrCcI0GfMAoGCCqBHM9VAYN1MIGJMQswCQYDVQQG
+EwJDTjETMBEGA1UECAwKU29tZS1TdGF0ZTELMAkGA1UEBwwCbG4xITAfBgNVBAoM
+GEludGVybmV0IFdpZGdpdHMgUHR5IEx0ZDELMAkGA1UECwwCb3UxEjAQBgNVBAMM
+CWxvY2FsaG9zdDEUMBIGCSqGSIb3DQEJARYFZW1haWwwHhcNMTgxMDI2MTAwMDE0
+WhcNMjgxMDIzMTAwMDE0WjB8MQswCQYDVQQGEwJDTjETMBEGA1UECAwKU29tZS1T
+dGF0ZTEhMB8GA1UECgwYSW50ZXJuZXQgV2lkZ2l0cyBQdHkgTHRkMQswCQYDVQQL
+DAJvdTESMBAGA1UEAwwJbG9jYWxob3N0MRQwEgYJKoZIhvcNAQkBFgVlbWFpbDBZ
+MBMGByqGSM49AgEGCCqBHM9VAYItA0IABMKkVciyVPcmbP9WNO8qS+vhJHEKZ7gH
++yCnAnELTzAVPxVtQZMCt4Jn1dh6HJz1O7SyCDe0+bMqTOFHfsNrRfyjgYcwgYQw
+CQYDVR0TBAIwADALBgNVHQ8EBAMCBSAwKgYJYIZIAYb4QgENBB0WG0dtU1NMIEdl
+bmVyYXRlZCBDZXJ0aWZpY2F0ZTAdBgNVHQ4EFgQUV5RABY1zc28tmQ2BYyDgCGS1
+4zUwHwYDVR0jBBgwFoAUMYxMvlC3x7Oegy2FuCB3kni+XAAwCgYIKoEcz1UBg3UD
+SAAwRQIhAPUYNhtnPdhabEZT9NEtDva6ZYP+6/DGcvqkG5g1RlDfAiAzsVip+U/e
+4LuZK9812ORHxWys2H6Hn621kPBFlakC6Q==
+-----END CERTIFICATE-----
