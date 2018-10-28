@@ -19,14 +19,16 @@ public class ProviderUtil {
         java.security.Provider bouncyCastleProvider = new BouncyCastleProvider();
         java.security.Security.insertProviderAt(bouncyCastleProvider, 1);
 
-//        java.security.Provider bouncyCastleJsseProvider = new BouncyCastleJsseProvider();
-//        java.security.Security.insertProviderAt(bouncyCastleJsseProvider, 2);
-
-        java.security.Provider sunJCE = new SunJCE();
-        Security.insertProviderAt(sunJCE, 2);
-
         java.security.Provider gmProvider = new GMProvider();
-        Security.insertProviderAt(gmProvider, 3);
+        Security.insertProviderAt(gmProvider, 2);
+
+//        java.security.Provider sunJCE = new SunJCE();
+//        Security.insertProviderAt(sunJCE, 3);
+
+//        java.security.Provider bouncyCastleJsseProvider = new BouncyCastleJsseProvider();
+//        java.security.Security.insertProviderAt(bouncyCastleJsseProvider, 4);
+
+
 
     }
 
@@ -43,6 +45,9 @@ public class ProviderUtil {
         java.security.Security.removeProvider("XMLDSig");
         java.security.Security.removeProvider("SunPCSC");
         java.security.Security.removeProvider("SunMSCAPI");
+        //直接在配置文件【"JAVA_HOME\jre\lib\security\java.security"】中移除provider
+//        1.的考虑其他程序对provider的使用，比如maven下载依赖时
+//        2.由于配置文件中序号得按需递增，一次改动就得重新编排
     }
 
     public static void queryProvicer(String modeControl, String providerName, String type, String algorithm) {

@@ -90,7 +90,9 @@ final class EllipticCurvesExtension extends HelloExtension {
         P256_K1(22, "secp256k1",    "1.3.132.0.10",     false),
         P256_R1(23, "secp256r1",    "1.2.840.10045.3.1.7", true), // NIST P-256
         P384_R1(24, "secp384r1",    "1.3.132.0.34",     true),  // NIST P-384
-        P521_R1(25, "secp521r1",    "1.3.132.0.35",     true);  // NIST P-521
+        P521_R1(25, "secp521r1",    "1.3.132.0.35",     true),  // NIST P-521
+
+        P256_v1(26, "sm2p256v1",    "1.2.156.10197.1.301",     false);
 
         int          id;
         String       name;
@@ -179,7 +181,7 @@ final class EllipticCurvesExtension extends HelloExtension {
                     // NIST curves first
                     23, 24, 25, 9, 10, 11, 12, 13, 14,
                     // non-NIST curves
-                    22,
+                    22,26
                 };
             }
 

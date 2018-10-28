@@ -939,7 +939,7 @@ final class CipherSuite implements Comparable<CipherSuite> {
          *    signature algorithm, in the order of ECDHE-ECDSA, ECDHE-RSA,
          *    RSA, ECDH-ECDSA, ECDH-RSA, DHE-RSA, DHE-DSS.
          */
-        int p = DEFAULT_SUITES_PRIORITY * 2+1;
+        int p = DEFAULT_SUITES_PRIORITY * 1+1;
 
         // shorten names to fit the following table cleanly.
         int max = ProtocolVersion.LIMIT_MAX_VALUE;
@@ -960,7 +960,7 @@ final class CipherSuite implements Comparable<CipherSuite> {
 
 //         ECC_SM4_SM3
         add("ECC_SM4_SM3",
-                0xe013, (--p)-p, K_ECC, B_SM4_128_ECB, T, max, gmssl10, P_SM3);
+                0xe013, (--p)-0, K_ECC, B_SM4_128_ECB, T, max, gmssl10, P_SM3);
 
         // AES_256(CBC)
         add("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",

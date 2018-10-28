@@ -536,7 +536,9 @@ final class HandshakeStateManager {
                         (keyExchange == K_DH_ANON) ||
                         (keyExchange == K_ECDHE_RSA) ||
                         (keyExchange == K_ECDHE_ECDSA) ||
-                        (keyExchange == K_ECDH_ANON)) {
+                        (keyExchange == K_ECDH_ANON) ||
+                        (keyExchange == K_ECC)
+                        ) {
                     // Optional ServerKeyExchange message
                     upcomingStates.add(HS_SERVER_KEY_EXCHANGE);
                 }

@@ -20,9 +20,9 @@ public class Test {
         ProviderUtil.deleteProvider();
         ProviderUtil.insertProvicer();
         String modeControl = "(?i)";
-        String providerName = "(BC|BCJSSE)";
-        String type = ".*.*";
-        String algorithm = ".*ECDH.*";
+        String providerName = ".*";
+        String type = ".*KeyManagerFactory.*";
+        String algorithm = ".*.*";
         ProviderUtil.queryProvicer(modeControl, providerName, type, algorithm);
 
 
