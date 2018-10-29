@@ -9,6 +9,7 @@ import javax.net.SocketFactory;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Created by JasonFitch on 10/17/2018.
@@ -21,8 +22,12 @@ public class GMClientMain {
 
         System.setProperty("javax.net.debug", "ssl,handshake");
 
-        Socket s = clientWithoutCert();
-//        Socket s = clientWithCert();
+        SSLContext context = contextWithoutCert();
+//        SSLContext context = contextWithCert();
+
+        SocketFactory factory = context.getSocketFactory();
+        System.out.println("##########connecting to server on prot 8443 with cert...##########");
+        Socket s = factory.createSocket("localhost", 8443);
 
         PrintWriter    writer = new PrintWriter(s.getOutputStream());
         BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -35,26 +40,30 @@ public class GMClientMain {
         s.close();
     }
 
-    private static Socket clientWithoutCert() throws Exception {
-        SocketFactory sf = SSLSocketFactory.getDefault();
-        System.out.println("##########connecting to server on prot 8443 without cert...##########");
-        Socket s = sf.createSocket("localhost", 8443);
-        return s;
+    private static SSLContext contextWithoutCert() throws Exception {
+        KeyStore tks = KeyStore.getInstance("PKCS12", "BC");
+        tks.load(new FileInputStream(Contants.SERVER_KEY_STORE), Contants.SERVER_KEY_STORE_PASSWORD.toCharArray());
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509", "SunJSSE");
+        tmf.init(tks);
+
+        SSLContext context = SSLContext.getInstance("TLS", "SunJSSE");
+        context.init(null, tmf.getTrustManagers(), null);
+        return context;
     }
 
-    private static Socket clientWithCert() throws Exception {
+    private static SSLContext contextWithCert() throws Exception {
         KeyStore ks = KeyStore.getInstance("PKCS12", "BC");
         ks.load(new FileInputStream(Contants.CLIENT_KEY_STORE), Contants.CLIENT_KEY_STORE_PASSWORD.toCharArray());
-
         KeyManagerFactory kf = KeyManagerFactory.getInstance("SunX509", "SunJSSE");
         kf.init(ks, Contants.CLIENT_KEY_STORE_PASSWORD.toCharArray());
 
-        SSLContext context = SSLContext.getInstance("TLS", "SunJSSE");
-        context.init(kf.getKeyManagers(), null, null);
+        KeyStore tks = KeyStore.getInstance("PKCS12", "BC");
+        tks.load(new FileInputStream(Contants.SERVER_KEY_STORE), Contants.SERVER_KEY_STORE_PASSWORD.toCharArray());
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509", "SunJSSE");
+        tmf.init(tks);
 
-        SocketFactory factory = context.getSocketFactory();
-        System.out.println("##########connecting to server on prot 8443 with cert...##########");
-        Socket s = factory.createSocket("localhost", 8443);
-        return s;
+        SSLContext context = SSLContext.getInstance("TLS", "SunJSSE");
+        context.init(kf.getKeyManagers(), tmf.getTrustManagers(), null);
+        return context;
     }
 }

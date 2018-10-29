@@ -21,7 +21,7 @@ public class Test {
         ProviderUtil.insertProvicer();
         String modeControl = "(?i)";
         String providerName = ".*";
-        String type = ".*KeyManagerFactory.*";
+        String type = ".*TrustManagerFactory.*";
         String algorithm = ".*.*";
         ProviderUtil.queryProvicer(modeControl, providerName, type, algorithm);
 
