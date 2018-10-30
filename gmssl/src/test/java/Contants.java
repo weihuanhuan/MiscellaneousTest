@@ -21,8 +21,8 @@ public class Contants {
 //        Caused by: java.security.cert.CertPathBuilderException: Unable to find certificate chain.
 //                at org.bouncycastle.jce.provider.PKIXCertPathBuilderSpi.engineBuild(Unknown Source)
 
-        SERVER_KEY_STORE = resourceDir+"/double-localhost.pfx";
-        SERVER_KEY_STORE_PASSWORD = "DoubleCA";
+//        SERVER_KEY_STORE = resourceDir+"/double-localhost.pfx";
+//        SERVER_KEY_STORE_PASSWORD = "DoubleCA";
     }
 
 }

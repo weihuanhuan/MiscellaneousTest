@@ -104,7 +104,9 @@ public final class UntrustedCertificates {
         } else {
             try {
                 key = new X509CertImpl(cert.getEncoded()).getFingerprint(algorithm);
-            } catch (CertificateException cee) {
+            } catch (CertificateException ce ) {
+                return false;
+            }catch(Throwable t) {
                 return false;
             }
         }

@@ -316,6 +316,16 @@ final class ClientHandshaker extends Handshaker {
             case K_KRB5_EXPORT:
                 throw new SSLProtocolException(
                     "unexpected receipt of server key exchange algorithm");
+            case K_ECC:
+                try {
+                    ECC_ServerKeyExchange eccSrvKeyExchange =
+                            new ECC_ServerKeyExchange(input);
+                    handshakeState.update(eccSrvKeyExchange, resumingSession);
+                    this.serverKeyExchange(eccSrvKeyExchange);
+                } catch (GeneralSecurityException e) {
+                    throwSSLException("Server key", e);
+                }
+                break;
             default:
                 throw new SSLProtocolException(
                     "unsupported key exchange algorithm = "
@@ -747,6 +757,27 @@ final class ClientHandshaker extends Handshaker {
         // check constraints of RSA PublicKey
         if (!algorithmConstraints.permits(
             EnumSet.of(CryptoPrimitive.KEY_AGREEMENT), ephemeralServerKey)) {
+
+            throw new SSLHandshakeException("RSA ServerKeyExchange " +
+                    "does not comply to algorithm constraints");
+        }
+    }
+
+    private void serverKeyExchange(ECC_ServerKeyExchange mesg)
+            throws IOException, GeneralSecurityException {
+        if (debug != null && Debug.isOn("handshake")) {
+            mesg.print(System.out);
+        }
+        if (!mesg.verify(serverKey, clnt_random, svr_random)) {
+            fatalSE(Alerts.alert_handshake_failure,
+                    "server key exchange invalid");
+            // NOTREACHED
+        }
+        ephemeralServerKey = mesg.getPublicKey();
+
+        // check constraints of ECC PublicKey
+        if (!algorithmConstraints.permits(
+                EnumSet.of(CryptoPrimitive.KEY_AGREEMENT), ephemeralServerKey)) {
 
             throw new SSLHandshakeException("RSA ServerKeyExchange " +
                     "does not comply to algorithm constraints");

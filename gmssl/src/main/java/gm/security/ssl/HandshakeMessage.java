@@ -678,6 +678,76 @@ class RSA_ServerKeyExchange extends ServerKeyExchange
     }
 }
 
+    static final class ECC_ServerKeyExchange extends ServerKeyExchange {
+
+        private byte rsa_modulus[];     // 1 to 2^16 - 1 bytes
+        private byte rsa_exponent[];    // 1 to 2^16 - 1 bytes
+
+        private Signature signature;
+        private byte[]    signatureBytes;
+
+        private void updateSignature(byte clntNonce[], byte svrNonce[])
+                throws SignatureException {
+            int tmp;
+
+            signature.update(clntNonce);
+            signature.update(svrNonce);
+
+            tmp = rsa_modulus.length;
+            signature.update((byte) (tmp >> 8));
+            signature.update((byte) (tmp & 0x0ff));
+            signature.update(rsa_modulus);
+
+            tmp = rsa_exponent.length;
+            signature.update((byte) (tmp >> 8));
+            signature.update((byte) (tmp & 0x0ff));
+            signature.update(rsa_exponent);
+        }
+
+
+        public ECC_ServerKeyExchange(PublicKey tempPublicKey, PrivateKey privateKey, RandomCookie clnt_random, RandomCookie svr_random, SecureRandom secureRandom) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException {
+            RSAPublicKeySpec rsaKey = JsseJce.getRSAPublicKeySpec(tempPublicKey);
+            rsa_modulus = toByteArray(rsaKey.getModulus());
+            rsa_exponent = toByteArray(rsaKey.getPublicExponent());
+            signature = RSASignature.getInstance();
+            signature = Signature.getInstance("SM3WITHSM2","BC");
+            signature.initSign(privateKey, secureRandom);
+            updateSignature(clnt_random.random_bytes, svr_random.random_bytes);
+            signatureBytes = signature.sign();
+        }
+
+        public ECC_ServerKeyExchange(HandshakeInStream input) throws NoSuchAlgorithmException, IOException {
+            signature = RSASignature.getInstance();
+            rsa_modulus = input.getBytes16();
+            rsa_exponent = input.getBytes16();
+            signatureBytes = input.getBytes16();
+        }
+
+        @Override
+        int messageLength() {
+            return 0;
+        }
+
+        @Override
+        void send(HandshakeOutStream s) throws IOException {
+
+        }
+
+        @Override
+        void print(PrintStream p) throws IOException {
+
+        }
+
+        public boolean verify(PublicKey serverKey, RandomCookie clnt_random, RandomCookie svr_random) {
+            return true;
+        }
+
+        public PublicKey getPublicKey() {
+
+            return null;
+        }
+    }
+
 
 /*
  * Using Diffie-Hellman algorithm for key exchange.  All we really need to
@@ -1200,26 +1270,6 @@ class ECDH_ServerKeyExchange extends ServerKeyExchange {
 
             s.println("Server key: " + publicKey);
         }
-    }
-}
-
-static final class ECC_ServerKeyExchange extends ServerKeyExchange{
-
-
-
-    @Override
-    int messageLength() {
-        return 0;
-    }
-
-    @Override
-    void send(HandshakeOutStream s) throws IOException {
-
-    }
-
-    @Override
-    void print(PrintStream p) throws IOException {
-
     }
 }
 

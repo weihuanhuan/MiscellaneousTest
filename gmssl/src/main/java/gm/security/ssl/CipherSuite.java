@@ -627,8 +627,8 @@ final class CipherSuite implements Comparable<CipherSuite> {
         new BulkCipher(CIPHER_AES_GCM,  AEAD_CIPHER,     16, 12,  4, true);
     final static BulkCipher B_AES_256_GCM =
         new BulkCipher(CIPHER_AES_GCM,  AEAD_CIPHER,     32, 12,  4, true);
-    final static BulkCipher B_SM4_128_ECB =
-            new BulkCipher(CIPHER_SM4_ECB,  BLOCK_CIPHER,16, 16,  0, true);
+    final static BulkCipher B_SM4_128_CBC =
+            new BulkCipher(CIPHER_SM4_CBC,  BLOCK_CIPHER,16, 16,  16, true);
 
     // MACs
     final static MacAlg M_NULL    = new MacAlg("NULL",     0,   0,   0);
@@ -960,7 +960,7 @@ final class CipherSuite implements Comparable<CipherSuite> {
 
 //         ECC_SM4_SM3
         add("ECC_SM4_SM3",
-                0xe013, (--p)-0, K_ECC, B_SM4_128_ECB, T, max, gmssl10, P_SM3);
+                0xe013, (--p)-0, K_ECC, B_SM4_128_CBC, T, max, gmssl10, P_SM3);
 
         // AES_256(CBC)
         add("TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384",

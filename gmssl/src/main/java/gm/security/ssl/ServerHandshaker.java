@@ -972,7 +972,16 @@ final class ServerHandshaker extends Handshaker {
             m3 = null;
             break;
         case K_ECC:
-            m3 = new ECC_ServerKeyExchange();
+            try {
+                m3 = new ECC_ServerKeyExchange(
+                        tempPublicKey, privateKey,
+                        clnt_random, svr_random,
+                        sslContext.getSecureRandom());
+            } catch (GeneralSecurityException e) {
+                throwSSLException
+                        ("Error generating ECC server key exchange", e);
+                m3 = null; // make compiler happy
+            }
             break;
         default:
             throw new RuntimeException("internal error: " + keyExchange);

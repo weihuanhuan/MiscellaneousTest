@@ -86,7 +86,7 @@ public final class ProtocolVersion implements Comparable<ProtocolVersion> {
 
     // maximum version we implement (TLS 1.2)
 //    final static ProtocolVersion MAX = TLS12;
-    final static ProtocolVersion MAX = GMSSL10;
+    final static ProtocolVersion MAX = TLS12;
 
     // ProtocolVersion to use by default (TLS 1.2)
 //    final static ProtocolVersion DEFAULT = TLS12;
@@ -117,7 +117,7 @@ public final class ProtocolVersion implements Comparable<ProtocolVersion> {
 
         ProtocolVersion[] pvs = new ProtocolVersion[] {
 //                SSL20Hello, SSL30, TLS10, TLS11, TLS12};
-                GMSSL10};
+                GMSSL10,TLS10,TLS12};
         for (ProtocolVersion p : pvs) {
             if (SSLAlgorithmConstraints.DEFAULT_SSL_ONLY.permits(
                     EnumSet.of(CryptoPrimitive.KEY_AGREEMENT),

@@ -27,16 +27,17 @@ public class GMServerMain {
         ProviderUtil.deleteProvider();
         ProviderUtil.insertProvicer();
 
+        //server keystore
         KeyStore ks = KeyStore.getInstance("PKCS12", "BC");
         ks.load(new FileInputStream(Contants.SERVER_KEY_STORE), Contants.SERVER_KEY_STORE_PASSWORD.toCharArray());
 
         KeyManagerFactory kf = KeyManagerFactory.getInstance("SunX509", "SunJSSE");
         kf.init(ks, Contants.SERVER_KEY_STORE_PASSWORD.toCharArray());
 
-        SSLContext bcSSL = SSLContext.getInstance("TLS", "SunJSSE");
-        bcSSL.init(kf.getKeyManagers(), null, null);
+        SSLContext sslContext = SSLContext.getInstance("TLS", "SunJSSE");
+        sslContext.init(kf.getKeyManagers(), null, null);
 
-        ServerSocketFactory factory      = bcSSL.getServerSocketFactory();
+        ServerSocketFactory factory      = sslContext.getServerSocketFactory();
         ServerSocket        serverSocket = factory.createServerSocket(8443);
         ((SSLServerSocket) serverSocket).setNeedClientAuth(false);
 //        ((SSLServerSocket) serverSocket).setNeedClientAuth(true);
