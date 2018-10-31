@@ -773,7 +773,7 @@ final class ClientHandshaker extends Handshaker {
                     "server key exchange invalid");
             // NOTREACHED
         }
-        ephemeralServerKey = mesg.getPublicKey();
+        ephemeralServerKey = serverKey;
 
         // check constraints of ECC PublicKey
         if (!algorithmConstraints.permits(
@@ -1097,6 +1097,21 @@ final class ClientHandshaker extends Handshaker {
             session.setLocalPrincipal(kerberosMsg.getLocalPrincipal());
             m2 = kerberosMsg;
             break;
+            case K_ECC:
+                if (serverKey == null) {
+                    throw new SSLProtocolException
+                            ("Server did not send certificate message");
+                }
+
+                if (!(serverKey instanceof ECPublicKey)) {
+                    throw new SSLProtocolException
+                            ("Server certificate does not include an EC key");
+                }
+               key = serverKey;
+
+                m2 = new RSAClientKeyExchange(protocolVersion, maxProtocolVersion,
+                        sslContext.getSecureRandom(), key);
+                break;
         default:
             // somethings very wrong
             throw new RuntimeException

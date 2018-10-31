@@ -973,8 +973,9 @@ final class ServerHandshaker extends Handshaker {
             break;
         case K_ECC:
             try {
+
                 m3 = new ECC_ServerKeyExchange(
-                        tempPublicKey, privateKey,
+                        certs[0], privateKey,
                         clnt_random, svr_random,
                         sslContext.getSecureRandom());
             } catch (GeneralSecurityException e) {

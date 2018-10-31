@@ -680,71 +680,57 @@ class RSA_ServerKeyExchange extends ServerKeyExchange
 
     static final class ECC_ServerKeyExchange extends ServerKeyExchange {
 
-        private byte rsa_modulus[];     // 1 to 2^16 - 1 bytes
-        private byte rsa_exponent[];    // 1 to 2^16 - 1 bytes
-
+        private X509Certificate enCertificate;
         private Signature signature;
         private byte[]    signatureBytes;
 
         private void updateSignature(byte clntNonce[], byte svrNonce[])
                 throws SignatureException {
-            int tmp;
-
             signature.update(clntNonce);
             signature.update(svrNonce);
-
-            tmp = rsa_modulus.length;
-            signature.update((byte) (tmp >> 8));
-            signature.update((byte) (tmp & 0x0ff));
-            signature.update(rsa_modulus);
-
-            tmp = rsa_exponent.length;
-            signature.update((byte) (tmp >> 8));
-            signature.update((byte) (tmp & 0x0ff));
-            signature.update(rsa_exponent);
         }
 
 
-        public ECC_ServerKeyExchange(PublicKey tempPublicKey, PrivateKey privateKey, RandomCookie clnt_random, RandomCookie svr_random, SecureRandom secureRandom) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException {
-            RSAPublicKeySpec rsaKey = JsseJce.getRSAPublicKeySpec(tempPublicKey);
-            rsa_modulus = toByteArray(rsaKey.getModulus());
-            rsa_exponent = toByteArray(rsaKey.getPublicExponent());
-            signature = RSASignature.getInstance();
+        public ECC_ServerKeyExchange(X509Certificate enCert, PrivateKey privateKey, RandomCookie clnt_random, RandomCookie svr_random, SecureRandom secureRandom) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException {
+            enCertificate = enCert;
             signature = Signature.getInstance("SM3WITHSM2","BC");
             signature.initSign(privateKey, secureRandom);
             updateSignature(clnt_random.random_bytes, svr_random.random_bytes);
             signatureBytes = signature.sign();
         }
 
-        public ECC_ServerKeyExchange(HandshakeInStream input) throws NoSuchAlgorithmException, IOException {
-            signature = RSASignature.getInstance();
-            rsa_modulus = input.getBytes16();
-            rsa_exponent = input.getBytes16();
-            signatureBytes = input.getBytes16();
+        public ECC_ServerKeyExchange(HandshakeInStream input) throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+            signature = Signature.getInstance("SM3WITHSM2","BC");
+            signatureBytes = input.getBytes24();
         }
 
         @Override
         int messageLength() {
-            return 0;
+            return 4 + signatureBytes.length;
         }
 
         @Override
         void send(HandshakeOutStream s) throws IOException {
-
+            s.putBytes24(signatureBytes);
         }
 
         @Override
         void print(PrintStream p) throws IOException {
+            p.println("*** ECC ServerKeyExchange");
 
+            if (debug != null && Debug.isOn("verbose")) {
+                Debug.println(p, "ECC signatureBytes", signatureBytes);
+            }
         }
 
-        public boolean verify(PublicKey serverKey, RandomCookie clnt_random, RandomCookie svr_random) {
-            return true;
+        public boolean verify(PublicKey serverKey, RandomCookie clnt_random, RandomCookie svr_random) throws InvalidKeyException, SignatureException {
+            signature.initVerify(serverKey);
+            updateSignature(clnt_random.random_bytes, svr_random.random_bytes);
+            return signature.verify(signatureBytes);
         }
 
         public PublicKey getPublicKey() {
-
-            return null;
+            return enCertificate.getPublicKey();
         }
     }
 

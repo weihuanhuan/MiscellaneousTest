@@ -21,8 +21,8 @@ public class Test {
         ProviderUtil.insertProvicer();
         String modeControl = "(?i)";
         String providerName = ".*";
-        String type = ".*.*";
-        String algorithm = ".*sm3.*";
+        String type = ".*Signature.*";
+        String algorithm = ".*sm.*";
         ProviderUtil.queryProvicer(modeControl, providerName, type, algorithm);
 
 
