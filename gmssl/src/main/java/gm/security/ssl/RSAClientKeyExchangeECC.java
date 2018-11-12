@@ -44,6 +44,7 @@ import javax.crypto.SecretKey;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLKeyException;
 import javax.net.ssl.SSLProtocolException;
+import org.bouncycastle.crypto.agreement.SM2KeyExchange;
 
 /**
  * This is the client key exchange message (CLIENT --> SERVER) used with
@@ -75,11 +76,12 @@ final class RSAClientKeyExchangeECC extends HandshakeMessage {
     RSAClientKeyExchangeECC(ProtocolVersion protocolVersion,
                             ProtocolVersion maxVersion,
                             SecureRandom generator, PublicKey publicKey) throws IOException {
-        if (publicKey.getAlgorithm().equals("RSA") == false) {
-            throw new SSLKeyException("Public key not of type RSA: " +
+        if (publicKey.getAlgorithm().equals("EC") == false) {
+            throw new SSLKeyException("Public key not of type EC: " +
                 publicKey.getAlgorithm());
         }
         this.protocolVersion = protocolVersion;
+
 
         try {
             String s = ((protocolVersion.v >= ProtocolVersion.TLS12.v) ?
@@ -94,7 +96,7 @@ final class RSAClientKeyExchangeECC extends HandshakeMessage {
             encrypted = cipher.wrap(preMaster);
         } catch (GeneralSecurityException e) {
             throw (SSLKeyException)new SSLKeyException
-                                ("RSA premaster secret error").initCause(e);
+                                ("ECC premaster secret error").initCause(e);
         }
     }
 
@@ -203,7 +205,7 @@ final class RSAClientKeyExchangeECC extends HandshakeMessage {
         } catch (Exception e) {
             // unlikely to happen, otherwise, must be a provider exception
             if (debug != null && Debug.isOn("handshake")) {
-                System.out.println("RSA premaster secret decryption error:");
+                System.out.println("ECC premaster secret decryption error:");
                 e.printStackTrace(System.out);
             }
             throw new RuntimeException("Could not generate dummy secret", e);
@@ -232,7 +234,7 @@ final class RSAClientKeyExchangeECC extends HandshakeMessage {
                 NoSuchAlgorithmException iae) {
             // unlikely to happen, otherwise, must be a provider exception
             if (debug != null && Debug.isOn("handshake")) {
-                System.out.println("RSA premaster secret generation error:");
+                System.out.println("ECC premaster secret generation error:");
                 iae.printStackTrace(System.out);
             }
             throw new RuntimeException("Could not generate premaster secret", iae);
@@ -271,6 +273,6 @@ final class RSAClientKeyExchangeECC extends HandshakeMessage {
             version = ProtocolVersion.valueOf(ba[0], ba[1]).name;
         }
 
-        s.println("*** ClientKeyExchange, RSA PreMasterSecret, " + version);
+        s.println("*** ClientKeyExchange, ECC PreMasterSecret, " + version);
     }
 }

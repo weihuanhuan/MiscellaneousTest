@@ -779,7 +779,7 @@ final class ClientHandshaker extends Handshaker {
         if (!algorithmConstraints.permits(
                 EnumSet.of(CryptoPrimitive.KEY_AGREEMENT), ephemeralServerKey)) {
 
-            throw new SSLHandshakeException("RSA ServerKeyExchange " +
+            throw new SSLHandshakeException("ECC ServerKeyExchange " +
                     "does not comply to algorithm constraints");
         }
     }
@@ -1109,7 +1109,7 @@ final class ClientHandshaker extends Handshaker {
                 }
                key = serverKey;
 
-                m2 = new RSAClientKeyExchange(protocolVersion, maxProtocolVersion,
+                m2 = new RSAClientKeyExchangeECC(protocolVersion, maxProtocolVersion,
                         sslContext.getSecureRandom(), key);
                 break;
         default:

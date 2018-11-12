@@ -701,7 +701,7 @@ class RSA_ServerKeyExchange extends ServerKeyExchange
 
         public ECC_ServerKeyExchange(HandshakeInStream input) throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
             signature = Signature.getInstance("SM3WITHSM2","BC");
-            signatureBytes = input.getBytes24();
+            signatureBytes = input.getBytes16();
         }
 
         @Override
@@ -711,7 +711,7 @@ class RSA_ServerKeyExchange extends ServerKeyExchange
 
         @Override
         void send(HandshakeOutStream s) throws IOException {
-            s.putBytes24(signatureBytes);
+            s.putBytes16(signatureBytes);
         }
 
         @Override
