@@ -26,8 +26,12 @@ public class GMClientMain {
 //        SSLContext sslContext = contextWithCert();
 
         SocketFactory factory = sslContext.getSocketFactory();
-        System.out.println("##########connecting to server on prot 8443 with cert...##########");
-        Socket s = factory.createSocket("localhost", 8443);
+        String hostname="localhost";
+        int port = 8443;
+//        hostname = "ebssec.boc.cn";
+//        port = 443;
+        System.out.println("##########connecting to server on "+port+" ...##########");
+        Socket s = factory.createSocket(hostname, port);
 
         PrintWriter    writer = new PrintWriter(s.getOutputStream());
         BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));

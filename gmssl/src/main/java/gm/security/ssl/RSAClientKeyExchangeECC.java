@@ -84,7 +84,7 @@ final class RSAClientKeyExchangeECC extends HandshakeMessage {
 
 
         try {
-            String s = ((protocolVersion.v >= ProtocolVersion.TLS12.v) ?
+            String s = ((protocolVersion.v >= ProtocolVersion.GMSSL10.v) ?
                 "SunTls12RsaPremasterSecret" : "SunTlsRsaPremasterSecret");
             KeyGenerator kg = JsseJce.getKeyGenerator(s);
             kg.init(new TlsRsaPremasterSecretParameterSpec(

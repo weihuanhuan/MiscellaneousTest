@@ -117,7 +117,7 @@ public final class ProtocolVersion implements Comparable<ProtocolVersion> {
 
         ProtocolVersion[] pvs = new ProtocolVersion[] {
 //                SSL20Hello, SSL30, TLS10, TLS11, TLS12};
-                GMSSL10,TLS10,TLS12};
+                GMSSL10};
         for (ProtocolVersion p : pvs) {
             if (SSLAlgorithmConstraints.DEFAULT_SSL_ONLY.permits(
                     EnumSet.of(CryptoPrimitive.KEY_AGREEMENT),
