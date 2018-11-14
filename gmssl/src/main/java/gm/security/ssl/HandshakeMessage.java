@@ -465,12 +465,14 @@ class CertificateMsg extends HandshakeMessage
     @Override
     int messageLength() {
         if (encodedChain == null) {
+            //证书报文的总长度定义
             messageLength = 3;
             encodedChain = new ArrayList<byte[]>(chain.length);
             try {
                 for (X509Certificate cert : chain) {
                     byte[] b = cert.getEncoded();
                     encodedChain.add(b);
+                    //添加发送的证书，证书报文总长度 = 证书内容的所占字节 + 该证书的长度
                     messageLength += b.length + 3;
                 }
             } catch (CertificateEncodingException e) {
@@ -684,34 +686,45 @@ class RSA_ServerKeyExchange extends ServerKeyExchange
         private Signature signature;
         private byte[]    signatureBytes;
 
-        private void updateSignature(byte clntNonce[], byte svrNonce[])
+        private void updateSignature(byte[] clntNonce, byte[] svrNonce, byte[] enCertData)
                 throws SignatureException {
             signature.update(clntNonce);
             signature.update(svrNonce);
+
+            int tmp = enCertData.length;
+            signature.update((byte)(tmp >> 16));
+            signature.update((byte)(tmp >> 8));
+            signature.update((byte)(tmp & 0x0ff));
+            signature.update(enCertData);
         }
 
 
-        public ECC_ServerKeyExchange(X509Certificate enCert, PrivateKey privateKey, RandomCookie clnt_random, RandomCookie svr_random, SecureRandom secureRandom) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException {
+        public ECC_ServerKeyExchange(X509Certificate enCert, PrivateKey signPrivateKey, RandomCookie clnt_random, RandomCookie svr_random, SecureRandom secureRandom) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, CertificateEncodingException {
             enCertificate = enCert;
             signature = Signature.getInstance("SM3WITHSM2","BC");
-            signature.initSign(privateKey, secureRandom);
-            updateSignature(clnt_random.random_bytes, svr_random.random_bytes);
+            signature.initSign(signPrivateKey, secureRandom);
+            byte[] enCertData = enCertificate.getEncoded();
+            updateSignature(clnt_random.random_bytes, svr_random.random_bytes,enCertData);
             signatureBytes = signature.sign();
         }
 
-        public ECC_ServerKeyExchange(HandshakeInStream input) throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+        public ECC_ServerKeyExchange(HandshakeInStream input,X509Certificate enCert) throws NoSuchAlgorithmException, IOException, NoSuchProviderException {
+            enCertificate= enCert;
             signature = Signature.getInstance("SM3WITHSM2","BC");
-            signatureBytes = input.getBytes24();
+            signatureBytes = input.getBytes16();
         }
 
         @Override
         int messageLength() {
-            return 4 + signatureBytes.length;
+            //报文总长度 = 消息类型 + 消息总长度 + 签名长度 + 签名数据 = ( 1 + 3 + 2 ) + 签名数据
+            return 6 + signatureBytes.length;
         }
 
         @Override
         void send(HandshakeOutStream s) throws IOException {
-            s.putBytes24(signatureBytes);
+            //写入 2字节len, 以及data。
+            //这里为什么长度是 2字节？，没有找到根据
+            s.putBytes16(signatureBytes);
         }
 
         @Override
@@ -723,9 +736,10 @@ class RSA_ServerKeyExchange extends ServerKeyExchange
             }
         }
 
-        public boolean verify(PublicKey serverKey, RandomCookie clnt_random, RandomCookie svr_random) throws InvalidKeyException, SignatureException {
-            signature.initVerify(serverKey);
-            updateSignature(clnt_random.random_bytes, svr_random.random_bytes);
+        public boolean verify(PublicKey signPublicKey, RandomCookie clnt_random, RandomCookie svr_random) throws InvalidKeyException, SignatureException, CertificateEncodingException {
+            signature.initVerify(signPublicKey);
+            byte[] enCertData = enCertificate.getEncoded();
+            updateSignature(clnt_random.random_bytes, svr_random.random_bytes, enCertData);
             return signature.verify(signatureBytes);
         }
 

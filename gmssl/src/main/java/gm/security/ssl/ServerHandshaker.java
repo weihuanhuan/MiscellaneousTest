@@ -875,7 +875,7 @@ final class ServerHandshaker extends Handshaker {
             X509Certificate[] newCerts = new X509Certificate[3];
             newCerts[0]=certs[0];
             System.arraycopy(certs,0,newCerts,1,certs.length);
-
+            certs = newCerts;
             CertificateMsg m2 = new CertificateMsg(certs);
 
             /*
@@ -977,9 +977,11 @@ final class ServerHandshaker extends Handshaker {
             break;
         case K_ECC:
             try {
-
+                //处理服务端加密证书
+                X509Certificate enCertificate = certs[1];
+                PrivateKey   signPrivateKey = privateKey;
                 m3 = new ECC_ServerKeyExchange(
-                        certs[0], privateKey,
+                        enCertificate, signPrivateKey,
                         clnt_random, svr_random,
                         sslContext.getSecureRandom());
             } catch (GeneralSecurityException e) {

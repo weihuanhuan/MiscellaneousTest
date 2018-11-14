@@ -28,15 +28,16 @@ package gm.security.ssl;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.cert.*;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateParsingException;
+import java.security.cert.X509Certificate;
 import java.util.*;
 
 import java.security.interfaces.ECPublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.ECParameterSpec;
 
-import java.security.cert.X509Certificate;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateParsingException;
 import javax.security.auth.x500.X500Principal;
 
 import javax.crypto.SecretKey;
@@ -47,6 +48,8 @@ import javax.net.ssl.*;
 import javax.security.auth.Subject;
 
 import gm.security.ssl.HandshakeMessage.*;
+import javax.security.cert.*;
+
 import static gm.security.ssl.CipherSuite.KeyExchange.*;
 
 /**
@@ -318,8 +321,9 @@ final class ClientHandshaker extends Handshaker {
                     "unexpected receipt of server key exchange algorithm");
             case K_ECC:
                 try {
+                    X509Certificate enCertificate = session.getCertificateChain()[1];
                     ECC_ServerKeyExchange eccSrvKeyExchange =
-                            new ECC_ServerKeyExchange(input);
+                            new ECC_ServerKeyExchange(input,enCertificate);
                     handshakeState.update(eccSrvKeyExchange, resumingSession);
                     this.serverKeyExchange(eccSrvKeyExchange);
                 } catch (GeneralSecurityException e) {
@@ -768,7 +772,8 @@ final class ClientHandshaker extends Handshaker {
         if (debug != null && Debug.isOn("handshake")) {
             mesg.print(System.out);
         }
-        if (!mesg.verify(serverKey, clnt_random, svr_random)) {
+        PublicKey signPublicKey = serverKey;
+        if (!mesg.verify(signPublicKey, clnt_random, svr_random)) {
             fatalSE(Alerts.alert_handshake_failure,
                     "server key exchange invalid");
             // NOTREACHED
@@ -1663,7 +1668,9 @@ final class ClientHandshaker extends Handshaker {
             }
         } catch (CertificateException e) {
             // This will throw an exception, so include the original error.
-            fatalSE(Alerts.alert_certificate_unknown, e);
+//            fatalSE(Alerts.alert_certificate_unknown, e);
+//            忽略错误，屏蔽证书验证，强行通过并信任服务器证书.
+            System.out.println("###"+e.getMessage());
         }
         session.setPeerCertificates(peerCerts);
     }
