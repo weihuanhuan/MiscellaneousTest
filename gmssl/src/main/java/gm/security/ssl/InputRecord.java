@@ -523,6 +523,7 @@ class InputRecord extends ByteArrayInputStream implements Record {
              * alert message. If it's not, it is either invalid or an
              * SSLv2 message.
              */
+            //记录层内容类型1字节
             if (buf[0] != ct_handshake && buf[0] != ct_alert) {
                 handleUnknownRecord(s, o);
             } else {
@@ -559,6 +560,8 @@ class InputRecord extends ByteArrayInputStream implements Record {
      */
     private void readV3Record(InputStream s, OutputStream o)
             throws IOException {
+
+        //记录层报文协议版本2字节
         ProtocolVersion recordVersion = ProtocolVersion.valueOf(buf[1], buf[2]);
 
         // check the record version
@@ -567,6 +570,7 @@ class InputRecord extends ByteArrayInputStream implements Record {
         /*
          * Get and check length, then the data.
          */
+        //记录层报文长度2字节，其值代表握手协议报文的长度
         int contentLen = ((buf[3] & 0x0ff) << 8) + (buf[4] & 0xff);
 
         /*

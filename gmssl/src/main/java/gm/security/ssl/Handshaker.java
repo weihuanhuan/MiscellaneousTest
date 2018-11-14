@@ -997,8 +997,9 @@ abstract class Handshaker {
              * we can read and process an entire message.
              */
             input.mark(4);
-
+            //握手报文类型1字节
             messageType = (byte)input.getInt8();
+            //握手保温长度3字节，其值是本报文的数据域的长度
             messageLen = input.getInt24();
 
             if (input.available() < messageLen) {

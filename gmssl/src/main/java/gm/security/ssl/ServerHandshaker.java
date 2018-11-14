@@ -872,7 +872,7 @@ final class ServerHandshaker extends Handshaker {
                 throw new RuntimeException("no certificates");
             }
 
-            X509Certificate[] newCerts = new X509Certificate[3];
+            X509Certificate[] newCerts = new X509Certificate[certs.length+1];
             newCerts[0]=certs[0];
             System.arraycopy(certs,0,newCerts,1,certs.length);
             certs = newCerts;

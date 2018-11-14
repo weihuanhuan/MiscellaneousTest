@@ -140,7 +140,9 @@ public abstract class HandshakeMessage {
             throw new SSLException("Handshake message too big"
                 + ", type = " + messageType() + ", len = " + len);
         }
+        //写1字节的握手协议消息类型
         s.write(messageType());
+        //写3字节的握手协议消息长度，其值 len = 当前握手消息的数据域长度 = 数据字节数 + 数据本身
         s.putInt24(len);
         send(s);
     }
@@ -716,8 +718,8 @@ class RSA_ServerKeyExchange extends ServerKeyExchange
 
         @Override
         int messageLength() {
-            //报文总长度 = 消息类型 + 消息总长度 + 签名长度 + 签名数据 = ( 1 + 3 + 2 ) + 签名数据
-            return 6 + signatureBytes.length;
+            //报文数据域长度 = 签名长度 + 签名数据
+            return 2 + signatureBytes.length;
         }
 
         @Override
