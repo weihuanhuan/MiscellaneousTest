@@ -229,6 +229,12 @@ public abstract class SunJSSE extends java.security.Provider {
          */
         put("KeyStore.PKCS12",
             "gm.security.pkcs12.PKCS12KeyStore");
+
+        //添加keyGenerator
+        put("KeyGenerator.TlsRsaPremasterSecretGenerator","com.gm.crypto.provider.TlsRsaPremasterSecretGenerator");
+        put("KeyGenerator.TlsMasterSecretGenerator","com.gm.crypto.provider.TlsMasterSecretGenerator");
+        put("KeyGenerator.TlsKeyMaterialGenerator","com.gm.crypto.provider.TlsKeyMaterialGenerator");
+
     }
 
     private void subclassCheck() {

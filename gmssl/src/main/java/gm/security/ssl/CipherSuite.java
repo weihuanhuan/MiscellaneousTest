@@ -146,7 +146,7 @@ final class CipherSuite implements Comparable<CipherSuite> {
         } else if (name.endsWith("_SCSV")) {
             macAlg = M_NULL;
         } else if (name.endsWith("_SM3")) {
-            macAlg = M_NULL;
+            macAlg = M_SM3;
         } else {
             throw new IllegalArgumentException
                     ("Unknown MAC algorithm for ciphersuite " + name);
@@ -343,6 +343,7 @@ final class CipherSuite implements Comparable<CipherSuite> {
         K_ECDHE_RSA  ("ECDHE_RSA",   ALLOW_ECC, true),
         K_ECDH_ANON  ("ECDH_anon",   ALLOW_ECC, true),
 
+        //GM ECC
         K_ECC        ("ECC",         true,     false),
 
         // Kerberos cipher suites
@@ -627,6 +628,8 @@ final class CipherSuite implements Comparable<CipherSuite> {
         new BulkCipher(CIPHER_AES_GCM,  AEAD_CIPHER,     16, 12,  4, true);
     final static BulkCipher B_AES_256_GCM =
         new BulkCipher(CIPHER_AES_GCM,  AEAD_CIPHER,     32, 12,  4, true);
+
+    //SM4
     final static BulkCipher B_SM4_128_CBC =
             new BulkCipher(CIPHER_SM4_CBC,  BLOCK_CIPHER,16, 16,  16, true);
 
@@ -636,6 +639,9 @@ final class CipherSuite implements Comparable<CipherSuite> {
     final static MacAlg M_SHA     = new MacAlg("SHA",     20,  64,   9);
     final static MacAlg M_SHA256  = new MacAlg("SHA256",  32,  64,   9);
     final static MacAlg M_SHA384  = new MacAlg("SHA384",  48, 128,  17);
+
+    //SM3  GMT 0004-2012 5.2
+    final static MacAlg M_SM3  = new MacAlg("SM3",  32, 64,  9);
 
     /**
      * PRFs (PseudoRandom Function) from TLS specifications.
@@ -654,7 +660,10 @@ final class CipherSuite implements Comparable<CipherSuite> {
         P_SHA256("SHA-256", 32,  64),
         P_SHA384("SHA-384", 48, 128),
         P_SHA512("SHA-512", 64, 128),  // not currently used.
-        P_SM3(       "SM3", 32,  16);
+
+        //参考 GMT 0004-2012 5.1
+        //这俩个数字没有找见明确的依据。hash长度256byte=32*8bit？
+        P_SM3(       "SM3", 32,  64);
 
         // PRF characteristics
         private final String prfHashAlg;

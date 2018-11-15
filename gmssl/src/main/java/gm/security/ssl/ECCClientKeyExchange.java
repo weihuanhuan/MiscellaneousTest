@@ -26,7 +26,6 @@
 
 package gm.security.ssl;
 
-import gm.security.internal.spec.TlsRsaPremasterSecretParameterSpec;
 import gm.security.util.KeyUtil;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -44,7 +43,12 @@ import javax.crypto.SecretKey;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLKeyException;
 import javax.net.ssl.SSLProtocolException;
-import org.bouncycastle.crypto.agreement.SM2KeyExchange;
+import org.bouncycastle.crypto.InvalidCipherTextException;
+import org.bouncycastle.crypto.engines.SM2Engine;
+import org.bouncycastle.crypto.params.ECPublicKeyParameters;
+import org.bouncycastle.crypto.params.ParametersWithRandom;
+import org.bouncycastle.jcajce.provider.asymmetric.util.ECUtil;
+import gm.security.internal.spec.TlsRsaPremasterSecretParameterSpec;
 
 /**
  * This is the client key exchange message (CLIENT --> SERVER) used with
@@ -56,7 +60,7 @@ import org.bouncycastle.crypto.agreement.SM2KeyExchange;
  * always exactly 48 bytes.
  *
  */
-final class RSAClientKeyExchangeECC extends HandshakeMessage {
+final class ECCClientKeyExchange extends HandshakeMessage {
 
     /*
      * The following field values were encrypted with the server's public
@@ -73,30 +77,47 @@ final class RSAClientKeyExchangeECC extends HandshakeMessage {
      * it, using its RSA private key.  Result is the same size as the
      * server's public key, and uses PKCS #1 block format 02.
      */
-    RSAClientKeyExchangeECC(ProtocolVersion protocolVersion,
-                            ProtocolVersion maxVersion,
-                            SecureRandom generator, PublicKey publicKey) throws IOException {
-        if (publicKey.getAlgorithm().equals("EC") == false) {
+    ECCClientKeyExchange(ProtocolVersion protocolVersion,
+                         ProtocolVersion maxVersion,
+                         SecureRandom secureRandom, PublicKey enPublicKey) throws IOException {
+        if (enPublicKey.getAlgorithm().equals("EC") == false) {
             throw new SSLKeyException("Public key not of type EC: " +
-                publicKey.getAlgorithm());
+                    enPublicKey.getAlgorithm());
         }
         this.protocolVersion = protocolVersion;
 
 
         try {
-            String s = ((protocolVersion.v >= ProtocolVersion.GMSSL10.v) ?
-                "SunTls12RsaPremasterSecret" : "SunTlsRsaPremasterSecret");
+
+            /*
+             *  在不使用SunJCE的时候
+             *  如下方法可以生成预主密钥，但是应为使用了未签名的KeyGenerator，导致无法加载。
+             *  这KeyGenerator本来是 com.gm.crypto.provider.SunJCE 提供的
+             *  我将其加载到了 gm.security.ssl.SunJSSE 中在 doRegister 方法中注册。
+             *  并包装SunJSSE为 gm.security.provider.internal.GMProvider
+             *
+             */
+
+            //参考 https://blog.csdn.net/upset_ming/article/details/79880688#comments 4.11
+            String s = ((protocolVersion.v == ProtocolVersion.GMSSL10.v) ?
+                    "TlsRsaPremasterSecretGenerator" : "");
             KeyGenerator kg = JsseJce.getKeyGenerator(s);
             kg.init(new TlsRsaPremasterSecretParameterSpec(
-                    maxVersion.v, protocolVersion.v), generator);
+                    maxVersion.v, protocolVersion.v), secureRandom);
             preMaster = kg.generateKey();
 
-            Cipher cipher = JsseJce.getCipher(JsseJce.CIPHER_RSA_PKCS1);
-            cipher.init(Cipher.WRAP_MODE, publicKey, generator);
-            encrypted = cipher.wrap(preMaster);
+            ECPublicKeyParameters pubKeyParams = (ECPublicKeyParameters) ECUtil.generatePublicKeyParameter(enPublicKey);
+            SM2Engine             sm2Engine       = new SM2Engine();
+            ParametersWithRandom  parametersWithRandom          = new ParametersWithRandom(pubKeyParams, secureRandom);
+            sm2Engine.init(true, parametersWithRandom);
+            byte[] preMasterEncoded = preMaster.getEncoded();
+            encrypted = sm2Engine.processBlock(preMasterEncoded, 0, preMasterEncoded.length);
         } catch (GeneralSecurityException e) {
-            throw (SSLKeyException)new SSLKeyException
-                                ("ECC premaster secret error").initCause(e);
+            throw (SSLKeyException) new SSLKeyException
+                    ("ECC premaster secret error").initCause(e);
+        } catch (InvalidCipherTextException e) {
+            throw (SSLKeyException) new SSLKeyException
+                    ("ECC premaster secret error").initCause(e);
         }
     }
 
@@ -128,10 +149,10 @@ final class RSAClientKeyExchangeECC extends HandshakeMessage {
      * Server gets the PKCS #1 (block format 02) data, decrypts
      * it with its private key.
      */
-    RSAClientKeyExchangeECC(ProtocolVersion currentVersion,
-                            ProtocolVersion maxVersion,
-                            SecureRandom generator, HandshakeInStream input,
-                            int messageSize, PrivateKey privateKey) throws IOException {
+    ECCClientKeyExchange(ProtocolVersion currentVersion,
+                         ProtocolVersion maxVersion,
+                         SecureRandom generator, HandshakeInStream input,
+                         int messageSize, PrivateKey privateKey) throws IOException {
 
         if (privateKey.getAlgorithm().equals("RSA") == false) {
             throw new SSLKeyException("Private key not of type RSA: " +
@@ -250,6 +271,9 @@ final class RSAClientKeyExchangeECC extends HandshakeMessage {
     int messageLength() {
         if (protocolVersion.v >= ProtocolVersion.TLS10.v) {
             return encrypted.length + 2;
+        } else if (protocolVersion.v == ProtocolVersion.GMSSL10.v){
+            //数据本身 + 数据域长度
+            return encrypted.length + 2;
         } else {
             return encrypted.length;
         }
@@ -258,6 +282,9 @@ final class RSAClientKeyExchangeECC extends HandshakeMessage {
     @Override
     void send(HandshakeOutStream s) throws IOException {
         if (protocolVersion.v >= ProtocolVersion.TLS10.v) {
+            s.putBytes16(encrypted);
+        } else if (protocolVersion.v == ProtocolVersion.GMSSL10.v){
+            //先写消息域长度，再写消息本身
             s.putBytes16(encrypted);
         } else {
             s.write(encrypted);

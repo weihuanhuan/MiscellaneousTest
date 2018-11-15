@@ -872,6 +872,7 @@ final class ServerHandshaker extends Handshaker {
                 throw new RuntimeException("no certificates");
             }
 
+            //参考 https://blog.csdn.net/mrpre/article/details/78015580
             X509Certificate[] newCerts = new X509Certificate[certs.length+1];
             newCerts[0]=certs[0];
             System.arraycopy(certs,0,newCerts,1,certs.length);

@@ -28,7 +28,6 @@ package gm.security.ssl;
 import java.io.*;
 import java.math.BigInteger;
 import java.security.*;
-import java.security.cert.*;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateParsingException;
 import java.security.cert.X509Certificate;
@@ -48,7 +47,6 @@ import javax.net.ssl.*;
 import javax.security.auth.Subject;
 
 import gm.security.ssl.HandshakeMessage.*;
-import javax.security.cert.*;
 
 import static gm.security.ssl.CipherSuite.KeyExchange.*;
 
@@ -960,17 +958,17 @@ final class ClientHandshaker extends Handshaker {
 
         switch (keyExchange) {
 
-        case K_RSA:
-        case K_RSA_EXPORT:
-            if (serverKey == null) {
-                throw new SSLProtocolException
-                        ("Server did not send certificate message");
-            }
+            case K_RSA:
+            case K_RSA_EXPORT:
+                if (serverKey == null) {
+                    throw new SSLProtocolException
+                            ("Server did not send certificate message");
+                }
 
-            if (!(serverKey instanceof RSAPublicKey)) {
-                throw new SSLProtocolException
-                        ("Server certificate does not include an RSA key");
-            }
+                if (!(serverKey instanceof RSAPublicKey)) {
+                    throw new SSLProtocolException
+                            ("Server certificate does not include an RSA key");
+                }
 
             /*
              * For RSA key exchange, we randomly generate a new
@@ -986,28 +984,28 @@ final class ClientHandshaker extends Handshaker {
              * to 512 bits in length, use the cert's public key,
              * otherwise, the ephemeral one.
              */
-            PublicKey key;
-            if (keyExchange == K_RSA) {
-                key = serverKey;
-            } else {    // K_RSA_EXPORT
-                if (JsseJce.getRSAKeyLength(serverKey) <= 512) {
-                    // extraneous ephemeralServerKey check done
-                    // above in processMessage()
+                PublicKey key;
+                if (keyExchange == K_RSA) {
                     key = serverKey;
-                } else {
-                    if (ephemeralServerKey == null) {
-                        throw new SSLProtocolException("Server did not send" +
-                            " a RSA_EXPORT Server Key Exchange message");
+                } else {    // K_RSA_EXPORT
+                    if (JsseJce.getRSAKeyLength(serverKey) <= 512) {
+                        // extraneous ephemeralServerKey check done
+                        // above in processMessage()
+                        key = serverKey;
+                    } else {
+                        if (ephemeralServerKey == null) {
+                            throw new SSLProtocolException("Server did not send" +
+                                    " a RSA_EXPORT Server Key Exchange message");
+                        }
+                        key = ephemeralServerKey;
                     }
-                    key = ephemeralServerKey;
                 }
-            }
 
-            m2 = new RSAClientKeyExchange(protocolVersion, maxProtocolVersion,
-                                sslContext.getSecureRandom(), key);
-            break;
-        case K_DH_RSA:
-        case K_DH_DSS:
+                m2 = new RSAClientKeyExchange(protocolVersion, maxProtocolVersion,
+                        sslContext.getSecureRandom(), key);
+                break;
+            case K_DH_RSA:
+            case K_DH_DSS:
             /*
              * For DH Key exchange, we only need to make sure the server
              * knows our public key, so we calculate the same pre-master
@@ -1022,86 +1020,86 @@ final class ClientHandshaker extends Handshaker {
             // if (useDH_RSA || useDH_DSS)
             m2 = new DHClientKeyExchange();
             break;
-        case K_DHE_RSA:
-        case K_DHE_DSS:
-        case K_DH_ANON:
-            if (dh == null) {
-                throw new SSLProtocolException
-                    ("Server did not send a DH Server Key Exchange message");
-            }
-            m2 = new DHClientKeyExchange(dh.getPublicKey());
-            break;
-        case K_ECDHE_RSA:
-        case K_ECDHE_ECDSA:
-        case K_ECDH_ANON:
-            if (ecdh == null) {
-                throw new SSLProtocolException
-                    ("Server did not send a ECDH Server Key Exchange message");
-            }
-            m2 = new ECDHClientKeyExchange(ecdh.getPublicKey());
-            break;
-        case K_ECDH_RSA:
-        case K_ECDH_ECDSA:
-            if (serverKey == null) {
-                throw new SSLProtocolException
-                        ("Server did not send certificate message");
-            }
-            if (serverKey instanceof ECPublicKey == false) {
-                throw new SSLProtocolException
-                        ("Server certificate does not include an EC key");
-            }
-            ECParameterSpec params = ((ECPublicKey)serverKey).getParams();
-            ecdh = new ECDHCrypt(params, sslContext.getSecureRandom());
-            m2 = new ECDHClientKeyExchange(ecdh.getPublicKey());
-            break;
-        case K_KRB5:
-        case K_KRB5_EXPORT:
-            String sniHostname = null;
-            for (SNIServerName serverName : requestedServerNames) {
-                if (serverName instanceof SNIHostName) {
-                    sniHostname = ((SNIHostName) serverName).getAsciiName();
-                    break;
+            case K_DHE_RSA:
+            case K_DHE_DSS:
+            case K_DH_ANON:
+                if (dh == null) {
+                    throw new SSLProtocolException
+                            ("Server did not send a DH Server Key Exchange message");
                 }
-            }
+                m2 = new DHClientKeyExchange(dh.getPublicKey());
+                break;
+            case K_ECDHE_RSA:
+            case K_ECDHE_ECDSA:
+            case K_ECDH_ANON:
+                if (ecdh == null) {
+                    throw new SSLProtocolException
+                            ("Server did not send a ECDH Server Key Exchange message");
+                }
+                m2 = new ECDHClientKeyExchange(ecdh.getPublicKey());
+                break;
+            case K_ECDH_RSA:
+            case K_ECDH_ECDSA:
+                if (serverKey == null) {
+                    throw new SSLProtocolException
+                            ("Server did not send certificate message");
+                }
+                if (serverKey instanceof ECPublicKey == false) {
+                    throw new SSLProtocolException
+                            ("Server certificate does not include an EC key");
+                }
+                ECParameterSpec params = ((ECPublicKey) serverKey).getParams();
+                ecdh = new ECDHCrypt(params, sslContext.getSecureRandom());
+                m2 = new ECDHClientKeyExchange(ecdh.getPublicKey());
+                break;
+            case K_KRB5:
+            case K_KRB5_EXPORT:
+                String sniHostname = null;
+                for (SNIServerName serverName : requestedServerNames) {
+                    if (serverName instanceof SNIHostName) {
+                        sniHostname = ((SNIHostName) serverName).getAsciiName();
+                        break;
+                    }
+                }
 
-            KerberosClientKeyExchange kerberosMsg = null;
-            if (sniHostname != null) {
-                // use first requested SNI hostname
-                try {
+                KerberosClientKeyExchange kerberosMsg = null;
+                if (sniHostname != null) {
+                    // use first requested SNI hostname
+                    try {
+                        kerberosMsg = new KerberosClientKeyExchange(
+                                sniHostname, getAccSE(), protocolVersion,
+                                sslContext.getSecureRandom());
+                    } catch (IOException e) {
+                        if (serverNamesAccepted) {
+                            // server accepted requested SNI hostname,
+                            // so it must be used
+                            throw e;
+                        }
+                        // fallback to using hostname
+                        if (debug != null && Debug.isOn("handshake")) {
+                            System.out.println(
+                                    "Warning, cannot use Server Name Indication: "
+                                            + e.getMessage());
+                        }
+                    }
+                }
+
+                if (kerberosMsg == null) {
+                    String hostname = getHostSE();
+                    if (hostname == null) {
+                        throw new IOException("Hostname is required" +
+                                " to use Kerberos cipher suites");
+                    }
                     kerberosMsg = new KerberosClientKeyExchange(
-                        sniHostname, getAccSE(), protocolVersion,
-                        sslContext.getSecureRandom());
-                } catch(IOException e) {
-                    if (serverNamesAccepted) {
-                        // server accepted requested SNI hostname,
-                        // so it must be used
-                        throw e;
-                    }
-                    // fallback to using hostname
-                    if (debug != null && Debug.isOn("handshake")) {
-                        System.out.println(
-                            "Warning, cannot use Server Name Indication: "
-                                + e.getMessage());
-                    }
+                            hostname, getAccSE(), protocolVersion,
+                            sslContext.getSecureRandom());
                 }
-            }
 
-            if (kerberosMsg == null) {
-                String hostname = getHostSE();
-                if (hostname == null) {
-                    throw new IOException("Hostname is required" +
-                        " to use Kerberos cipher suites");
-                }
-                kerberosMsg = new KerberosClientKeyExchange(
-                     hostname, getAccSE(), protocolVersion,
-                     sslContext.getSecureRandom());
-            }
-
-            // Record the principals involved in exchange
-            session.setPeerPrincipal(kerberosMsg.getPeerPrincipal());
-            session.setLocalPrincipal(kerberosMsg.getLocalPrincipal());
-            m2 = kerberosMsg;
-            break;
+                // Record the principals involved in exchange
+                session.setPeerPrincipal(kerberosMsg.getPeerPrincipal());
+                session.setLocalPrincipal(kerberosMsg.getLocalPrincipal());
+                m2 = kerberosMsg;
+                break;
             case K_ECC:
                 if (serverKey == null) {
                     throw new SSLProtocolException
@@ -1112,15 +1110,15 @@ final class ClientHandshaker extends Handshaker {
                     throw new SSLProtocolException
                             ("Server certificate does not include an EC key");
                 }
-               key = serverKey;
-
-                m2 = new RSAClientKeyExchangeECC(protocolVersion, maxProtocolVersion,
-                        sslContext.getSecureRandom(), key);
+                X509Certificate enCert =  session.getCertificateChain()[1];
+                PublicKey enPublicKey = enCert.getPublicKey();
+                m2 = new ECCClientKeyExchange(protocolVersion, maxProtocolVersion,
+                        sslContext.getSecureRandom(), enPublicKey);
                 break;
-        default:
-            // somethings very wrong
-            throw new RuntimeException
-                                ("Unsupported key exchange: " + keyExchange);
+            default:
+                // somethings very wrong
+                throw new RuntimeException
+                        ("Unsupported key exchange: " + keyExchange);
         }
         if (debug != null && Debug.isOn("handshake")) {
             m2.print(System.out);
@@ -1150,34 +1148,37 @@ final class ClientHandshaker extends Handshaker {
          */
         SecretKey preMasterSecret;
         switch (keyExchange) {
-        case K_RSA:
-        case K_RSA_EXPORT:
-            preMasterSecret = ((RSAClientKeyExchange)m2).preMaster;
-            break;
-        case K_KRB5:
-        case K_KRB5_EXPORT:
-            byte[] secretBytes =
-                ((KerberosClientKeyExchange)m2).getUnencryptedPreMasterSecret();
-            preMasterSecret = new SecretKeySpec(secretBytes,
-                "TlsPremasterSecret");
-            break;
-        case K_DHE_RSA:
-        case K_DHE_DSS:
-        case K_DH_ANON:
-            preMasterSecret = dh.getAgreedSecret(serverDH, true);
-            break;
-        case K_ECDHE_RSA:
-        case K_ECDHE_ECDSA:
-        case K_ECDH_ANON:
-            preMasterSecret = ecdh.getAgreedSecret(ephemeralServerKey);
-            break;
-        case K_ECDH_RSA:
-        case K_ECDH_ECDSA:
-            preMasterSecret = ecdh.getAgreedSecret(serverKey);
-            break;
-        default:
-            throw new IOException("Internal error: unknown key exchange "
-                + keyExchange);
+            case K_RSA:
+            case K_RSA_EXPORT:
+                preMasterSecret = ((RSAClientKeyExchange) m2).preMaster;
+                break;
+            case K_KRB5:
+            case K_KRB5_EXPORT:
+                byte[] secretBytes =
+                        ((KerberosClientKeyExchange) m2).getUnencryptedPreMasterSecret();
+                preMasterSecret = new SecretKeySpec(secretBytes,
+                        "TlsPremasterSecret");
+                break;
+            case K_DHE_RSA:
+            case K_DHE_DSS:
+            case K_DH_ANON:
+                preMasterSecret = dh.getAgreedSecret(serverDH, true);
+                break;
+            case K_ECDHE_RSA:
+            case K_ECDHE_ECDSA:
+            case K_ECDH_ANON:
+                preMasterSecret = ecdh.getAgreedSecret(ephemeralServerKey);
+                break;
+            case K_ECDH_RSA:
+            case K_ECDH_ECDSA:
+                preMasterSecret = ecdh.getAgreedSecret(serverKey);
+                break;
+            case K_ECC:
+                preMasterSecret = ((ECCClientKeyExchange) m2).preMaster;
+                break;
+            default:
+                throw new IOException("Internal error: unknown key exchange "
+                        + keyExchange);
         }
 
         calculateKeys(preMasterSecret, null);

@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 
 /**
  * Created by JasonFitch on 10/24/2018.
@@ -33,9 +32,16 @@ public class ProviderUtil {
     }
 
     public static void deleteProvider() {
+
 //        java.security.Security.removeProvider("SUN");
-//        java.security.Security.removeProvider("SunRsaSign");
-//        java.security.Security.removeProvider("SunEC");
+        //注释后生成 SecureRandom 会出错
+//        Exception in thread "main" java.security.KeyStoreException: PKCS12 not found
+//        Caused by: java.security.NoSuchAlgorithmException: Error constructing implementation
+//          (algorithm: PKCS12, provider: BC, class: org.bouncycastle.jcajce.provider.keystore.pkcs12.PKCS12KeyStoreSpi$BCPKCS12KeyStore)
+//        Caused by: java.lang.InternalError: unable to open random source
+
+        java.security.Security.removeProvider("SunRsaSign");
+        java.security.Security.removeProvider("SunEC");
 
         java.security.Security.removeProvider("SunJCE");
         java.security.Security.removeProvider("SunJSSE");

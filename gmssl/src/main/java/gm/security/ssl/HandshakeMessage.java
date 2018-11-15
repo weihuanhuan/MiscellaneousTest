@@ -702,6 +702,9 @@ class RSA_ServerKeyExchange extends ServerKeyExchange
 
 
         public ECC_ServerKeyExchange(X509Certificate enCert, PrivateKey signPrivateKey, RandomCookie clnt_random, RandomCookie svr_random, SecureRandom secureRandom) throws SignatureException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException, CertificateEncodingException {
+
+            //参考 https://blog.csdn.net/upset_ming/article/details/79880688#comments 4.7
+            //以及 https://blog.csdn.net/mrpre/article/details/78015580
             enCertificate = enCert;
             signature = Signature.getInstance("SM3WITHSM2","BC");
             signature.initSign(signPrivateKey, secureRandom);
@@ -2057,6 +2060,46 @@ static final class Finished extends HandshakeMessage {
                     throw new ProviderException(
                         "Invalid PRF output, format must be RAW. " +
                         "Format received: " + prfKey.getFormat());
+                }
+                byte[] finished = prfKey.getEncoded();
+                return finished;
+            } catch (GeneralSecurityException e) {
+                throw new RuntimeException("PRF failed", e);
+            }
+        } else if (protocolVersion.v == ProtocolVersion.GMSSL10.v) {
+            // GMSSL
+            try {
+                byte[] seed;
+                String prfAlg;
+                PRF    prf;
+
+                // Get the KeyGenerator alg and calculate the seed.
+                seed = handshakeHash.getFinishedHash();
+
+                prfAlg = "SunTls12Prf";
+                prf = cipherSuite.prfAlg;
+
+                String prfHashAlg    = prf.getPRFHashAlg();
+                int    prfHashLength = prf.getPRFHashLength();
+                int    prfBlockSize  = prf.getPRFBlockSize();
+
+                /*
+                 * RFC 5246/7.4.9 says that finished messages can
+                 * be ciphersuite-specific in both length/PRF hash
+                 * algorithm.  If we ever run across a different
+                 * length, this call will need to be updated.
+                 */
+                TlsPrfParameterSpec spec = new TlsPrfParameterSpec(
+                        masterKey, tlsLabel, seed, 12,
+                        prfHashAlg, prfHashLength, prfBlockSize);
+
+                KeyGenerator kg = JsseJce.getKeyGenerator(prfAlg);
+                kg.init(spec);
+                SecretKey prfKey = kg.generateKey();
+                if ("RAW".equals(prfKey.getFormat()) == false) {
+                    throw new ProviderException(
+                            "Invalid PRF output, format must be RAW. " +
+                                    "Format received: " + prfKey.getFormat());
                 }
                 byte[] finished = prfKey.getEncoded();
                 return finished;

@@ -37,7 +37,6 @@ import javax.net.ssl.*;
 import sun.misc.HexDumpEncoder;
 
 import gm.security.internal.spec.*;
-import gm.security.internal.interfaces.TlsMasterSecret;
 
 import gm.security.ssl.HandshakeMessage.*;
 import gm.security.ssl.CipherSuite.*;
@@ -1224,6 +1223,9 @@ abstract class Handshaker {
         if (protocolVersion.v >= ProtocolVersion.TLS12.v) {
             masterAlg = "SunTls12MasterSecret";
             prf = cipherSuite.prfAlg;
+        } else if (protocolVersion.v == ProtocolVersion.GMSSL10.v){
+            masterAlg = "TlsMasterSecretGenerator";
+            prf =cipherSuite.prfAlg;
         } else {
             masterAlg = "SunTlsMasterSecret";
             prf = P_NONE;
@@ -1310,6 +1312,9 @@ abstract class Handshaker {
 
         if (protocolVersion.v >= ProtocolVersion.TLS12.v) {
             keyMaterialAlg = "SunTls12KeyMaterial";
+            prf = cipherSuite.prfAlg;
+        } else if (protocolVersion.v == ProtocolVersion.GMSSL10.v) {
+            keyMaterialAlg = "TlsKeyMaterialGenerator";
             prf = cipherSuite.prfAlg;
         } else {
             keyMaterialAlg = "SunTlsKeyMaterial";

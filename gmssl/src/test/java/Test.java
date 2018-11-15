@@ -20,11 +20,10 @@ public class Test {
         ProviderUtil.deleteProvider();
         ProviderUtil.insertProvicer();
         String modeControl = "(?i)";
-        String providerName = ".*";
-        String type = ".*Digest.*";
+        String providerName = ".*bc.*";
+        String type = ".*Cipher.*";
         String algorithm = ".*sm.*";
         ProviderUtil.queryProvicer(modeControl, providerName, type, algorithm);
-
 
 
         KeyStore ks = KeyStore.getInstance("BKS","BC");

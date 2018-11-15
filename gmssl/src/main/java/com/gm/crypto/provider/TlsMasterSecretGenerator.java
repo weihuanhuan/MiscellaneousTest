@@ -121,6 +121,17 @@ public final class TlsMasterSecretGenerator extends KeyGeneratorSpi {
                                 spec.getPRFHashAlg(), spec.getPRFHashLength(),
                                 spec.getPRFBlockSize()) :
                         doTLS10PRF(premaster, label, seed, 48));
+            } else if (protocolVersion == 0x0101) {
+                //处理 master secret 参考 GMT 0024-2014 5.1.4 5.1.5 6.5.1
+                byte[] label;
+                byte[] seed;
+                byte[] clientRandom = spec.getClientRandom();
+                byte[] serverRandom = spec.getServerRandom();
+                label = LABEL_MASTER_SECRET;
+                seed = concat(clientRandom, serverRandom);
+                master = doTLS12PRF(premaster, label, seed, 48,
+                                spec.getPRFHashAlg(), spec.getPRFHashLength(),
+                                spec.getPRFBlockSize());
             } else {
                 master = new byte[48];
                 MessageDigest md5 = MessageDigest.getInstance("MD5");
