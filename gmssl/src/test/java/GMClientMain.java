@@ -28,8 +28,8 @@ public class GMClientMain {
         SocketFactory factory = sslContext.getSocketFactory();
         String hostname="localhost";
         int port = 8443;
-        hostname = "ebssec.boc.cn";
-        port = 443;
+//        hostname = "ebssec.boc.cn";
+//        port = 443;
         System.out.println("##########connecting to server on "+port+" ...##########");
         Socket s = factory.createSocket(hostname, port);
 

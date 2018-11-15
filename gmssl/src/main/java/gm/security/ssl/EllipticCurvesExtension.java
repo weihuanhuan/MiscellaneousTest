@@ -92,6 +92,7 @@ final class EllipticCurvesExtension extends HelloExtension {
         P384_R1(24, "secp384r1",    "1.3.132.0.34",     true),  // NIST P-384
         P521_R1(25, "secp521r1",    "1.3.132.0.35",     true),  // NIST P-521
 
+        //JF GMSSL SM2 曲线OID 参考 GMT 0006-2012 附 录 A 表A.1
         P256_v1(26, "sm2p256v1",    "1.2.156.10197.1.301",     false);
 
         int          id;

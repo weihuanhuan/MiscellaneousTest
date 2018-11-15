@@ -235,59 +235,69 @@ final class ServerHandshaker extends Handshaker {
             case HandshakeMessage.ht_client_key_exchange:
                 SecretKey preMasterSecret;
                 switch (keyExchange) {
-                case K_RSA:
-                case K_RSA_EXPORT:
-                    /*
-                     * The client's pre-master secret is decrypted using
-                     * either the server's normal private RSA key, or the
-                     * temporary one used for non-export or signing-only
-                     * certificates/keys.
-                     */
-                    RSAClientKeyExchange pms = new RSAClientKeyExchange(
-                            protocolVersion, clientRequestedVersion,
-                            sslContext.getSecureRandom(), input,
-                            message_len, privateKey);
-                    handshakeState.update(pms, resumingSession);
-                    preMasterSecret = this.clientKeyExchange(pms);
-                    break;
-                case K_KRB5:
-                case K_KRB5_EXPORT:
-                    KerberosClientKeyExchange kke =
-                        new KerberosClientKeyExchange(protocolVersion,
-                            clientRequestedVersion,
-                            sslContext.getSecureRandom(),
-                            input,
-                            this.getAccSE(),
-                            serviceCreds);
-                    handshakeState.update(kke, resumingSession);
-                    preMasterSecret = this.clientKeyExchange(kke);
-                    break;
-                case K_DHE_RSA:
-                case K_DHE_DSS:
-                case K_DH_ANON:
-                    /*
-                     * The pre-master secret is derived using the normal
-                     * Diffie-Hellman calculation.   Note that the main
-                     * protocol difference in these five flavors is in how
-                     * the ServerKeyExchange message was constructed!
-                     */
-                    DHClientKeyExchange dhcke = new DHClientKeyExchange(input);
-                    handshakeState.update(dhcke, resumingSession);
-                    preMasterSecret = this.clientKeyExchange(dhcke);
-                    break;
-                case K_ECDH_RSA:
-                case K_ECDH_ECDSA:
-                case K_ECDHE_RSA:
-                case K_ECDHE_ECDSA:
-                case K_ECDH_ANON:
-                    ECDHClientKeyExchange ecdhcke =
-                        new ECDHClientKeyExchange(input);
-                    handshakeState.update(ecdhcke, resumingSession);
-                    preMasterSecret = this.clientKeyExchange(ecdhcke);
-                    break;
-                default:
-                    throw new SSLProtocolException
-                        ("Unrecognized key exchange: " + keyExchange);
+                    case K_RSA:
+                    case K_RSA_EXPORT:
+                        /*
+                         * The client's pre-master secret is decrypted using
+                         * either the server's normal private RSA key, or the
+                         * temporary one used for non-export or signing-only
+                         * certificates/keys.
+                         */
+                        RSAClientKeyExchange pms = new RSAClientKeyExchange(
+                                protocolVersion, clientRequestedVersion,
+                                sslContext.getSecureRandom(), input,
+                                message_len, privateKey);
+                        handshakeState.update(pms, resumingSession);
+                        preMasterSecret = this.clientKeyExchange(pms);
+                        break;
+                    case K_KRB5:
+                    case K_KRB5_EXPORT:
+                        KerberosClientKeyExchange kke =
+                                new KerberosClientKeyExchange(protocolVersion,
+                                        clientRequestedVersion,
+                                        sslContext.getSecureRandom(),
+                                        input,
+                                        this.getAccSE(),
+                                        serviceCreds);
+                        handshakeState.update(kke, resumingSession);
+                        preMasterSecret = this.clientKeyExchange(kke);
+                        break;
+                    case K_DHE_RSA:
+                    case K_DHE_DSS:
+                    case K_DH_ANON:
+                        /*
+                         * The pre-master secret is derived using the normal
+                         * Diffie-Hellman calculation.   Note that the main
+                         * protocol difference in these five flavors is in how
+                         * the ServerKeyExchange message was constructed!
+                         */
+                        DHClientKeyExchange dhcke = new DHClientKeyExchange(input);
+                        handshakeState.update(dhcke, resumingSession);
+                        preMasterSecret = this.clientKeyExchange(dhcke);
+                        break;
+                    case K_ECDH_RSA:
+                    case K_ECDH_ECDSA:
+                    case K_ECDHE_RSA:
+                    case K_ECDHE_ECDSA:
+                    case K_ECDH_ANON:
+                        ECDHClientKeyExchange ecdhcke =
+                                new ECDHClientKeyExchange(input);
+                        handshakeState.update(ecdhcke, resumingSession);
+                        preMasterSecret = this.clientKeyExchange(ecdhcke);
+                        break;
+                    case K_ECC:
+                        //JF 这里要使用加密证书的私钥
+                        PrivateKey enPrivateKey = privateKey;
+                        ECCClientKeyExchange eccClientKeyExchange = new ECCClientKeyExchange(
+                                protocolVersion, clientRequestedVersion,
+                                sslContext.getSecureRandom(), input,
+                                message_len, enPrivateKey);
+                        handshakeState.update(eccClientKeyExchange, resumingSession);
+                        preMasterSecret = this.clientKeyExchange(eccClientKeyExchange);
+                        break;
+                    default:
+                        throw new SSLProtocolException
+                                ("Unrecognized key exchange: " + keyExchange);
                 }
 
                 // Need to add the hash for RFC 7627.
@@ -1911,6 +1921,16 @@ final class ServerHandshaker extends Handshaker {
      * decrypted using the private key before we get here.
      */
     private SecretKey clientKeyExchange(RSAClientKeyExchange mesg)
+            throws IOException {
+
+        if (debug != null && Debug.isOn("handshake")) {
+            mesg.print(System.out);
+        }
+        return mesg.preMaster;
+    }
+
+    //GMSSL ECC
+    private SecretKey clientKeyExchange(ECCClientKeyExchange mesg)
             throws IOException {
 
         if (debug != null && Debug.isOn("handshake")) {
