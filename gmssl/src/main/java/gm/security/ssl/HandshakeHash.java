@@ -97,6 +97,7 @@ final class HandshakeHash {
     private final int clonesNeeded;    // needs to be saved for later use
 
     // For TLS 1.2
+    //JF also GMSSL 1.0
     private MessageDigest finMD;
 
     /**

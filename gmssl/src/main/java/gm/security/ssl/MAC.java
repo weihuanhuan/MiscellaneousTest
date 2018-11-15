@@ -84,6 +84,8 @@ final class MAC extends Authenticator {
             algorithm = "HmacSHA256";    // TLS 1.2+
         } else if (macAlg == M_SHA384) {
             algorithm = "HmacSHA384";    // TLS 1.2+
+        } else if (macAlg == M_SM3) {
+            algorithm = "HmacSM3";    //JF GMSSL
         } else {
             throw new RuntimeException("Unknown Mac " + macAlg);
         }

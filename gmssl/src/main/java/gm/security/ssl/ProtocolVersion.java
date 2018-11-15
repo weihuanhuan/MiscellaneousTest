@@ -75,7 +75,7 @@ public final class ProtocolVersion implements Comparable<ProtocolVersion> {
     // TLS 1.2
     final static ProtocolVersion TLS12 = new ProtocolVersion(0x0303, "TLSv1.2");
 
-    // GMSSL 1.0
+    //JF GMSSL 1.0
     final static ProtocolVersion GMSSL10 = new ProtocolVersion(0x0101, "GMSSLv1.0");
 
     private static final boolean FIPS = SunJSSE.isFIPS();
@@ -115,6 +115,7 @@ public final class ProtocolVersion implements Comparable<ProtocolVersion> {
     static {
         Set<ProtocolVersion> protocols = new HashSet<>(5);
 
+        //控制有效的协议
         ProtocolVersion[] pvs = new ProtocolVersion[] {
 //                SSL20Hello, SSL30, TLS10, TLS11, TLS12};
                 GMSSL10};

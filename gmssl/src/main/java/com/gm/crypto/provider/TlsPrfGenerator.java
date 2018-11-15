@@ -187,6 +187,7 @@ abstract class TlsPrfGenerator extends KeyGeneratorSpi {
             secret = B0;
         }
 
+        //JF mdPRFBlockSize是的超过其大小的密钥长度变为hash算法的
         // If we have a long secret, digest it first.
         if (secret.length > mdPRFBlockSize) {
             secret = mdPRF.digest(secret);
@@ -383,6 +384,13 @@ abstract class TlsPrfGenerator extends KeyGeneratorSpi {
     static public class V10 extends TlsPrfGenerator {
         protected SecretKey engineGenerateKey() {
             return engineGenerateKey0(false);
+        }
+    }
+
+    //JF GMSSL PrfGenerator
+    static public class GMSSLPrfGenerator extends TlsPrfGenerator {
+        protected SecretKey engineGenerateKey() {
+            return engineGenerateKey0(true);
         }
     }
 }

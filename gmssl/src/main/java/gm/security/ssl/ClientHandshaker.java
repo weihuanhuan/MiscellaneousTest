@@ -319,6 +319,7 @@ final class ClientHandshaker extends Handshaker {
                     "unexpected receipt of server key exchange algorithm");
             case K_ECC:
                 try {
+                    //使用加密证书
                     X509Certificate enCertificate = session.getCertificateChain()[1];
                     ECC_ServerKeyExchange eccSrvKeyExchange =
                             new ECC_ServerKeyExchange(input,enCertificate);
@@ -559,7 +560,11 @@ final class ClientHandshaker extends Handshaker {
         setCipherSuite(mesg.cipherSuite);
         if (protocolVersion.v >= ProtocolVersion.TLS12.v) {
             handshakeHash.setFinishedAlg(cipherSuite.prfAlg.getPRFHashAlg());
+        }else if (protocolVersion.v == ProtocolVersion.GMSSL10.v ) {
+            //JF GMSSL
+            handshakeHash.setFinishedAlg(cipherSuite.prfAlg.getPRFHashAlg());
         }
+
 
         if (mesg.compression_method != 0) {
             fatalSE(Alerts.alert_illegal_parameter,

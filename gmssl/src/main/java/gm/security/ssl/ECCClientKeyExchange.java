@@ -45,6 +45,7 @@ import javax.net.ssl.SSLKeyException;
 import javax.net.ssl.SSLProtocolException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.engines.SM2Engine;
+import org.bouncycastle.crypto.params.ECPrivateKeyParameters;
 import org.bouncycastle.crypto.params.ECPublicKeyParameters;
 import org.bouncycastle.crypto.params.ParametersWithRandom;
 import org.bouncycastle.jcajce.provider.asymmetric.util.ECUtil;
@@ -86,9 +87,7 @@ final class ECCClientKeyExchange extends HandshakeMessage {
         }
         this.protocolVersion = protocolVersion;
 
-
         try {
-
             /*
              *  在不使用SunJCE的时候
              *  如下方法可以生成预主密钥，但是应为使用了未签名的KeyGenerator，导致无法加载。
@@ -97,7 +96,6 @@ final class ECCClientKeyExchange extends HandshakeMessage {
              *  并包装SunJSSE为 gm.security.provider.internal.GMProvider
              *
              */
-
             //参考 https://blog.csdn.net/upset_ming/article/details/79880688#comments 4.11
             String s = ((protocolVersion.v == ProtocolVersion.GMSSL10.v) ?
                     "TlsRsaPremasterSecretGenerator" : "");
@@ -150,18 +148,22 @@ final class ECCClientKeyExchange extends HandshakeMessage {
      * it with its private key.
      */
     ECCClientKeyExchange(ProtocolVersion currentVersion,
-                         ProtocolVersion maxVersion,
-                         SecureRandom generator, HandshakeInStream input,
-                         int messageSize, PrivateKey privateKey) throws IOException {
+                         ProtocolVersion clientRequestedVersion,
+                         SecureRandom secureRandom, HandshakeInStream input,
+                         int messageSize, PrivateKey enPrivateKey) throws IOException {
 
-        if (privateKey.getAlgorithm().equals("RSA") == false) {
-            throw new SSLKeyException("Private key not of type RSA: " +
-                 privateKey.getAlgorithm());
+        if (enPrivateKey.getAlgorithm().equals("EC") == false) {
+            throw new SSLKeyException("Private key not of type EC: " +
+                    enPrivateKey.getAlgorithm());
         }
 
         if (currentVersion.v >= ProtocolVersion.TLS10.v) {
             encrypted = input.getBytes16();
-        } else {
+        }
+        else if (currentVersion.v == ProtocolVersion.GMSSL10.v) {
+            encrypted = input.getBytes16();
+        }
+        else {
             encrypted = new byte [messageSize];
             if (input.read(encrypted) != messageSize) {
                 throw new SSLProtocolException(
@@ -169,56 +171,28 @@ final class ECCClientKeyExchange extends HandshakeMessage {
             }
         }
 
-        byte[] encoded = null;
+        byte[] decrypted = null;
         try {
-            boolean needFailover = false;
-            Cipher cipher = JsseJce.getCipher(JsseJce.CIPHER_RSA_PKCS1);
+            ECPrivateKeyParameters priKeyParams         = (ECPrivateKeyParameters) ECUtil.generatePrivateKeyParameter(enPrivateKey);
+            SM2Engine              sm2Engine            = new SM2Engine();
+            sm2Engine.init(false, priKeyParams);
+
+            boolean failed = false;
             try {
-                // Try UNWRAP_MODE mode firstly.
-                cipher.init(Cipher.UNWRAP_MODE, privateKey,
-                        new TlsRsaPremasterSecretParameterSpec(
-                                maxVersion.v, currentVersion.v),
-                        generator);
-
-                // The provider selection can be delayed, please don't call
-                // any Cipher method before the call to Cipher.init().
-                needFailover = !KeyUtil.isOracleJCEProvider(
-                        cipher.getProvider().getName());
-            } catch (InvalidKeyException | UnsupportedOperationException iue) {
-                if (debug != null && Debug.isOn("handshake")) {
-                    System.out.println("The Cipher provider "
-                            + safeProviderName(cipher)
-                            + " caused exception: " + iue.getMessage());
-                }
-
-                needFailover = true;
+                decrypted = sm2Engine.processBlock(encrypted, 0, encrypted.length);
+            } catch (InvalidCipherTextException e) {
+                // Note: decrypted == null
+                failed = true;
             }
 
-            if (needFailover) {
-                // The cipher might be spoiled by unsuccessful call to init(),
-                // so request a fresh instance
-                cipher = JsseJce.getCipher(JsseJce.CIPHER_RSA_PKCS1);
+            //初步检查解密后的数据是否正确，不正确则生成一份替代书籍，避免decrypted == null 的问题。
+            decrypted = KeyUtil.checkTlsPreMasterSecretKey(
+                    clientRequestedVersion.v, currentVersion.v,
+                    secureRandom, decrypted, failed);
 
-                // Use DECRYPT_MODE and dispose the previous initialization.
-                cipher.init(Cipher.DECRYPT_MODE, privateKey);
-                boolean failed = false;
-                try {
-                    encoded = cipher.doFinal(encrypted);
-                } catch (BadPaddingException bpe) {
-                    // Note: encoded == null
-                    failed = true;
-                }
-                encoded = KeyUtil.checkTlsPreMasterSecretKey(
-                                maxVersion.v, currentVersion.v,
-                                generator, encoded, failed);
-                preMaster = generatePreMasterSecret(
-                                maxVersion.v, currentVersion.v,
-                                encoded, generator);
-            } else {
-                // the cipher should have been initialized
-                preMaster = (SecretKey)cipher.unwrap(encrypted,
-                        "TlsRsaPremasterSecret", Cipher.SECRET_KEY);
-            }
+            preMaster = generatePreMasterSecret(
+                    clientRequestedVersion.v, currentVersion.v,
+                    decrypted, secureRandom);
         } catch (InvalidKeyException ibk) {
             // the message is too big to process with RSA
             throw new SSLException(
@@ -237,19 +211,19 @@ final class ECCClientKeyExchange extends HandshakeMessage {
     @SuppressWarnings("deprecation")
     private static SecretKey generatePreMasterSecret(
             int clientVersion, int serverVersion,
-            byte[] encodedSecret, SecureRandom generator) {
+            byte[] encodedSecret, SecureRandom secureRandom) {
 
         if (debug != null && Debug.isOn("handshake")) {
             System.out.println("Generating a premaster secret");
         }
 
         try {
-            String s = ((clientVersion >= ProtocolVersion.TLS12.v) ?
-                "SunTls12RsaPremasterSecret" : "SunTlsRsaPremasterSecret");
+            String s = ((clientVersion == ProtocolVersion.GMSSL10.v) ?
+                    "TlsRsaPremasterSecretGenerator" : "");
             KeyGenerator kg = JsseJce.getKeyGenerator(s);
             kg.init(new TlsRsaPremasterSecretParameterSpec(
                     clientVersion, serverVersion, encodedSecret),
-                    generator);
+                    secureRandom);
             return kg.generateKey();
         } catch (InvalidAlgorithmParameterException |
                 NoSuchAlgorithmException iae) {

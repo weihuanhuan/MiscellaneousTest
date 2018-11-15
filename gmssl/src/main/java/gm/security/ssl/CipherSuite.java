@@ -343,7 +343,7 @@ final class CipherSuite implements Comparable<CipherSuite> {
         K_ECDHE_RSA  ("ECDHE_RSA",   ALLOW_ECC, true),
         K_ECDH_ANON  ("ECDH_anon",   ALLOW_ECC, true),
 
-        //GM ECC
+        //JF GM ECC
         K_ECC        ("ECC",         true,     false),
 
         // Kerberos cipher suites
@@ -629,9 +629,9 @@ final class CipherSuite implements Comparable<CipherSuite> {
     final static BulkCipher B_AES_256_GCM =
         new BulkCipher(CIPHER_AES_GCM,  AEAD_CIPHER,     32, 12,  4, true);
 
-    //SM4
+    //JF SM4  keysize 128bit=16*8bit ,others = ?
     final static BulkCipher B_SM4_128_CBC =
-            new BulkCipher(CIPHER_SM4_CBC,  BLOCK_CIPHER,16, 16,  16, true);
+            new BulkCipher(CIPHER_SM4_CBC,  BLOCK_CIPHER,16, 16,  0, true);
 
     // MACs
     final static MacAlg M_NULL    = new MacAlg("NULL",     0,   0,   0);
@@ -640,7 +640,7 @@ final class CipherSuite implements Comparable<CipherSuite> {
     final static MacAlg M_SHA256  = new MacAlg("SHA256",  32,  64,   9);
     final static MacAlg M_SHA384  = new MacAlg("SHA384",  48, 128,  17);
 
-    //SM3  GMT 0004-2012 5.2
+    //JF SM3  GMT 0004-2012 5.2
     final static MacAlg M_SM3  = new MacAlg("SM3",  32, 64,  9);
 
     /**
@@ -661,8 +661,8 @@ final class CipherSuite implements Comparable<CipherSuite> {
         P_SHA384("SHA-384", 48, 128),
         P_SHA512("SHA-512", 64, 128),  // not currently used.
 
-        //参考 GMT 0004-2012 5.1
-        //这俩个数字没有找见明确的依据。hash长度256byte=32*8bit？
+        //JF 参考 GMT 0004-2012 5.1
+        //JF 这俩个数字没有找见明确的依据。hash长度256byte=32*8bit？
         P_SM3(       "SM3", 32,  64);
 
         // PRF characteristics
@@ -954,6 +954,8 @@ final class CipherSuite implements Comparable<CipherSuite> {
         int max = ProtocolVersion.LIMIT_MAX_VALUE;
         int tls11 = ProtocolVersion.TLS11.v;
         int tls12 = ProtocolVersion.TLS12.v;
+
+        //JF gmssl10
         int gmssl10 = ProtocolVersion.GMSSL10.v;
 
         //  ID           Key Exchange   Cipher     A  obs  suprt  PRF
@@ -967,7 +969,7 @@ final class CipherSuite implements Comparable<CipherSuite> {
         // technologies mature in the industry.  Eventually we'll move
         // the GCM suites here.
 
-//         ECC_SM4_SM3
+        //JF ECC_SM4_SM3
         add("ECC_SM4_SM3",
                 0xe013, (--p)-0, K_ECC, B_SM4_128_CBC, T, max, gmssl10, P_SM3);
 

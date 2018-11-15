@@ -20,8 +20,8 @@ public class Test {
         ProviderUtil.deleteProvider();
         ProviderUtil.insertProvicer();
         String modeControl = "(?i)";
-        String providerName = ".*bc.*";
-        String type = ".*Cipher.*";
+        String providerName = ".*.*";
+        String type = ".*MAC.*";
         String algorithm = ".*sm.*";
         ProviderUtil.queryProvicer(modeControl, providerName, type, algorithm);
 

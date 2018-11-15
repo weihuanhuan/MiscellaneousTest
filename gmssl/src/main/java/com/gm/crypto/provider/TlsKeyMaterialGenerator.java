@@ -70,10 +70,11 @@ public final class TlsKeyMaterialGenerator extends KeyGeneratorSpi {
         protocolVersion = (spec.getMajorVersion() << 8)
             | spec.getMinorVersion();
         if ((protocolVersion < 0x0300) || (protocolVersion > 0x0303)) {
+            //JF 0x0101 GMSSL
             if(0x0101 == protocolVersion)
                 return;
             throw new InvalidAlgorithmParameterException(
-                "Only SSL 3.0, TLS 1.0/1.1/1.2 supported");
+                "Only SSL 3.0, TLS 1.0/1.1/1.2, GMSSL 1.0 supported");
         }
     }
 
@@ -135,6 +136,12 @@ public final class TlsKeyMaterialGenerator extends KeyGeneratorSpi {
             byte[] seed = concat(serverRandom, clientRandom);
             keyBlock = doTLS10PRF(masterSecret, LABEL_KEY_EXPANSION, seed,
                         keyBlockLen, md5, sha);
+        } else if ( protocolVersion == 0x0101){
+            //JF deal with GMSSL 1.0  参考 GMT 0024-2014 6.5.2
+            byte[] seed = concat(serverRandom, clientRandom);
+            keyBlock = doTLS12PRF(masterSecret, LABEL_KEY_EXPANSION, seed,
+                    keyBlockLen, spec.getPRFHashAlg(),
+                    spec.getPRFHashLength(), spec.getPRFBlockSize());
         } else {
             // SSL
             md5 = MessageDigest.getInstance("MD5");
@@ -195,6 +202,7 @@ public final class TlsKeyMaterialGenerator extends KeyGeneratorSpi {
         System.arraycopy(keyBlock, ofs, serverKeyBytes, 0, keyLength);
         ofs += keyLength;
 
+        //JF GMSSL SM4 isExportable == false
         if (isExportable == false) {
             // cipher keys
             clientCipherKey = new SecretKeySpec(clientKeyBytes, alg);

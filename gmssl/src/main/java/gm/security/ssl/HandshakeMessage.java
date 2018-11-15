@@ -1981,6 +1981,11 @@ static final class Finished extends HandshakeMessage {
         this.protocolVersion = protocolVersion;
         this.cipherSuite = cipherSuite;
         int msgLen = (protocolVersion.v >= ProtocolVersion.TLS10.v) ? 12 : 36;
+
+        //JF GMSSL finsh message len
+        if (protocolVersion.v == ProtocolVersion.GMSSL10.v){
+            msgLen = 12;
+        }
         verifyData = new byte[msgLen];
         input.read(verifyData);
     }
@@ -2067,7 +2072,7 @@ static final class Finished extends HandshakeMessage {
                 throw new RuntimeException("PRF failed", e);
             }
         } else if (protocolVersion.v == ProtocolVersion.GMSSL10.v) {
-            // GMSSL
+            //JF  GMSSL GMT 0024-2014 6.4.4.9 & https://blog.csdn.net/mrpre/article/details/78015580
             try {
                 byte[] seed;
                 String prfAlg;
@@ -2076,7 +2081,7 @@ static final class Finished extends HandshakeMessage {
                 // Get the KeyGenerator alg and calculate the seed.
                 seed = handshakeHash.getFinishedHash();
 
-                prfAlg = "SunTls12Prf";
+                prfAlg = "GMSSLPrfGenerator";
                 prf = cipherSuite.prfAlg;
 
                 String prfHashAlg    = prf.getPRFHashAlg();
