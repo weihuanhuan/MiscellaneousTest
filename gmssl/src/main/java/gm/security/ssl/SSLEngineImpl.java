@@ -280,8 +280,10 @@ final public class SSLEngineImpl extends SSLEngine {
     /*
      * Crypto state that's reinitialized when the session changes.
      */
-    private Authenticator       readAuthenticator, writeAuthenticator;
-    private CipherBox           readCipher, writeCipher;
+    private Authenticator       readAuthenticator;
+    private Authenticator writeAuthenticator;
+    private CipherBox           readCipher;
+    private CipherBox writeCipher;
     // NOTE: compression state would be saved here
 
     /*

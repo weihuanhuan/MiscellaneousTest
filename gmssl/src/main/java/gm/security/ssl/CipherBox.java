@@ -497,6 +497,13 @@ final class CipherBox {
                         "padding removal (" + newLen + ") should be larger " +
                         "than <" + blockSize + "> since explicit IV used");
                     }
+                }else if (protocolVersion.v == ProtocolVersion.GMSSL10.v) {
+                    //JF GMSSL
+                    if (newLen < blockSize) {
+                        throw new BadPaddingException("The length after " +
+                                "padding removal (" + newLen + ") should be larger " +
+                                "than <" + blockSize + "> since explicit IV used");
+                    }
                 }
             }
             return newLen;
@@ -927,6 +934,9 @@ final class CipherBox {
                 // the SecurityParameters.block_size.
                 if (protocolVersion.v >= ProtocolVersion.TLS11.v) {
                     return cipher.getBlockSize();
+                }else if (protocolVersion.v == ProtocolVersion.GMSSL10.v){
+                    //JF GMSSL
+                    return cipher.getBlockSize();
                 }
                 break;
             case AEAD_CIPHER:
@@ -1023,6 +1033,10 @@ final class CipherBox {
                     // Generate a random number as the explicit IV parameter.
                     nonce = new byte[cipher.getBlockSize()];
                     random.nextBytes(nonce);
+                }else if (protocolVersion.v == ProtocolVersion.GMSSL10.v){
+                    //JF GMSSL
+                    nonce = new byte[cipher.getBlockSize()];
+                    random.nextBytes(nonce);
                 }
                 break;
             case AEAD_CIPHER:
@@ -1078,7 +1092,11 @@ final class CipherBox {
             minimal = (minimal >= blockSize) ? minimal : blockSize;
             if (protocolVersion.v >= ProtocolVersion.TLS11.v) {
                 minimal += blockSize;   // plus the size of the explicit IV
+            }else if (protocolVersion.v == ProtocolVersion.GMSSL10.v){
+                //JF GMSSL
+                minimal += blockSize;
             }
+
 
             return (fragmentLen >= minimal);
         }

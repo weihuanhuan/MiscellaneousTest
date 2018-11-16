@@ -149,9 +149,12 @@ abstract class Handshaker {
     // Temporary storage for the individual keys. Set by
     // calculateConnectionKeys() and cleared once the ciphers are
     // activated.
-    private SecretKey clntWriteKey, svrWriteKey;
-    private IvParameterSpec clntWriteIV, svrWriteIV;
-    private SecretKey clntMacSecret, svrMacSecret;
+    private SecretKey clntWriteKey;
+    private SecretKey svrWriteKey;
+    private IvParameterSpec clntWriteIV;
+    private IvParameterSpec svrWriteIV;
+    private SecretKey clntMacSecret;
+    private SecretKey svrMacSecret;
 
     /*
      * Delegated task subsystem data structures.

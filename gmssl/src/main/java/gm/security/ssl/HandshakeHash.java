@@ -158,6 +158,17 @@ final class HandshakeHash {
         data.reset();
     }
 
+//JF 调用顺序
+//JF                      negotiated
+//JF
+//JF              update   reset   setFinishedAlg
+//JF
+//JF                 protocolDetermined
+//JF
+//JF              preTLS1.2       TLS1.2 & GM
+//JF             getMD5Clone    getFinishedHash
+//JF             getSHAClone
+//JF
 
     void protocolDetermined(ProtocolVersion pv) {
 
@@ -165,6 +176,12 @@ final class HandshakeHash {
         if (version != -1) return;
 
         version = pv.compareTo(ProtocolVersion.TLS12) >= 0 ? 2 : 1;
+
+        //JF GMSSL 行为相同和TLS1.2
+        if( pv.compareTo(ProtocolVersion.GMSSL10)==0 ) {
+            version = 2;
+        }
+
         switch (version) {
             case 1:
                 // initiate md5, sha and call update on saved array

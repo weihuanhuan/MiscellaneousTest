@@ -1673,9 +1673,9 @@ final class ClientHandshaker extends Handshaker {
                     "Improper X509TrustManager implementation");
             }
         } catch (CertificateException e) {
-            // This will throw an exception, so include the original error.
-//            fatalSE(Alerts.alert_certificate_unknown, e);
-//            忽略错误，屏蔽证书验证，强行通过并信任服务器证书.
+            //JF This will throw an exception, so include the original error.
+            //JF fatalSE(Alerts.alert_certificate_unknown, e);
+            //JF 忽略错误，屏蔽证书验证，强行通过并信任服务器证书.
             System.out.println("###"+e.getMessage());
         }
         session.setPeerCertificates(peerCerts);

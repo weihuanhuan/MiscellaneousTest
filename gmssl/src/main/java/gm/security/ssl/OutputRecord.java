@@ -243,6 +243,7 @@ class OutputRecord extends ByteArrayOutputStream implements Record {
         if (!box.isNullCipher()) {
             // Requires explicit IV/nonce for CBC/AEAD cipher suites for
             // TLS 1.1 or later.
+
             if ((protocolVersion.v >= ProtocolVersion.TLS11.v) &&
                                     (box.isCBCMode() || box.isAEADMode())) {
                 byte[] nonce = box.createExplicitNonce(authenticator,
@@ -250,7 +251,15 @@ class OutputRecord extends ByteArrayOutputStream implements Record {
                 int offset = headerPlusMaxIVSize - nonce.length;
                 System.arraycopy(nonce, 0, buf, offset, nonce.length);
                 headerOffset = offset - headerSize;
-            } else {
+            } else if ((protocolVersion.v == ProtocolVersion.GMSSL10.v) &&
+                    (box.isCBCMode() || box.isAEADMode())) {
+                //JF GMSSL
+                byte[] nonce = box.createExplicitNonce(authenticator,
+                        contentType, count - headerPlusMaxIVSize);
+                int offset = headerPlusMaxIVSize - nonce.length;
+                System.arraycopy(nonce, 0, buf, offset, nonce.length);
+                headerOffset = offset - headerSize;
+            }else {
                 headerOffset = headerPlusMaxIVSize - headerSize;
             }
 

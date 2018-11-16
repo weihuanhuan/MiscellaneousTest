@@ -300,8 +300,10 @@ final public class SSLSocketImpl extends BaseSSLSocketImpl {
     /*
      * Crypto state that's reinitialized when the session changes.
      */
-    private Authenticator       readAuthenticator, writeAuthenticator;
-    private CipherBox           readCipher, writeCipher;
+    private Authenticator readAuthenticator;
+    private Authenticator writeAuthenticator;
+    private CipherBox     writeCipher;
+    private CipherBox readCipher;
     // NOTE: compression state would be saved here
 
     /*
@@ -914,6 +916,10 @@ final public class SSLSocketImpl extends BaseSSLSocketImpl {
     boolean needToSplitPayload() {
         writeLock.lock();
         try {
+            //JF GMSSL
+            if(protocolVersion.v == ProtocolVersion.GMSSL10.v){
+                return false;
+            }
             return (protocolVersion.v <= ProtocolVersion.TLS10.v) &&
                     writeCipher.isCBCMode() && !isFirstAppOutputRecord &&
                     Record.enableCBCProtection;
