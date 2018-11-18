@@ -199,6 +199,11 @@ final class CipherBox {
                     mode == Cipher.DECRYPT_MODE &&
                     protocolVersion.v >= ProtocolVersion.TLS11.v) {
                 iv = getFixedMask(bulkCipher.ivSize);
+            }else if (iv == null && bulkCipher.ivSize != 0 &&
+                    mode == Cipher.DECRYPT_MODE &&
+                    protocolVersion.v == ProtocolVersion.GMSSL10.v){
+                //JF GMSSL
+                iv = getFixedMask(bulkCipher.ivSize);
             }
 
             if (cipherType == AEAD_CIPHER) {
@@ -581,7 +586,8 @@ final class CipherBox {
                 newLen = removePadding(bb, tagLen, blockSize, protocolVersion);
 
                 // check the explicit IV of TLS v1.1 or later
-                if (protocolVersion.v >= ProtocolVersion.TLS11.v) {
+                //JF GMSSL
+                if (protocolVersion.v >= ProtocolVersion.TLS11.v || protocolVersion.v == ProtocolVersion.GMSSL10.v) {
                     if (newLen < blockSize) {
                         throw new BadPaddingException("The length after " +
                         "padding removal (" + newLen + ") should be larger " +
@@ -760,6 +766,11 @@ final class CipherBox {
             if (results[0] != 0) {          // padding data has invalid bytes
                 throw new BadPaddingException("Invalid TLS padding data");
             }
+        } else if (protocolVersion.v == ProtocolVersion.GMSSL10.v) {
+            //JF GMSSL
+            if (results[0] != 0) {          // padding data has invalid bytes
+                throw new BadPaddingException("Invalid GMSSL padding data");
+            }
         } else { // SSLv3
             // SSLv3 requires 0 <= length byte < block size
             // some implementations do 1 <= length byte <= block size,
@@ -808,7 +819,12 @@ final class CipherBox {
             if (results[0] != 0) {          // padding data has invalid bytes
                 throw new BadPaddingException("Invalid TLS padding data");
             }
-        } else { // SSLv3
+        } else if (protocolVersion.v == ProtocolVersion.GMSSL10.v){
+            //JF GMSSL
+            if (results[0] != 0) {          // padding data has invalid bytes
+                throw new BadPaddingException("Invalid GMSSL padding data");
+            }
+        }else { // SSLv3
             // SSLv3 requires 0 <= length byte < block size
             // some implementations do 1 <= length byte <= block size,
             // so accept that as well
@@ -888,6 +904,9 @@ final class CipherBox {
                 // SecurityParameters.record_iv_length, which is equal to
                 // the SecurityParameters.block_size.
                 if (protocolVersion.v >= ProtocolVersion.TLS11.v) {
+                    return cipher.getBlockSize();
+                }else if (protocolVersion.v == ProtocolVersion.GMSSL10.v) {
+                    //JF GMSSL
                     return cipher.getBlockSize();
                 }
                 break;

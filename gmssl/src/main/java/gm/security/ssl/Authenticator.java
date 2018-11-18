@@ -70,7 +70,8 @@ class Authenticator {
      * SSL/TLS protocol.
      */
     Authenticator(ProtocolVersion protocolVersion) {
-        if (protocolVersion.v >= ProtocolVersion.TLS10.v) {
+        //JF GMSSL
+        if (protocolVersion.v >= ProtocolVersion.TLS10.v || protocolVersion.v == ProtocolVersion.GMSSL10.v) {
             block = new byte[BLOCK_SIZE_TLS];
             block[9] = protocolVersion.major;
             block[10] = protocolVersion.minor;

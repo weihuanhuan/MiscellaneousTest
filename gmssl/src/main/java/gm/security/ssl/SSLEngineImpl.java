@@ -1326,6 +1326,10 @@ final public class SSLEngineImpl extends SSLEngine {
      * EngineOutputRecord.write(EngineArgs, MAC, CipherBox).
      */
     boolean needToSplitPayload(CipherBox cipher, ProtocolVersion protocol) {
+        //JF GMSSL
+        if(protocol.v == ProtocolVersion.GMSSL10.v){
+            return false;
+        }
         return (protocol.v <= ProtocolVersion.TLS10.v) &&
                 cipher.isCBCMode() && !isFirstAppOutputRecord &&
                 Record.enableCBCProtection;

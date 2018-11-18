@@ -1338,6 +1338,10 @@ abstract class Handshaker {
         } else if (protocolVersion.v >= ProtocolVersion.TLS11.v &&
                 cipher.cipherType == BLOCK_CIPHER) {
             ivSize = 0;
+        }else if (protocolVersion.v == ProtocolVersion.GMSSL10.v &&
+                cipher.cipherType == BLOCK_CIPHER){
+            //JF GMSSL ? 这个值怎样设置？
+            ivSize = 0;
         }
 
         TlsKeyMaterialParameterSpec spec = new TlsKeyMaterialParameterSpec(

@@ -292,6 +292,17 @@ final class EngineOutputRecord extends OutputRecord {
                     // The explicit IV in TLS 1.1 and later can be encrypted.
                     dstBB.position(dstPos + headerSize);
                 }   // Otherwise, DON'T encrypt the nonce_explicit for AEAD mode
+            }else if (protocolVersion.v == ProtocolVersion.GMSSL10.v &&
+                    (writeCipher.isCBCMode() || writeCipher.isAEADMode())){
+                //JF GMSSL
+                byte[] nonce = writeCipher.createExplicitNonce(
+                        authenticator, contentType(), dstBB.remaining());
+                dstBB.position(dstPos + headerSize);
+                dstBB.put(nonce);
+                if (!writeCipher.isAEADMode()) {
+                    // The explicit IV in TLS 1.1 and later can be encrypted.
+                    dstBB.position(dstPos + headerSize);
+                }   // Otherwise, DON'T encrypt the nonce_explicit for AEAD mode
             }
 
             /*

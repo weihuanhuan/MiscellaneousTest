@@ -1115,6 +1115,7 @@ final class ClientHandshaker extends Handshaker {
                     throw new SSLProtocolException
                             ("Server certificate does not include an EC key");
                 }
+                //JF 使用服务端加密证书公钥
                 X509Certificate enCert =  session.getCertificateChain()[1];
                 PublicKey enPublicKey = enCert.getPublicKey();
                 m2 = new ECCClientKeyExchange(protocolVersion, maxProtocolVersion,

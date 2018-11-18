@@ -159,11 +159,10 @@ final class ECCClientKeyExchange extends HandshakeMessage {
 
         if (currentVersion.v >= ProtocolVersion.TLS10.v) {
             encrypted = input.getBytes16();
-        }
-        else if (currentVersion.v == ProtocolVersion.GMSSL10.v) {
+        } else if (currentVersion.v == ProtocolVersion.GMSSL10.v) {
+            //JF GMSSL
             encrypted = input.getBytes16();
-        }
-        else {
+        } else {
             encrypted = new byte [messageSize];
             if (input.read(encrypted) != messageSize) {
                 throw new SSLProtocolException(

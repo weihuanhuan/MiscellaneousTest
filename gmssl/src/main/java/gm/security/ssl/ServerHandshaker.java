@@ -287,6 +287,7 @@ final class ServerHandshaker extends Handshaker {
                         break;
                     case K_ECC:
                         //JF 这里要使用加密证书的私钥
+                        X509Certificate enCertificate = certs[1];
                         PrivateKey enPrivateKey = privateKey;
                         ECCClientKeyExchange eccClientKeyExchange = new ECCClientKeyExchange(
                                 protocolVersion, clientRequestedVersion,
