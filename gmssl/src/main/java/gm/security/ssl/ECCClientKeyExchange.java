@@ -78,6 +78,7 @@ final class ECCClientKeyExchange extends HandshakeMessage {
      * it, using its RSA private key.  Result is the same size as the
      * server's public key, and uses PKCS #1 block format 02.
      */
+    //JF 客户端处理
     ECCClientKeyExchange(ProtocolVersion protocolVersion,
                          ProtocolVersion maxVersion,
                          SecureRandom secureRandom, PublicKey enPublicKey) throws IOException {
@@ -88,7 +89,7 @@ final class ECCClientKeyExchange extends HandshakeMessage {
         this.protocolVersion = protocolVersion;
 
         try {
-            /*
+            /*JF
              *  在不使用SunJCE的时候
              *  如下方法可以生成预主密钥，但是应为使用了未签名的KeyGenerator，导致无法加载。
              *  这KeyGenerator本来是 com.gm.crypto.provider.SunJCE 提供的
@@ -96,7 +97,7 @@ final class ECCClientKeyExchange extends HandshakeMessage {
              *  并包装SunJSSE为 gm.security.provider.internal.GMProvider
              *
              */
-            //参考 https://blog.csdn.net/upset_ming/article/details/79880688#comments 4.11
+            //JF 参考 https://blog.csdn.net/upset_ming/article/details/79880688#comments 4.11
             String s = ((protocolVersion.v == ProtocolVersion.GMSSL10.v) ?
                     "TlsRsaPremasterSecretGenerator" : "");
             KeyGenerator kg = JsseJce.getKeyGenerator(s);
@@ -147,6 +148,7 @@ final class ECCClientKeyExchange extends HandshakeMessage {
      * Server gets the PKCS #1 (block format 02) data, decrypts
      * it with its private key.
      */
+    //JF 服务端处理
     ECCClientKeyExchange(ProtocolVersion currentVersion,
                          ProtocolVersion clientRequestedVersion,
                          SecureRandom secureRandom, HandshakeInStream input,
@@ -184,7 +186,7 @@ final class ECCClientKeyExchange extends HandshakeMessage {
                 failed = true;
             }
 
-            //初步检查解密后的数据是否正确，不正确则生成一份替代书籍，避免decrypted == null 的问题。
+            //JF 初步检查解密后的数据是否正确，不正确则生成一份替代书籍，避免decrypted == null 的问题。
             decrypted = KeyUtil.checkTlsPreMasterSecretKey(
                     clientRequestedVersion.v, currentVersion.v,
                     secureRandom, decrypted, failed);
@@ -245,7 +247,7 @@ final class ECCClientKeyExchange extends HandshakeMessage {
         if (protocolVersion.v >= ProtocolVersion.TLS10.v) {
             return encrypted.length + 2;
         } else if (protocolVersion.v == ProtocolVersion.GMSSL10.v){
-            //数据本身 + 数据域长度
+            //JF 数据本身 + 数据域长度
             return encrypted.length + 2;
         } else {
             return encrypted.length;
@@ -257,7 +259,7 @@ final class ECCClientKeyExchange extends HandshakeMessage {
         if (protocolVersion.v >= ProtocolVersion.TLS10.v) {
             s.putBytes16(encrypted);
         } else if (protocolVersion.v == ProtocolVersion.GMSSL10.v){
-            //先写消息域长度，再写消息本身
+            //JF 先写消息域长度，再写消息本身
             s.putBytes16(encrypted);
         } else {
             s.write(encrypted);

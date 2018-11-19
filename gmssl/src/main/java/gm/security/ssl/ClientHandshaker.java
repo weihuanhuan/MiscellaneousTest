@@ -319,7 +319,7 @@ final class ClientHandshaker extends Handshaker {
                     "unexpected receipt of server key exchange algorithm");
             case K_ECC:
                 try {
-                    //使用加密证书
+                    //JF 验证服务器加密证书
                     X509Certificate enCertificate = session.getCertificateChain()[1];
                     ECC_ServerKeyExchange eccSrvKeyExchange =
                             new ECC_ServerKeyExchange(input,enCertificate);
@@ -775,7 +775,9 @@ final class ClientHandshaker extends Handshaker {
         if (debug != null && Debug.isOn("handshake")) {
             mesg.print(System.out);
         }
-        PublicKey signPublicKey = serverKey;
+        //JF 服务器签名公钥
+        X509Certificate signCert = session.getCertificateChain()[0];
+        PublicKey signPublicKey = signCert.getPublicKey();
         if (!mesg.verify(signPublicKey, clnt_random, svr_random)) {
             fatalSE(Alerts.alert_handshake_failure,
                     "server key exchange invalid");
@@ -1115,7 +1117,7 @@ final class ClientHandshaker extends Handshaker {
                     throw new SSLProtocolException
                             ("Server certificate does not include an EC key");
                 }
-                //JF 使用服务端加密证书公钥
+                //JF 使用服务端加密证书公钥加密预主密钥
                 X509Certificate enCert =  session.getCertificateChain()[1];
                 PublicKey enPublicKey = enCert.getPublicKey();
                 m2 = new ECCClientKeyExchange(protocolVersion, maxProtocolVersion,

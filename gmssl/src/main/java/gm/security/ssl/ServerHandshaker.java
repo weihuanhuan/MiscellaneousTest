@@ -286,7 +286,7 @@ final class ServerHandshaker extends Handshaker {
                         preMasterSecret = this.clientKeyExchange(ecdhcke);
                         break;
                     case K_ECC:
-                        //JF 这里要使用加密证书的私钥
+                        //JF 使用服务端加密证书的私钥解密预主密钥
                         X509Certificate enCertificate = certs[1];
                         PrivateKey enPrivateKey = privateKey;
                         ECCClientKeyExchange eccClientKeyExchange = new ECCClientKeyExchange(
@@ -992,7 +992,7 @@ final class ServerHandshaker extends Handshaker {
             break;
         case K_ECC:
             try {
-                //处理服务端加密证书
+                //JF  使用签名证书私钥签名服务端加密证书
                 X509Certificate enCertificate = certs[1];
                 PrivateKey   signPrivateKey = privateKey;
                 m3 = new ECC_ServerKeyExchange(

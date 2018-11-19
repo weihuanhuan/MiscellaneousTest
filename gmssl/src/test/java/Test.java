@@ -5,7 +5,10 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
+import java.util.Arrays;
+import java.util.Enumeration;
 
 /**
  * Created by JasonFitch on 10/24/2018.
@@ -21,13 +24,25 @@ public class Test {
         ProviderUtil.insertProvicer();
         String modeControl = "(?i)";
         String providerName = ".*.*";
-        String type = ".*MAC.*";
+        String type = ".*sign.*";
         String algorithm = ".*sm.*";
         ProviderUtil.queryProvicer(modeControl, providerName, type, algorithm);
 
 
-        KeyStore ks = KeyStore.getInstance("BKS","BC");
-        ks.load(new FileInputStream(SERVER_KEY_STORE), null);
+        KeyStore ks = KeyStore.getInstance("PKCS12", "BC");
+        ks.load(new FileInputStream(Contants.SERVER_KEY_STORE), Contants.SERVER_KEY_STORE_PASSWORD.toCharArray());
+        Enumeration<String> aliases = ks.aliases();
+        if (aliases.hasMoreElements()) {
+            String        alias       = aliases.nextElement();
+            System.out.println("###alias:"+alias);
+
+            int index = 0;
+            Certificate[] certChain = ks.getCertificateChain(alias);
+            for (Certificate cert : certChain) {
+                System.out.println("" + ++index + "########################################certType:" + cert.getType());
+                System.out.println(cert);
+            }
+        }
 
     }
 }
