@@ -111,6 +111,11 @@ final class ECCClientKeyExchange extends HandshakeMessage {
             sm2Engine.init(true, parametersWithRandom);
             byte[] preMasterEncoded = preMaster.getEncoded();
             encrypted = sm2Engine.processBlock(preMasterEncoded, 0, preMasterEncoded.length);
+
+//JF 详见 DER编码C1C2C3密文（根据《SM2密码算法使用规范》 GM/T 0009-2012）
+//libing    org.bouncycastle.tls.TlsUtils#derEncodeSm2CipherText(byte[], org.bouncycastle.crypto.params.ECPublicKeyParameters)
+//gmhelpher org.zz.gmhelper.Sm2Util#derEncodeSm2CipherText(byte[])
+
         } catch (GeneralSecurityException e) {
             throw (SSLKeyException) new SSLKeyException
                     ("ECC premaster secret error").initCause(e);
