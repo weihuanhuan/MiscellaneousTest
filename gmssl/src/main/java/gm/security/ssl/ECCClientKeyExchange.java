@@ -27,6 +27,7 @@
 package gm.security.ssl;
 
 import gm.security.util.KeyUtil;
+import gmhelper.Sm2Util;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.security.GeneralSecurityException;
@@ -179,13 +180,16 @@ final class ECCClientKeyExchange extends HandshakeMessage {
 
         byte[] decrypted = null;
         try {
+
+            byte[] decodeDer = Sm2Util.parseSm2CipherTextDer(encrypted);
+
             ECPrivateKeyParameters priKeyParams         = (ECPrivateKeyParameters) ECUtil.generatePrivateKeyParameter(enPrivateKey);
             SM2Engine              sm2Engine            = new SM2Engine();
             sm2Engine.init(false, priKeyParams);
 
             boolean failed = false;
             try {
-                decrypted = sm2Engine.processBlock(encrypted, 0, encrypted.length);
+                decrypted = sm2Engine.processBlock(decodeDer, 0, decodeDer.length);
             } catch (InvalidCipherTextException e) {
                 // Note: decrypted == null
                 failed = true;
