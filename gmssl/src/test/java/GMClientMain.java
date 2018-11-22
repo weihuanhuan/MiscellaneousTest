@@ -1,6 +1,7 @@
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -16,32 +17,61 @@ import javax.net.ssl.TrustManagerFactory;
  */
 public class GMClientMain {
 
-    public static void main(String[] args) throws Exception {
+    public static void initProvider(){
         ProviderUtil.deleteProvider();
         ProviderUtil.insertProvicer();
+    }
 
-        System.setProperty("javax.net.debug", "ssl,handshake");
-
+    public static Socket initClient() throws Exception {
         SSLContext sslContext = contextWithoutCert();
 //        SSLContext sslContext = contextWithCert();
 
         SocketFactory factory = sslContext.getSocketFactory();
         String hostname="localhost";
         int port = 8443;
-        hostname = "ebssec.boc.cn";
-        port = 443;
+//        hostname = "ebssec.boc.cn";
+//        port = 443;
         System.out.println("##########connecting to server on "+port+" ...##########");
-        Socket s = factory.createSocket(hostname, port);
+        Socket clientSocket = factory.createSocket(hostname, port);
 
-        PrintWriter    writer = new PrintWriter(s.getOutputStream());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        writer.println("########################gmssl success hello#######################");
-        writer.flush();
-        System.out.println(reader.readLine());
+        return clientSocket;
+    }
 
-        reader.close();
-        writer.close();
-        s.close();
+    public static void main(String[] args) throws Exception {
+        initProvider();
+        System.setProperty("javax.net.debug", "ssl,handshake");
+
+        PrintWriter    writer       = null;
+        BufferedReader reader       = null;
+        Socket         clientSocket = null;
+        try {
+            clientSocket = initClient();
+
+            writer = new PrintWriter(clientSocket.getOutputStream());
+            reader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+            //JF writer.println("GET /boc15/login.html HTTP/1.1\r\n");
+            //JF 这里工行提示404，原因是println会在输出数据后自动的添加换行，而我数据本身已经提供了http报文所需的换行，导致报文格式错误
+            //JF 最好发送char数组防止对端接收时解码错误。
+            writer.print("GET /boc15/login.html HTTP/1.1\r\n".toCharArray());
+            writer.print("Host:ebssec.boc.cn\r\n".toCharArray());
+            writer.print("Accept-Protocal:SM-SSL\r\n".toCharArray());
+            writer.print("User-Agent:Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.3; WOW64; Trident/7.0; .NET4.0E; .NET4.0C; InfoPath.3; .NET CLR 3.5.30729; .NET CLR 2.0.50727; .NET CLR 3.0.30729)\r\n".toCharArray());
+            writer.print("\r\n".toCharArray());//空行，通知服务器请求头部分到此结束
+            writer.flush();
+
+            String line;
+            //JF while时会一直等待服务器数据导致阻塞进程
+            if (null != (line = reader.readLine())) {
+                System.out.println(line);
+            }
+        } finally {
+            System.out.println("close resource");
+            reader.close();
+            writer.close();
+            clientSocket.close();
+        }
+
     }
 
     private static SSLContext contextWithoutCert() throws Exception {
