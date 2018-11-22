@@ -102,7 +102,6 @@ public class GMServerMain implements Runnable{
     }
 
     public static void startServer() throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, NoSuchProviderException, IOException {
-
         PrintWriter    writer       = null;
         BufferedReader reader       = null;
         Socket         clientSocket = null;
@@ -125,10 +124,18 @@ public class GMServerMain implements Runnable{
 
         } finally {
             System.out.println("close resource");
-            writer.close();
-            reader.close();
-            clientSocket.close();
-            serverSocket.close();
+            if (null != reader) {
+                reader.close();
+            }
+            if (null != writer) {
+                writer.close();
+            }
+            if (null != clientSocket) {
+                clientSocket.close();
+            }
+            if (null != serverSocket) {
+                serverSocket.close();
+            }
         }
     }
 

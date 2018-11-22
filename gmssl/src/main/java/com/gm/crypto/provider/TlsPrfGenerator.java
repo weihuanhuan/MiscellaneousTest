@@ -187,7 +187,7 @@ abstract class TlsPrfGenerator extends KeyGeneratorSpi {
             secret = B0;
         }
 
-        //JF mdPRFBlockSize是的超过其大小的密钥长度变为hash算法的
+        //JF mdPRFBlockSize使得超过其大小的密钥长度经过hash算法的后变为hash的长度
         // If we have a long secret, digest it first.
         if (secret.length > mdPRFBlockSize) {
             secret = mdPRF.digest(secret);

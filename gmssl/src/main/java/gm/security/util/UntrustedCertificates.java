@@ -104,12 +104,13 @@ public final class UntrustedCertificates {
         } else {
             try {
                 key = new X509CertImpl(cert.getEncoded()).getFingerprint(algorithm);
-            } catch (CertificateException ce ) {
+            } catch (CertificateException cee ) {
                 return false;
-            }catch(Throwable t) {
+            }catch (Throwable t) {
                 //JF 证书验证时差异化造成类型不匹配，导致验证服务器证书失败，这里暂时忽略
                 // java.lang.InternalError: Could not obtain X500Principal access
                 // java.lang.NoSuchMethodException: javax.security.auth.x500.X500Principal.<init>(gm.security.x509.X500Name)
+                t.printStackTrace();
                 return false;
             }
         }

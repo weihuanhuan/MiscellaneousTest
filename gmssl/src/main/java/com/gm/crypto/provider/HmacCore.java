@@ -263,7 +263,7 @@ abstract class HmacCore extends MacSpi implements Cloneable {
         }
     }
 
-    //JF  nested static class for the HmacSM3 implementation
+    //JF  GMSSL nested static class for the HmacSM3 implementation
     public static final class HmacSM3 extends HmacCore {
         public HmacSM3() throws NoSuchAlgorithmException {
             super("SM3", 64);
