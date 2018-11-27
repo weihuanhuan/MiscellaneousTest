@@ -23,9 +23,9 @@ public class Test {
         ProviderUtil.deleteProvider();
         ProviderUtil.insertProvicer();
         String modeControl = "(?i)";
-        String providerName = ".*.*";
-        String type = ".*sign.*";
-        String algorithm = ".*sm.*";
+        String providerName = ".*bc.*";
+        String type = ".*keystore.*";
+        String algorithm = ".*.*";
         ProviderUtil.queryProvicer(modeControl, providerName, type, algorithm);
 
 
@@ -39,8 +39,8 @@ public class Test {
             int index = 0;
             Certificate[] certChain = ks.getCertificateChain(alias);
             for (Certificate cert : certChain) {
-                System.out.println("" + ++index + "########################################certType:" + cert.getType());
-                System.out.println(cert);
+//                System.out.println("" + ++index + "########################################certType:" + cert.getType());
+//                System.out.println(cert);
             }
         }
 

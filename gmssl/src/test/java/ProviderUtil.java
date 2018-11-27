@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jsse.provider.BouncyCastleJsseProvider;
 
 /**
  * Created by JasonFitch on 10/24/2018.
@@ -24,8 +25,8 @@ public class ProviderUtil {
 //        java.security.Provider sunJCE = new SunJCE();
 //        Security.insertProviderAt(sunJCE, 3);
 
-//        java.security.Provider bouncyCastleJsseProvider = new BouncyCastleJsseProvider();
-//        java.security.Security.insertProviderAt(bouncyCastleJsseProvider, 4);
+        java.security.Provider bouncyCastleJsseProvider = new BouncyCastleJsseProvider();
+        java.security.Security.insertProviderAt(bouncyCastleJsseProvider, 4);
 
 
 
