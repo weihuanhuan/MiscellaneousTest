@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error" name="Log4j2Test" packages="">
+    <Appenders>
+
+        <Console name="Console1" target="SYSTEM_OUT"></Console>
+        <Console name="Console2" target="SYSTEM_OUT"></Console>
+        <Console name="Console3" target="SYSTEM_OUT"></Console>
+        <Console name="Console4" target="SYSTEM_OUT"></Console>
+
+        <Async name="Async1">
+            <AppenderRef ref="Console1"/>
+        </Async>
+
+        <Async name="Async2">
+            <AppenderRef ref="Console4"/>
+        </Async>
+
+    </Appenders>
+    <Loggers>
+
+        <Root level="error">
+            <AppenderRef ref="Console2"/>
+        </Root>
+
+        <AsyncLogger name="NotRootLogger1" level="error"  additivity="false">
+            <AppenderRef ref="Async1"/>
+            <!--<AppenderRef ref="Console3"/>-->
+            <!--这里的Console3添加后AsyncAppender虽然启动了，但不处理日志业务，变成了非异步Appender去处理，为什么呢？-->
+        </AsyncLogger>
+
+        <AsyncLogger name="NotRootLogger2" level="error"  additivity="false">
+            <AppenderRef ref="Console3"/>
+        </AsyncLogger>
+
+        <AsyncLogger name="NotRootLogger3" level="error"  additivity="false">
+            <AppenderRef ref="Async2"/>
+        </AsyncLogger>
+
+    </Loggers>
+</Configuration>
