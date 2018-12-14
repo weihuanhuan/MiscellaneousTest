@@ -27,10 +27,11 @@ public class Log4j2Test {
         Logger notRootLogger3 = LogManager.getLogger("NotRootLogger3");
         notRootLogger3.error("Hello notRootLogger3, level error!");
 
-        //3个AsyncLogger+1个RootLogger，只有2个AsyncLogger线程，那么他们之间关系如何？
+        Logger notAsyncNotRootLogger1 = LogManager.getLogger("NotAsyncNotRootLogger1");
+        notAsyncNotRootLogger1.error("Hello notAsyncNotRootLogger1, level error!");
 
         // 默认配置下异步会丢失某些日志，延时让程序写完日志事件
-//        TimeUnit.MILLISECONDS.sleep(6000 * 3600);
+        TimeUnit.MILLISECONDS.sleep(6000 * 3600);
 
     }
 }
