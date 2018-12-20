@@ -63,7 +63,7 @@
 
             随后AsyncLoggerContext.start()方法被调用，启动序列如下： loggerDisruptor.start();   super.start();
             首先调用AsyncLoggerDisruptor.start()方法
-            在AsyncLoggerConfigDisruptor.start()方法中创建Log4jThreadFactory，并创建com.lmax.disruptor.dsl.Disruptor实例用上述线程工厂初始化
+            在其start()方法中创建Log4jThreadFactory，并创建com.lmax.disruptor.dsl.Disruptor实例用上述线程工厂初始化
             由com.lmax.disruptor.dsl.BasicExecutor.execute()方法中使用上述线程工厂并创建一个线程，Log4j2-TF-index-AsyncLogger[AsyncContext@xxxxxxx]-index
 
             然后调用LoggerContext.start()方法，其中调用LoggerContext.reconfigure()完成日志系统的再配置行为，
