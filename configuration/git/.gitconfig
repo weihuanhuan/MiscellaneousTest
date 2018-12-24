@@ -1,0 +1,24 @@
+# This is Git's per-user configuration file.
+[user]
+# Please adapt and uncomment the following lines:
+#	name = 
+#	email = JasonFitch@WeiHuanHuan.(none)
+	name = weihuanhuan1107
+	email = weihuanhuan1107@126.com
+[color]
+	ui = true
+[merge]
+#	tool = vimdiff
+	tool = kdiff3
+[mergetool]
+	trustExitCode = false
+[diff]
+	tool = vimdiff
+	guitool = kdiff3
+[difftool]
+	prompt = false
+	trustExitCode = false
+[mergetool "kdiff3"]
+	path = C:/Program Files/KDiff3/kdiff3.exe
+[difftool "kdiff3"]
+	path = C:/Program Files/KDiff3/kdiff3.exe

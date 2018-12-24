@@ -32,3 +32,5 @@ dbembedded/
 **/*~
 **/*.swp
 **/*.orig
+!configuration/
+!configuration/**/*.jar
