@@ -1,0 +1,22 @@
+REGEDIT4
+
+; System variables
+[HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment]
+
+"ANT_HOME"="C:\\apache-ant-1.10.5"
+
+"GOPATH"="F:\\Go"
+"GOROOT"="C:\\Go\\"
+
+"GRADLE_HOME"="C:\\gradle-4.10.2"
+"GRADLE_USER_HOME"="E:\\Temporary\\gradle"
+
+"JAVA_HOME"="C:\\Program Files\\Java\\jdk1.8.0_192"
+
+"JMETER_HOME"="C:\\apache-jmeter-5.0"
+
+"M2_HOME"="C:\\apache-maven-3.5.4"
+
+"SSLKEYLOGFILE"="C:\\Users\\JasonFitch\\Desktop\\sslpremaster"
+
+Path=%JMETER_HOME%\bin;%GRADLE_HOME%\bin;%ANT_HOME%\bin;%M2_HOME%\bin;%JAVA_HOME%\bin;C:\Go\bin
