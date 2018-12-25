@@ -1,4 +1,4 @@
-package log.log4j2;
+package log.log4j2.SimpleInvoke;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
@@ -14,7 +14,7 @@ import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 /**
  * Created by JasonFitch on 12/24/2018.
  */
-public class DirectAsyncLogger {
+public class DirectAsyncLoggerWithContext {
 
 
     public static void main(String[] args) throws NoSuchFieldException, IllegalAccessException, InterruptedException {
