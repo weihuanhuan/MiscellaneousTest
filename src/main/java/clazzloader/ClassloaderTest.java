@@ -1,4 +1,4 @@
-package ClassloaderTest;
+package clazzloader;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -6,8 +6,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 
 import static java.security.AccessController.doPrivileged;
 

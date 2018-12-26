@@ -1,0 +1,2 @@
+Name,Case,Whole Word,Path,Diacritic,Regex,Sort,Descending,Filter,Search,Index,File List,Host,Link Type,Macro,Key,View
+"lastUpdated",0,0,0,0,1,"Name",0,"EVERYTHING","^(?!\$).*\.lastUpdated$",0,"","",1,,,0

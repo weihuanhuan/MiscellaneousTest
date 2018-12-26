@@ -10,10 +10,10 @@
         <Console name="Console" target="SYSTEM_OUT"/>
 
         <RollingFile name="RollingFile" fileName="${logDir}/log4j2.log"
-                     filePattern="${logDir}/log4j2-%d{yyyy-MM-dd}-%i.log">
+                     filePattern="${logDir}/log4j2-%d{yyyy-MM-dd HH-mm}-%i.log">
             <Policies>
                 <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
-                <SizeBasedTriggeringPolicy size="100 M"/>
+                <SizeBasedTriggeringPolicy size="10KB"/>
             </Policies>
             <DefaultRolloverStrategy max="20"/>
         </RollingFile>
@@ -24,11 +24,9 @@
 
         <Root level="info">
             <AppenderRef ref="Console"/>
-            <AppenderRef ref="RollingFile"/>
         </Root>
 
         <Logger name="NotAsyncNotRootLogger1" level="error" additivity="false">
-            <AppenderRef ref="Console"/>
             <AppenderRef ref="RollingFile"/>
         </Logger>
 
