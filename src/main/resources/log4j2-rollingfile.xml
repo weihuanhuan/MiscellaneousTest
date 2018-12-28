@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" name="Log4j2Test" packages="" monitorInterval="30">
+
+    <Properties>
+        <Property name="logDir">logs</Property>
+    </Properties>
+
+    <Appenders>
+
+        <Console name="Console" target="SYSTEM_OUT"/>
+
+        <RollingFile name="RollingFile" fileName="${logDir}/log4j2.log"
+                     filePattern="${logDir}/log4j2-%d{yyyy-MM-dd HH-mm}-%i.log">
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
+                <SizeBasedTriggeringPolicy size="10KB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="20"/>
+        </RollingFile>
+
+    </Appenders>
+
+    <Loggers>
+
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+
+        <Logger name="NotAsyncNotRootLogger1" level="error" additivity="false">
+            <AppenderRef ref="RollingFile"/>
+        </Logger>
+
+    </Loggers>
+</Configuration>
