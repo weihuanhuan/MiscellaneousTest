@@ -34,3 +34,5 @@ dbembedded/
 **/*.orig
 !configuration/
 !configuration/**/*.jar
+!ext/
+!ext/**/*.jar

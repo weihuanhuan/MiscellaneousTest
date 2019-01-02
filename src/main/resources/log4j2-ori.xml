@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="error" name="Log4j2Test" packages="">
+    <Appenders>
+
+        <Console name="Console1" target="SYSTEM_OUT"></Console>
+        <Console name="Console2" target="SYSTEM_OUT"></Console>
+        <Console name="Console3" target="SYSTEM_OUT"></Console>
+        <Console name="Console4" target="SYSTEM_OUT"></Console>
+        <Console name="Console5" target="SYSTEM_OUT"></Console>
+
+        <!--<Async name="Async1">-->
+            <!--<AppenderRef ref="Console1"/>-->
+        <!--</Async>-->
+
+        <!--<Async name="Async2">-->
+            <!--<AppenderRef ref="Console4"/>-->
+        <!--</Async>-->
+
+        <!--//JF Appenders中一个Async标签会对应一条AsyncAppender-name线程，为什么呢？ -->
+        <!--//JF
+            在org.apache.logging.log4j.core.config.AbstractConfiguration.start()中会启动所有配置的Appender，
+            如果是AsyncAppender则会启动一个对应的线程来处理其任务，
+            同时，即使没有Logger引用这个Appender也会执行相应的Appender.start()方法,而AsyncAppender在这里创建线程并启动线程。
+        -->
+
+    </Appenders>
+
+    <Loggers>
+
+        <Root level="error">
+            <AppenderRef ref="Console2"/>
+        </Root>
+
+        <!--<AsyncLogger name="NotRootLogger1" level="error"  additivity="false">-->
+        <!--<AppenderRef ref="Async1"/>-->
+        <!--&lt;!&ndash;<AppenderRef ref="Console3"/>&ndash;&gt;-->
+        <!--&lt;!&ndash;//JF 这里的Console3添加后AsyncAppender虽然启动了，但不处理日志业务，变成了非异步Appender去处理，为什么呢？&ndash;&gt;-->
+        <!--</AsyncLogger>-->
+
+        <!--<AsyncLogger name="NotRootLogger2" level="error" additivity="false">-->
+        <!--<AppenderRef ref="Console3"/>-->
+        <!--</AsyncLogger>-->
+
+        <!--<AsyncLogger name="NotRootLogger3" level="error" additivity="false">-->
+        <!--<AppenderRef ref="Async2"/>-->
+        <!--</AsyncLogger>-->
+
+        <Logger name="NotAsyncNotRootLogger1" level="error" additivity="false">
+            <AppenderRef ref="Console5"/>
+        </Logger>
+
+        <!--//JF 3个AsyncLogger+1个RootLogger，只有2个AsyncLogger线程，那么他们之间关系如何？-->
+        <!--//JF
+
+            #####对于AsyncLoggerContext的线程#####
+            当配置了系统属性时：
+            System.setProperty("Log4jContextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector")
+            日志系统会Log4jContextFactory.getContext()方法会根据其成员变量的org.apache.logging.log4j.core.impl.Log4jContextFactory.selector
+            即，ContextSelector.getContext()的方法来获取相应的Context，这里是 AsyncLoggerContext。
+
+            AsyncLoggerContext有一个成员变量org.apache.logging.log4j.core.async.AsyncLoggerContext.loggerDisruptor，
+            这个变量会在AsyncLoggerContext对象的构造方法中通过 new 来实例化其自身，loggerDisruptor = new AsyncLoggerDisruptor(name);
+
+            随后AsyncLoggerContext.start()方法被调用，启动序列如下： loggerDisruptor.start();   super.start();
+            首先调用AsyncLoggerDisruptor.start()方法
+            在其start()方法中创建Log4jThreadFactory，并创建com.lmax.disruptor.dsl.Disruptor实例用上述线程工厂初始化
+            由com.lmax.disruptor.dsl.BasicExecutor.execute()方法中使用上述线程工厂并创建一个线程，Log4j2-TF-index-AsyncLogger[AsyncContext@xxxxxxx]-index
+
+            然后调用LoggerContext.start()方法，其中调用LoggerContext.reconfigure()完成日志系统的再配置行为，
+            这里的再配置过程调用了AbstractConfiguration.start()方法，会依据条件判断是否执行AsyncLoggerConfig的初始化工作，其过程如下所述。
+
+            #####对于AsyncLoggerConfig的线程#####
+            不论是LoggerContext还是AsyncLoggerContext在Context.start()的过程中，都会调用LoggerContext.reconfigure()方法进行再配置，
+            因为AsyncLoggerContext继承LoggerContext，其start()方法会调用super.start()，而LoggerContext.reconfigure()在LoggerContext.start()中
+            同时在再配置时的AbstractConfiguration.start()方法中，
+            当org.apache.logging.log4j.core.config.AbstractConfiguration.hasAsyncLoggers()判断存在AsyncLoggerConfig时
+            AsyncLoggerConfig会从AbstractConfiguration.getAsyncLoggerConfigDelegate()得到AsyncLoggerConfigDisruptor的一个实例，
+            方法片段如下：
+                   if (asyncLoggerConfigDisruptor == null) {
+                       asyncLoggerConfigDisruptor = new AsyncLoggerConfigDisruptor();
+                   }
+                   return asyncLoggerConfigDisruptor;
+            因此如果同时多个AsyncLoggerConfig在请求AsyncLoggerConfigDisruptor时，AbstractConfiguration只会在第一次时创建新的，以后都返回相同的实例。
+
+            然后AbstractConfiguration.start()方法中启动AsyncLoggerConfigDisruptor，
+            在AsyncLoggerConfigDisruptor.start()方法中创建Log4jThreadFactory，并创建com.lmax.disruptor.dsl.Disruptor实例用上述线程工厂初始化
+            由com.lmax.disruptor.dsl.BasicExecutor.execute()方法中使用上述线程工厂并创建一个线程，Log4j2-TF-index-AsyncLoggerConfig-index
+
+            #####com.lmax.disruptor.dsl.Disruptor实例的数量和使用场景#####
+            上述分析已知创建他的对象和情况是，通过如下俩个Helper类来实例化Disruptor：
+            1.AsyncLoggerContext对象的构造方法中通过 new 来实例化，loggerDisruptor = new AsyncLoggerDisruptor(name);
+            2.AsyncLoggerConfig会从AbstractConfiguration.getAsyncLoggerConfigDelegate()得到AsyncLoggerConfigDisruptor的一个实例，
+            其中
+            完全异步模式：
+            AsyncLoggerDisruptor由AsyncLoggerContext持有，他们具有相同的生命周期，提供给所有的AsyncLogger对象共享使用，实现异步日志处理
+            混合异步模式：
+            AsyncLoggerConfigDisruptor由AbstractConfiguration持有，提供给所有的AsyncLoggerConfig使用，
+            使得非异步Logger在和AsyncLoggerConfig关联时，可以借助其代理的功能，实现异步日志处理的能力。
+
+            #####LoggerContext和AsyncLoggerContext的创建依据#####
+            首先日志系统创建org.apache.logging.log4j.core.impl.Log4jContextFactory.Log4jContextFactory对象的实例，
+            然后其构造方法中会会创建如下组件。
+            public Log4jContextFactory() {
+                this(createContextSelector(), createShutdownCallbackRegistry());
+            }
+            Log4jContextFactory.createContextSelector()方法中会依据系统属性来判断当前的ContextSelector
+            如果有Log4jContextSelector系统属性指定的实现类的实例，比如org.apache.logging.log4j.core.async.AsyncLoggerContextSelector
+            否则返回org.apache.logging.log4j.core.selector.ClassLoaderContextSelector的实例
+            然后在用上述取得的对应实例来初始化其自身的对应成员变量，org.apache.logging.log4j.core.impl.Log4jContextFactory.selector
+
+            随后Log4jContextFactory.getContext()方法中，其成员selector，调用ContextSelector.getContext()方法取得上下文
+            final LoggerContext ctx = selector.getContext(fqcn, loader, currentContext, configLocation);
+            中间是通过ClassLoaderContextSelector.createContext()方法来创建org.apache.logging.log4j.core.LoggerContext的实例
+
+            而AsyncLoggerContextSelector继承自ClassLoaderContextSelector，并覆写了其createContext()方法，
+            所以通过调用AsyncLoggerContextSelector.createContext()方法来创建org.apache.logging.log4j.core.async.AsyncLoggerContext的实例
+
+
+            #####Logger和LoggerConfig的关系，以及Logger和AsyncLogger的创建依据#####
+            Logger由org.apache.logging.log4j.spi.LoggerContext实现类中的newInstance()方法来返回一个Logger的新实例。
+            LoggerContext的实现类有：
+            org.apache.logging.log4j.core.LoggerContext
+            org.apache.logging.log4j.core.async.AsyncLoggerContext
+            org.apache.logging.log4j.simple.SimpleLoggerContext
+            其产生是通过ContextSelector.getContext(java.lang.String, java.lang.ClassLoader, boolean, java.net.URI)来获取的
+            只有Context获取了具体的实现之后才有Configuration和LoggerConfig的创建。
+
+            默认情况下LoggerContext是LoggerContext类型的，则其调用LoggerContext.newInstance()方法,返回的都是一个Logger新实例
+            return new Logger(ctx, name, messageFactory)，
+
+            而如果是异步的AsyncLoggerContext，取决与系统属性Log4jContextSelector,则Context是AsyncLoggerContext的
+            其调用AsyncLoggerContext.newInstance()来返回一个AsyncLogger的新实例,AsyncLoggerContext重写了父类LoggerContext的newInstance()方法
+            return new AsyncLogger(ctx, name, messageFactory, loggerDisruptor);
+
+            在Logger中有成员变量org.apache.logging.log4j.core.Logger.PrivateConfig，当new Logger实例时会在其构造函数中同时new PrivateConfig
+            并通过如下操作把Configuration传递给PrivateConfig，privateConfig = new PrivateConfig(context.getConfiguration(), this)
+            同时，PrivateConfig中有成员变量LoggerConfig，通过Configuration.getLoggerConfig()方法将LoggerConfig赋值给该成员，
+            其中该过程会在AbstractConfiguration的成员变量loggerConfigs，是一个map，中的所有LoggerConfig中查找匹配符合条件的LoggerConfig
+            条件是：
+            Locates the appropriate LoggerConfig for a Logger name. This will remove tokens from the package name as
+            necessary or return the root LoggerConfig if no other matches were found.
+
+            #####LoggerConfig和Configuration的关系，以及LoggerConfig和AsyncLoggerConfig的创建依据#####
+            LoggerContext在重新配置好Configuration后，在setConfiguration()方法中，便调用AbstractConfiguration.start()启动新配置
+            其第一步就是AbstractConfiguration.initialize()方法，其中调用AbstractConfiguration.doConfigure()方法对配置中的各个孩子结点递归的调用
+            AbstractConfiguration.createConfiguration()方法进行逐层创建，
+            在最后一层中调用AbstractConfiguration.createPluginObject()方法来依据org.apache.logging.log4j.core.config.plugins.util.PluginType
+            指定的type来创建对应结点类型的实例，同时将Configuration传递给被创建的对象，以及ConfigurationNode信息等。
+
+            按照如下方法返回实例，这里的类型是：class org.apache.logging.log4j.core.config.LoggerConfig
+            return new PluginBuilder(type).withConfiguration(this).withConfigurationNode(node).forLogEvent(event).build();
+            最终通过反射调用LoggerConfig.createLogger(boolean,Level, String, String, AppenderRef[], Property[], Configuration, Filter)方法，
+            返回 new 出的新实例：
+            return new LoggerConfig(name, Arrays.asList(refs), filter, level, additivity, properties, config,
+                includeLocation(includeLocation, config));
+
+            如果是异步的，这里的类型是：class org.apache.logging.log4j.core.async.AsyncLoggerConfig
+            return new AsyncLoggerConfig(name, Arrays.asList(refs), filter, level, additivity, properties, config,
+                includeLocation(includeLocation));
+
+            #####完全异步和混合异步的关系####
+            有上述分析可知，
+            Logger和AsyncLogger的创建是由LoggerContext的类型控制的，这里的LoggerContext指运行时的LoggerContext具体实现类，
+            而LoggerContext实在日志系统启动时确定的，所以：
+            如果是AsyncLoggerContext，则所有的Logger都会实例化为AsyncLogger,即完全的异步化。
+
+    异步上下文时，异步日志配置的调用栈：
+    "main@1" prio=5 tid=0x1 nid=NA runnable
+    java.lang.Thread.State: RUNNABLE
+          at sun.misc.Unsafe.putOrderedInt(Unsafe.java:-1)
+          at com.lmax.disruptor.MultiProducerSequencer.setAvailableBufferValue(MultiProducerSequencer.java:261)
+          at com.lmax.disruptor.MultiProducerSequencer.setAvailable(MultiProducerSequencer.java:255)
+          at com.lmax.disruptor.MultiProducerSequencer.publish(MultiProducerSequencer.java:217)
+          at com.lmax.disruptor.RingBuffer.translateAndPublish(RingBuffer.java:966)
+          at com.lmax.disruptor.RingBuffer.tryPublishEvent(RingBuffer.java:478)
+          at org.apache.logging.log4j.core.async.AsyncLoggerDisruptor.tryPublish(AsyncLoggerDisruptor.java:207)
+            异步日志器自身实现异步日志
+          at org.apache.logging.log4j.core.async.AsyncLogger.publish(AsyncLogger.java:165)
+          at org.apache.logging.log4j.core.async.AsyncLogger.logWithThreadLocalTranslator(AsyncLogger.java:161)
+          at org.apache.logging.log4j.core.async.AsyncLogger.logMessage(AsyncLogger.java:131)
+            日志记录器通用接口
+          at org.apache.logging.log4j.spi.AbstractLogger.tryLogMessage(AbstractLogger.java:2170)
+          at org.apache.logging.log4j.spi.AbstractLogger.logMessageTrackRecursion(AbstractLogger.java:2125)
+          at org.apache.logging.log4j.spi.AbstractLogger.logMessageSafely(AbstractLogger.java:2108)
+          at org.apache.logging.log4j.spi.AbstractLogger.logMessage(AbstractLogger.java:2002)
+          at org.apache.logging.log4j.spi.AbstractLogger.logIfEnabled(AbstractLogger.java:1974)
+          at org.apache.logging.log4j.spi.AbstractLogger.error(AbstractLogger.java:731)
+          at log.log4j2.Log4j2Test.main(Log4j2Test.java:22)
+
+            LoggerConfig和AsyncLoggerConfig的创建是由Configuration中结点指定的类型控制的，
+            所以即使是LoggerContext时，Logger则都实例化为Logger，
+            但是该Logger会在实例化的时候通过名字匹配到对应的LoggerConfig相关联起来，如果没有则为root LoggerConfig，
+            然后依据配置中配置的Logger结点的类型是否是异步的，来确定该Logger是否是异步工作的，
+            这里的配置实质上是指定了LoggerConfig的类型是否为AsyncLoggerConfig，
+            而关键点在于，是由LoggerConfig来确定日志异步记录的方式，而不是Logger自身,这种模式下的异步便是混合异步的。
+
+
+    非异步上下文时，异步日志配置的调用栈：
+    "main@1" prio=5 tid=0x1 nid=NA runnable
+    java.lang.Thread.State: RUNNABLE
+          at sun.misc.Unsafe.putOrderedInt(Unsafe.java:-1)
+          at com.lmax.disruptor.MultiProducerSequencer.setAvailableBufferValue(MultiProducerSequencer.java:261)
+          at com.lmax.disruptor.MultiProducerSequencer.setAvailable(MultiProducerSequencer.java:255)
+          at com.lmax.disruptor.MultiProducerSequencer.publish(MultiProducerSequencer.java:217)
+          at com.lmax.disruptor.RingBuffer.translateAndPublish(RingBuffer.java:990)
+          at com.lmax.disruptor.RingBuffer.tryPublishEvent(RingBuffer.java:538)
+            主要的代理工作由AsyncLoggerConfigDisruptor来完成
+          at org.apache.logging.log4j.core.async.AsyncLoggerConfigDisruptor.tryEnqueue(AsyncLoggerConfigDisruptor.java:378)
+            同步日志器借助AsyncLoggerConfig实现异步日志
+          at org.apache.logging.log4j.core.async.AsyncLoggerConfig.logToAsyncDelegate(AsyncLoggerConfig.java:128)
+          at org.apache.logging.log4j.core.async.AsyncLoggerConfig.log(AsyncLoggerConfig.java:109)
+          at org.apache.logging.log4j.core.config.LoggerConfig.log(LoggerConfig.java:406)
+          at org.apache.logging.log4j.core.config.AwaitCompletionReliabilityStrategy.log(AwaitCompletionReliabilityStrategy.java:63)
+          at org.apache.logging.log4j.core.Logger.logMessage(Logger.java:146)
+            日志记录器通用接口
+          at org.apache.logging.log4j.spi.AbstractLogger.tryLogMessage(AbstractLogger.java:2170)
+          at org.apache.logging.log4j.spi.AbstractLogger.logMessageTrackRecursion(AbstractLogger.java:2125)
+          at org.apache.logging.log4j.spi.AbstractLogger.logMessageSafely(AbstractLogger.java:2108)
+          at org.apache.logging.log4j.spi.AbstractLogger.logMessage(AbstractLogger.java:2002)
+          at org.apache.logging.log4j.spi.AbstractLogger.logIfEnabled(AbstractLogger.java:1974)
+          at org.apache.logging.log4j.spi.AbstractLogger.error(AbstractLogger.java:731)
+          at log.log4j2.Log4j2Test.main(Log4j2Test.java:22)
+
+            这里不论是哪一种策略都是将日志交给LoggerConfig具体实现的log()方法来处理日志的，
+             org.apache.logging.log4j.core.Logger.logMessage()方法如下,省略部分代码：
+                  final ReliabilityStrategy strategy = privateConfig.loggerConfig.getReliabilityStrategy();
+                  strategy.log(this, getName(), fqcn, marker, level, msg, t);
+            org.apache.logging.log4j.core.config.ReliabilityStrategy.log()方法如下,省略部分代码：
+                  final LoggerConfig config = getActiveLoggerConfig(reconfigured);
+                  config.log(loggerName, fqcn, marker, level, data, t);
+            org.apache.logging.log4j.core.config.LoggerConfig.log()方法如下,省略部分代码：
+                  final LogEvent logEvent = logEventFactory.createEvent(loggerName, marker, fqcn, level, data, props, t);
+                  log(logEvent, LoggerConfigPredicate.ALL);
+                  这里才会依据具体的LoggerConfig还是AsyncLoggerConfig来调用相应的log()方法，如果时异步的则异步处理。
+                  ReusableLogEventFactory.release(logEvent);
+        }
+
+            #####Configuration和LoggerContext的关系#####
+            LoggerContext含有成员变量LoggerContext.configuration，其实例化时会创建默认配置configuration = new DefaultConfiguration();
+            随后在LoggerContext.start()方法中调用LoggerContext.reconfigure()方法，对configuration变量进行重新配置，
+            重新配置时，首先通过配置工厂依据各种配置信息源实例化一个新的Configuration变量实例，如下所示：
+            final Configuration instance = ConfigurationFactory.getInstance().getConfiguration(this, contextName, configURI, cl);
+            然后，调用LoggerContext.setConfiguration()方法，使用新配置的实例替换调旧配置的实例，而不是重新设置旧实例的值。
+            在setConfiguration()方法中，存在如下调用序列， config.start();  this.configuration = config;
+            这会先启动新配置自身及其相关组件，才会替换掉旧配置，完成配置的更新操作.
+
+            #####组件之间的关系#####
+            生命关系：
+            Configuration是由LoggerContext持有并按照默认配置实例化,并在LoggerContext.reconfigure()方法中会通过各种配置信息来新实例化一份新配置。
+            LoggerConfig是依据Configuration文件中Loggers标签中的Logger类结点来创建。
+            Logger是一个命名实体，他依旧自己的名字与LoggerConfig的名字进行匹配来确定自己所对应的LoggerConfig，没有匹配的则使用root LoggerConfig
+
+            数量关系：
+              LoggerContext   1-1     Configuration,
+              Configuration   1-1..*  LoggerConfig
+              LoggerConfig    1-0..*  Logger，同时这些Logger也对应着相同的LoggerContext，该LoggerContext与Configuration对应
+            因此：
+            所有同一个LoggerContext下的Logger共用一个Configuration，
+            而Configuration，维护着AsyncLoggerConfigDisruptor,并把他提供给所有的LoggerConfig使用
+
+        -->
+
+    </Loggers>
+</Configuration>

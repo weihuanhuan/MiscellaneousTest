@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.async.AsyncLogger;
 import org.apache.logging.log4j.core.async.AsyncLoggerContext;
-import org.apache.logging.log4j.core.async.AsyncLoggerDisruptor;
+//import org.apache.logging.log4j.core.async.AsyncLoggerDisruptor;
 import org.apache.logging.log4j.message.MessageFactory2;
 import org.apache.logging.log4j.message.ParameterizedMessageFactory;
 
@@ -27,12 +27,12 @@ public class DirectAsyncLoggerWithContext {
 
         Field loggerDisruptorFiled = asyncLoggerContext.getClass().getDeclaredField("loggerDisruptor");
         loggerDisruptorFiled.setAccessible(true);
-        AsyncLoggerDisruptor asyncLoggerDisruptor = (AsyncLoggerDisruptor) loggerDisruptorFiled.get(asyncLoggerContext);
+//        AsyncLoggerDisruptor asyncLoggerDisruptor = (AsyncLoggerDisruptor) loggerDisruptorFiled.get(asyncLoggerContext);
 
-        Logger asyncLogger = new AsyncLogger(asyncLoggerContext, "BESAsyncLogger", parameterizedMessageFactory, asyncLoggerDisruptor);
+//        Logger asyncLogger = new AsyncLogger(asyncLoggerContext, "BESAsyncLogger", parameterizedMessageFactory, asyncLoggerDisruptor);
 
-        asyncLogger.error("hello");
-        asyncLogger.error("username:{} password:{}", "user", "passwd");
+//        asyncLogger.error("hello");
+//        asyncLogger.error("username:{} password:{}", "user", "passwd");
 
 
         TimeUnit.SECONDS.sleep(60*60);

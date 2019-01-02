@@ -8,6 +8,7 @@ public class Constant {
     public static String WORK_DIR = System.getProperty("user.dir");
     public static String MAVEN_REPOSITORY = "E:/Temporary/repository";
 
+    public static String HANDLE_FILE = WORK_DIR + "/target/classes/fileHandleTestFile.txt";
     public static String CONF_FILE = WORK_DIR + "/target/classes/log4j2.xml";
     public static String MAIN_CLASS_NAME = "log.log4j2.BESBug.RollingFileInvokedMainClass";
 

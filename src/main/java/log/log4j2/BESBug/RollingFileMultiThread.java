@@ -50,6 +50,34 @@ public class RollingFileMultiThread {
 //                Configurator.initialize(null, configurationSource);
                 //此句 会 导致log4j2第2次加载，不会产生新的句柄，为什么这里的加载不会创建新的句柄，相比于BESBugTestMultiClass测试的情况？
                 Configurator.initialize(urlClassLoader, configurationSource);
+                //这里 的classloader实际上指定了ClassLoaderContextSelector.locateContext(classloader,URL)，方法中参数的classloader，
+                // 最终如果确实新创建了一个context(不是通过查找父加载器对应的上下文)，那么这个新建的上下文在集合中有一个唯一该classloader的id和context对应着
+                // org.apache.logging.log4j.core.selector.ClassLoaderContextSelector.CONTEXT_MAP，
+
+                // configurationSource是指定了ConfigurationFactory.getConfiguration(LoggerContext, ConfigurationSource)的第二个参数
+                // 其是在context确定以后，用来确定配置按照什么来源生成的。
+                // 而URL，目前各种情况下都为null，具体作用未知。
+
+                //正常运行时没有这个问题，debug时出现如下异常为什么，出现时机main和sub线程同时停在ClassLoaderContextSelector.locateContext():112处时，F9恢复程序，
+//                2019-01-02 05:46:17,251 main ERROR Could not register mbeans javax.management.InstanceAlreadyExistsException: org.apache.logging.log4j2:type=18b4aac2
+//                at com.sun.jmx.mbeanserver.Repository.addMBean(Repository.java:437)
+//                at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.registerWithRepository(DefaultMBeanServerInterceptor.java:1898)
+//                at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.registerDynamicMBean(DefaultMBeanServerInterceptor.java:966)
+//                at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.registerObject(DefaultMBeanServerInterceptor.java:900)
+//                at com.sun.jmx.interceptor.DefaultMBeanServerInterceptor.registerMBean(DefaultMBeanServerInterceptor.java:324)
+//                at com.sun.jmx.mbeanserver.JmxMBeanServer.registerMBean(JmxMBeanServer.java:522)
+//                at org.apache.logging.log4j.core.jmx.Server.register(Server.java:393)
+//                at org.apache.logging.log4j.core.jmx.Server.reregisterMBeansAfterReconfigure(Server.java:168)
+//                at org.apache.logging.log4j.core.jmx.Server.reregisterMBeansAfterReconfigure(Server.java:141)
+//                at org.apache.logging.log4j.core.LoggerContext.setConfiguration(LoggerContext.java:558)
+//                at org.apache.logging.log4j.core.LoggerContext.reconfigure(LoggerContext.java:619)
+//                at org.apache.logging.log4j.core.LoggerContext.reconfigure(LoggerContext.java:636)
+//                at org.apache.logging.log4j.core.LoggerContext.start(LoggerContext.java:231)
+//                at org.apache.logging.log4j.core.impl.Log4jContextFactory.getContext(Log4jContextFactory.java:153)
+//                at org.apache.logging.log4j.core.impl.Log4jContextFactory.getContext(Log4jContextFactory.java:45)
+//                at org.apache.logging.log4j.LogManager.getContext(LogManager.java:194)
+//                at org.apache.logging.log4j.LogManager.getLogger(LogManager.java:581)
+//                at log.log4j2.BESBug.RollingFileMultiThread.main(RollingFileMultiThread.java:88)
 
 
             } catch (IOException e) {
