@@ -84,8 +84,20 @@ public class RollingFileMultiClass {
         ClassLoader extClassLoader = appClassLoader.getParent();
         ClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), extClassLoader);
 
-        //更换为自定义的url classloader，其类路径和app的不同
-        Thread.currentThread().setContextClassLoader(urlClassLoader);
+//        更换为自定义的url classloader，其类路径和app的不同
+//        Thread.currentThread().setContextClassLoader(urlClassLoader);
+        //如果不更换上下文线程 classloader 第二次加载也是由url去加载，只是会抛出如下异常，为什么呢？
+//        Exception in thread "main" java.lang.reflect.InvocationTargetException
+//        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+//        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+//        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+//        at java.lang.reflect.Method.invoke(Method.java:498)
+//        at log.log4j2.BESBug.RollingFileMultiClass.main(RollingFileMultiClass.java:93)
+//        Caused by: java.lang.NoClassDefFoundError: Could not initialize class org.apache.logging.log4j.util.PropertiesUtil
+//        at org.apache.logging.log4j.status.StatusLogger.<clinit>(StatusLogger.java:78)
+//        at org.apache.logging.log4j.LogManager.<clinit>(LogManager.java:60)
+//        at log.log4j2.BESBug.RollingFileInvokedMainClass.main(RollingFileInvokedMainClass.java:27)
+//	... 5 more
 
         //接下来的资源加载都是使用 更换后的url类加载器去加载的。
         Class<?> mainClass = urlClassLoader.loadClass(Constant.MAIN_CLASS_NAME);

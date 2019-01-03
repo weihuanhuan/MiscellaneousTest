@@ -43,14 +43,26 @@ public class RollingFileInvokedMainClass {
             e.printStackTrace();
         }
 
-        //JF 根本原因
+        //JF 轮询文件占用问题
+        //原因简述：
         //   log4j2的一个classloader会初始化一次org.apache.logging.log4j.LogManager
         //   有多少个没有父子关系的classloader就得打开多少次文件流
-        //JF 解决方法
-        //   1.让LogManager只加载一次，添加JVM参数：-Djava.ext.dirs=ext
-        //   org.apache.logging.log4j.core.appender.AbstractManager的AbstractManager.getManager()方法
-        //   在取manager时会在其成员变量MAP中优先使用之前创建的已经缓冲的管理器，如果没有找到先前缓冲的管理器才会新创建一个,
-        //   这是不是也是log4j2在写入文件数据时，不是对目的地lock，反而是去lock目的地所对应的管理器的原因？
+        //解决方法：
+        //   1.让LogManager只加载一次，添加JVM参数：-Djava.ext.dirs=ext，交给ext classloader去既加载
+        //   注意sunjce相关的包是ext包，其在jdk/lib/ext、jdk/jre/lib/ext目录中，
+        //   默认情况app classloader会加载ext的包，但是如果自己创建类加载器，并把父类加载器指定为ext classloader时
+        //   会导致自己定义的类加载器无法加载到ext下的jar包，因此java.ext.dirs要写上相关路径不能省略
+        //   如：-Djava.ext.dirs="${JAVA_HOME}/jre/lib/ext":"${JAVA_HOME}/lib/ext":ext
+        //           个人应用里面的ext   JAVA_HOME为jdk里面的ext    JAVA_HOME为jre里面的ext
+        //具体分析：
+        //   org.apache.logging.log4j.LogManager的LogManager，是Log4j2日志系统的管理器
+        //   有多少个不同的类加载器加载了他，便会初始化多少个LogManager实例
+        //   org.apache.logging.log4j.core.appender.AbstractManager,抽象类，
+        //   其子类是各种类型的流管理器，负责对日志消息appender输出目的地的管理，每一个LogManager都会与其自己的流管理器相关联
+        //   如果系统中有两个LogManager，那么他们都会创建自己的流管理器，对于RollingFileManager来说，其负责轮询文件的FileInputStream的开打工作，
+        //   那么两个LogManager实例化的两份AbstractManager子类实现便会打开两次文件IO流，使得文件的handler数量变为2，
+        //   而当轮询文件时，其中一个LogManager对应的流管理器会先关闭其IO流再去对文件进行操作，
+        //   但是由于另一个LogManager的流管理器还打开这该文件的IO流，文件被占用导致对文件的重命名等操作失败。
 
 
         //当 符合轮询 条件时，当且经当执行 写日志操作 才会处理轮询相关的文件操作，导致出现如下问题：

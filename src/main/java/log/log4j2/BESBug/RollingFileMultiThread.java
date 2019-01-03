@@ -43,20 +43,46 @@ public class RollingFileMultiThread {
                 ClassLoader extClassLoader = appClassLoader.getParent();
                 ClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), extClassLoader);
 
+                // 更换类加载器为url classloader，发现LogManager的实例还是只有一个，
+                // debug时，发现LogManager还是app classloader加载的，为什么呢？
+                Thread.currentThread().setContextClassLoader(urlClassLoader);
+                //JVM的类加载使用如下方法
+                //  java.lang.ClassLoader.loadClass(java.lang.String, boolean)
+
+
                 File confFile = new File(Constant.CONF_FILE);
                 InputStream is = new FileInputStream(confFile);
+
                 ConfigurationSource configurationSource = new ConfigurationSource(is);
+
                 //此句 不会 导致log4j2第2次加载，不会产生新的句柄，为什么不指定自定义的url类加载器就不会2次加载呢？
-//                Configurator.initialize(null, configurationSource);
+                //Configurator.initialize(null, configurationSource);
+                //上下文创建机制：
+                //   这里的classloader实际上指定了ClassLoaderContextSelector.locateContext(classloader,URL)，方法中参数的classloader，
+                //   最终如果确实新创建了一个context，那么这个classloader会产生一个唯一的id，并与刚刚新建的context相对应着,并保存在一个map中作为以后的缓冲
+                //   org.apache.logging.log4j.core.selector.ClassLoaderContextSelector.CONTEXT_MAP，
+                //  (不是使用先前缓冲的context，应为locateContext会在缓冲中按照classloader查找先前已经创建的context，查找范围是：递归优先寻找父加载器，一直查到自己)，
+                //  这里不指定其他的类加载器，导致第二次获取context时使用的是先前创建的context所以没有使log4j2加载第二次。
+
+                //   configurationSource是指定了ConfigurationFactory.getConfiguration(LoggerContext, ConfigurationSource)的第二个参数
+                //   其是在context确定以后，用来确定配置按照什么来源生成的。
+                //   而URL，目前各种情况下都为null，具体作用未知。
+
                 //此句 会 导致log4j2第2次加载，不会产生新的句柄，为什么这里的加载不会创建新的句柄，相比于BESBugTestMultiClass测试的情况？
                 Configurator.initialize(urlClassLoader, configurationSource);
-                //这里 的classloader实际上指定了ClassLoaderContextSelector.locateContext(classloader,URL)，方法中参数的classloader，
-                // 最终如果确实新创建了一个context(不是通过查找父加载器对应的上下文)，那么这个新建的上下文在集合中有一个唯一该classloader的id和context对应着
-                // org.apache.logging.log4j.core.selector.ClassLoaderContextSelector.CONTEXT_MAP，
+                //缓冲机制：
+                //   首先注意这里的LogManager的加载都是由app classloader去加载的，即LogManager的实例只有一个
+                //   而urlClassLoader只是在处理log4j2的context时才会使用，所以log4j2会加载第二次，
+                //   但是，org.apache.logging.log4j.core.appender.AbstractManager的AbstractManager.getManager()方法
+                //   在取manager时会在其成员变量MAP中优先使用之前创建的已经缓冲的管理器，如果没有找到先前缓冲的管理器才会新创建一个,
+                //   所以在只有一个类加载器加载LogManager时，多个RollingFileAppender不会重复打开日志文件IO流，
+                //   而是利用流管理器统一对文件的读写进行处理，因此这里不会创建新的句柄，只有一个文件handler，
 
-                // configurationSource是指定了ConfigurationFactory.getConfiguration(LoggerContext, ConfigurationSource)的第二个参数
-                // 其是在context确定以后，用来确定配置按照什么来源生成的。
-                // 而URL，目前各种情况下都为null，具体作用未知。
+                //   这是不是也是log4j2在写入文件数据时，不是对目的地lock，反而是去lock目的地所对应的管理器的原因？
+
+
+                TimeUnit.SECONDS.sleep(60*60);
+
 
                 //正常运行时没有这个问题，debug时出现如下异常为什么，出现时机main和sub线程同时停在ClassLoaderContextSelector.locateContext():112处时，F9恢复程序，
 //                2019-01-02 05:46:17,251 main ERROR Could not register mbeans javax.management.InstanceAlreadyExistsException: org.apache.logging.log4j2:type=18b4aac2
@@ -116,6 +142,7 @@ public class RollingFileMultiThread {
         Logger logger = LogManager.getLogger(RollingFileMultiThread.class);
         logger.error("Hello RollingFileMultiThread, level error!");
 
+        TimeUnit.SECONDS.sleep(60*60);
     }
 
 }
