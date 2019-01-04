@@ -11,6 +11,9 @@
 
         <RollingFile name="RollingFile" fileName="${logDir}/log4j2.log"
                      filePattern="${logDir}/log4j2-%d{yyyy-MM-dd HH-mm}-%i.log">
+            <PatternLayout>
+                <Pattern>%d %p %class{1.} [%t] %location %m %ex%n</Pattern>
+            </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy modulate="true" interval="1"/>
                 <SizeBasedTriggeringPolicy size="10KB"/>
@@ -22,11 +25,11 @@
 
     <Loggers>
 
-        <Root level="info">
+        <Root level="info"  includeLocation="true">
             <AppenderRef ref="Console"/>
         </Root>
 
-        <Logger name="NotAsyncNotRootLogger1" level="error" additivity="false">
+        <Logger name="NotAsyncNotRootLogger1" level="error" additivity="false"  includeLocation="true" >
             <AppenderRef ref="RollingFile"/>
         </Logger>
 

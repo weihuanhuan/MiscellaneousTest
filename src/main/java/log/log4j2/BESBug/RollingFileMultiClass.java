@@ -22,6 +22,9 @@ import log.log4j2.Constant;
  */
 public class RollingFileMultiClass {
 
+    static {
+        System.setProperty("Log4jContextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");
+    }
 
     public static void main(String[] args) throws InterruptedException, IOException, ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
@@ -85,7 +88,7 @@ public class RollingFileMultiClass {
         ClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), extClassLoader);
 
 //        更换为自定义的url classloader，其类路径和app的不同
-//        Thread.currentThread().setContextClassLoader(urlClassLoader);
+        Thread.currentThread().setContextClassLoader(urlClassLoader);
         //如果不更换上下文线程 classloader 第二次加载也是由url去加载，只是会抛出如下异常，为什么呢？
 //        Exception in thread "main" java.lang.reflect.InvocationTargetException
 //        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
