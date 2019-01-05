@@ -43,112 +43,13 @@ public class AsyncRecordCompositionaAndExtend extends LogRecord {
     }
 
     @Override
-    public ResourceBundle getResourceBundle() {
-        return logRecord.getResourceBundle();
-    }
-
-    @Override
-    public void setResourceBundle(ResourceBundle bundle) {
-        logRecord.setResourceBundle(bundle);
-    }
-
-    @Override
-    public String getResourceBundleName() {
-        return logRecord.getResourceBundleName();
-    }
-
-    @Override
-    public void setResourceBundleName(String name) {
-        logRecord.setResourceBundleName(name);
-    }
-
-    @Override
-    public Level getLevel() {
-        return logRecord.getLevel();
-    }
-
-    @Override
-    public void setLevel(Level level) {
-        logRecord.setLevel(level);
-    }
-
-    @Override
-    public long getSequenceNumber() {
-        return logRecord.getSequenceNumber();
-    }
-
-    @Override
-    public void setSequenceNumber(long seq) {
-        logRecord.setSequenceNumber(seq);
-    }
-
-    @Override
-    public String getSourceClassName() {
-        return logRecord.getSourceClassName();
-    }
-
-    @Override
-    public void setSourceClassName(String sourceClassName) {
-        logRecord.setSourceClassName(sourceClassName);
-    }
-
-    @Override
-    public String getSourceMethodName() {
-        return logRecord.getSourceMethodName();
-    }
-
-    @Override
-    public void setSourceMethodName(String sourceMethodName) {
-        logRecord.setSourceMethodName(sourceMethodName);
-    }
-
-    @Override
-    public String getMessage() {
-        return logRecord.getMessage();
-    }
-
-    @Override
-    public void setMessage(String message) {
-        logRecord.setMessage(message);
-    }
-
-    @Override
-    public Object[] getParameters() {
-        return logRecord.getParameters();
-    }
-
-    @Override
-    public void setParameters(Object[] parameters) {
-        logRecord.setParameters(parameters);
-    }
-
-    @Override
     public int getThreadID() {
         return logRecord.getThreadID();
     }
 
-    @Override
-    public void setThreadID(int threadID) {
-        logRecord.setThreadID(threadID);
-    }
+//    @Override
+//    public void setThreadID(int threadID) {
+//        logRecord.setThreadID(threadID);
+//    }
 
-    @Override
-    public long getMillis() {
-        return logRecord.getMillis();
-    }
-
-    @Override
-    public void setMillis(long millis) {
-        logRecord.setMillis(millis);
-    }
-
-    @Override
-    public Throwable getThrown() {
-        return logRecord.getThrown();
-    }
-
-    @Override
-    public void setThrown(Throwable thrown) {
-        logRecord.setThrown(thrown);
-    }
 }

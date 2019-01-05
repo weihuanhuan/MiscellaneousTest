@@ -7,7 +7,7 @@ import java.util.logging.LogRecord;
 /**
  * Created by JasonFitch on 1/5/2019.
  */
-public class AsyncRecordExtend extends LogRecord{
+public class AsyncRecordExtend extends LogRecord {
     /**
      * Construct a LogRecord with the given level and message values.
      * <p>
@@ -49,86 +49,6 @@ public class AsyncRecordExtend extends LogRecord{
     }
 
     @Override
-    public ResourceBundle getResourceBundle() {
-        return super.getResourceBundle();
-    }
-
-    @Override
-    public void setResourceBundle(ResourceBundle bundle) {
-        super.setResourceBundle(bundle);
-    }
-
-    @Override
-    public String getResourceBundleName() {
-        return super.getResourceBundleName();
-    }
-
-    @Override
-    public void setResourceBundleName(String name) {
-        super.setResourceBundleName(name);
-    }
-
-    @Override
-    public Level getLevel() {
-        return super.getLevel();
-    }
-
-    @Override
-    public void setLevel(Level level) {
-        super.setLevel(level);
-    }
-
-    @Override
-    public long getSequenceNumber() {
-        return super.getSequenceNumber();
-    }
-
-    @Override
-    public void setSequenceNumber(long seq) {
-        super.setSequenceNumber(seq);
-    }
-
-    @Override
-    public String getSourceClassName() {
-        return super.getSourceClassName();
-    }
-
-    @Override
-    public void setSourceClassName(String sourceClassName) {
-        super.setSourceClassName(sourceClassName);
-    }
-
-    @Override
-    public String getSourceMethodName() {
-        return super.getSourceMethodName();
-    }
-
-    @Override
-    public void setSourceMethodName(String sourceMethodName) {
-        super.setSourceMethodName(sourceMethodName);
-    }
-
-    @Override
-    public String getMessage() {
-        return super.getMessage();
-    }
-
-    @Override
-    public void setMessage(String message) {
-        super.setMessage(message);
-    }
-
-    @Override
-    public Object[] getParameters() {
-        return super.getParameters();
-    }
-
-    @Override
-    public void setParameters(Object[] parameters) {
-        super.setParameters(parameters);
-    }
-
-    @Override
     public int getThreadID() {
         return super.getThreadID();
     }
@@ -138,23 +58,4 @@ public class AsyncRecordExtend extends LogRecord{
         super.setThreadID(threadID);
     }
 
-    @Override
-    public long getMillis() {
-        return super.getMillis();
-    }
-
-    @Override
-    public void setMillis(long millis) {
-        super.setMillis(millis);
-    }
-
-    @Override
-    public Throwable getThrown() {
-        return super.getThrown();
-    }
-
-    @Override
-    public void setThrown(Throwable thrown) {
-        super.setThrown(thrown);
-    }
 }
