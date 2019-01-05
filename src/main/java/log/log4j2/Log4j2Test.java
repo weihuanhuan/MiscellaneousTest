@@ -30,8 +30,14 @@ public class Log4j2Test {
         Logger notAsyncNotRootLogger1 = LogManager.getLogger("NotAsyncNotRootLogger1");
         notAsyncNotRootLogger1.error("Hello notAsyncNotRootLogger1, level error!");
 
+
+        while (true)
+        {
+            notAsyncNotRootLogger1.error("Hello notAsyncNotRootLogger1, level error!");
+        }
+
         // 默认配置下异步会丢失某些日志，延时让程序写完日志事件
-        TimeUnit.MILLISECONDS.sleep(6000 * 3600);
+//        TimeUnit.MILLISECONDS.sleep(6000 * 3600);
 
     }
 }
