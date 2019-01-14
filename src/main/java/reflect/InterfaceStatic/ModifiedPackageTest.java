@@ -1,4 +1,4 @@
-package reflect.other;
+package reflect.InterfaceStatic;
 
 //JF 不是公有的不能import
 //import reflect.parent.ModifiedPackage;
