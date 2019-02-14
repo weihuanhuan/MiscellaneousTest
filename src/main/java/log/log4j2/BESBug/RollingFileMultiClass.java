@@ -87,9 +87,9 @@ public class RollingFileMultiClass {
         ClassLoader extClassLoader = appClassLoader.getParent();
         ClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), extClassLoader);
 
-//        更换为自定义的url classloader，其类路径和app的不同
+        //JF 上下文线程 classloader 更换为自定义的url classloader，其类路径和app的不同,由上方url数组指定
         Thread.currentThread().setContextClassLoader(urlClassLoader);
-        //如果不更换上下文线程 classloader 第二次加载也是由url去加载，只是会抛出如下异常，为什么呢？
+        //JF 如果不更换上下文线程 classloader 第二次加载也是由url去加载，只是会抛出如下异常，为什么呢？ContextClassLoader会加载哪些资源？
 //        Exception in thread "main" java.lang.reflect.InvocationTargetException
 //        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 //        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
@@ -102,7 +102,7 @@ public class RollingFileMultiClass {
 //        at log.log4j2.BESBug.RollingFileInvokedMainClass.main(RollingFileInvokedMainClass.java:27)
 //	... 5 more
 
-        //接下来的资源加载都是使用 更换后的url类加载器去加载的。
+        //JF 接下来的资源加载都是使用 更换后的url类加载器去加载的，这些资源指的是哪些资源？
         Class<?> mainClass = urlClassLoader.loadClass(Constant.MAIN_CLASS_NAME);
         Method mainMethod = mainClass.getMethod("main", new Class[]{String[].class});
         mainMethod.invoke(null, new Object[]{new String[]{}});

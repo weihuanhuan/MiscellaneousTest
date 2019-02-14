@@ -39,6 +39,18 @@ public class RollingFileMultiThread {
 //                urls.add(urlLog4j2Core);
 //                urls.add(urlDisruptor);
 
+                //JF 这里的URLClassLoader即使urls是一个空的类路径数组也能加载到这些类的原因是什么呢？
+
+                //  Debug可以发现，url classloader的 ucp 中 urls 确实没有可加载的classpath，符合上述urls的设置
+                //  但是 app classloader的 和 ext classloader的 AccessControlContext 为null，
+                //  而 url classloader的 AccessControlContext 不为null，其context中有一个元素，且其classloader是app classloader
+
+                // URLClassLoader 中 URLClassPath 和 AccessControlContext的定义及描述
+                // 同时注意到 sun.misc.Launcher.ExtClassLoader 和 sun.misc.Launcher.AppClassLoader 都继承了 java.net.URLClassLoader
+                /* The search path for classes and resources */
+                //  private final URLClassPath ucp;
+                /* The context to be used when loading classes and resources */
+                //  private final AccessControlContext acc;
                 ClassLoader appClassLoader = ClassLoader.getSystemClassLoader();
                 ClassLoader extClassLoader = appClassLoader.getParent();
                 ClassLoader urlClassLoader = new URLClassLoader(urls.toArray(new URL[urls.size()]), extClassLoader);
