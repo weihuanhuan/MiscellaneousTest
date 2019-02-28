@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+
+    </style>
+    <meta charset="utf-8">
+    </meta>
+    <style>
+        div {
+            border: 2px solid lightgrey;
+            background-color: #8A2BE2;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        td {
+
+            border: 1px solid darkblue;
+        }
+
+        .a {
+            height: 150px;
+            border: 10px solid lightgrey;
+            background: url(https://www.google.com/logos/doodles/2018/paralympics-2018-4676703698812928.2-law.gif) no-repeat;
+        }
+    </style>
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <script>
+
+//        debugger;
+
+
+        $(document).ready(function () {
+            var div_b = document.createElement("div");
+
+            div_b.innerText = "A";
+            div_b.style.backgroundColor = "black";
+            a.onclick = function () {
+                a.replaceWith(div_b);
+            };
+
+            $("#b").click(function () {
+                var da = new Date();
+                alert(da);
+            });
+
+
+            var arr = new Array();
+            var keys = "key";
+            var value = "value";
+            var i = 0;
+
+            $("#c").click(function () {
+                doTravel(arr);
+                if (arr[keys + i] == null) {
+                    alert("null");
+                }
+                else {
+                    alert("notNull");
+                }
+//							if(arr[keys+i])
+//							++i;
+                arr[keys + i] = value + i;
+                doTravel(arr);
+            });
+
+            function doTravel(arr) {
+                console.log(arr);
+            }
+
+
+            $("#td_a").prepend("")  //元素之内的开头附加内容，元素本身
+            $("#td_a").prev();		//得到元素的前一个元素，元素本身前面的兄弟
+            $("#td_a").before("");   //元素之外的前边附加内容，元素本身前面的兄弟
+
+            $("#td_a").after("<td id='td_z' value='td_z_val' name='td_z_name'  style='display:none;'>td_z_content</td>");
+            console.log($("#td_a").next().text()); //显示td_z
+            //text()显示的是便签文本内容
+            console.log($("#td_z").text()); //显示td_z
+            //display：none的元素也是存在的
+
+            console.log($("#td_a").next().val()); // 显示 ""
+            console.log($("#a").next().val()); // 显示 b
+//						val()显示 有value属性的标签的value值，<td>标签无value属性，而<input>标签有
+
+            $("#from_a").attr('action', 'actionvalue');
+            $R = $("#from_a").children("[type='checkbox']").first().attr('disabled', '');
+            console.log($R);
+
+            console.log($("div[class=a]:last")); //最后的一个
+            $("div[class=a]:last").removeClass('a');
+
+            $("div[class=a]:first").css({'background': 'url("")'});
+
+            $("#e").click(function () {
+
+                $.ajax(
+                    {
+                        url: "../js/jquery-3.2.1.min.js",
+                        success: function (result) {
+                            $("#div1").html(result);
+                            return
+//                            debugger;
+                        }
+                    }
+                );
+
+
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+
+<div class="a">class_a_first</div>
+<div class="a">class_a_last</div>
+
+<input id="a" type="text" value="a"/>
+<input id="b" type="text" value="b"/>
+<input id="c" type="text" value="c"/>
+<input id="d" type="text" value="d"/>
+
+
+<input id="e" type="text" value="e"/>
+
+<form id="from_a" action="" method="post">
+    <input id="in_checked" type="checkbox"/>
+    <input id="in_submit" type="submit" value=""/>
+</form>
+
+
+<table>
+    <tr>
+        <th>th_a</th>
+        <th>th_b</th>
+    </tr>
+    <tr>
+        <td id="td_a" value="td_a_val">td_a</td>
+        <td id="td_b">td_b</td>
+    </tr>
+
+</table>
+
+<div id="div1"/>
+
+
+</body>
+
+</html>

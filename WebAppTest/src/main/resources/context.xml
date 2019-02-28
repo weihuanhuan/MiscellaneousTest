@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+
+    <!--<Manager className="de.javakaffee.web.msm.MemcachedBackupSessionManager"-->
+	    <!--sticky="${sticky}"-->
+	    <!--memcachedNodes="${memcachedNodes}"-->
+	    <!--failoverNodes="${failoverNodes}"-->
+	    <!--requestUriIgnorePattern=".*\.(png|gif|jpg|css|js|ico)$"-->
+	    <!--sessionBackupAsync="false"-->
+	    <!--sessionBackupTimeout="100"-->
+	    <!--transcoderFactoryClass="de.javakaffee.web.msm.serializer.kryo.KryoTranscoderFactory"-->
+    <!--/>-->
+
+    <Manager className="de.javakaffee.web.msm.MemcachedBackupSessionManager"
+             memcachedNodes="n1:192.168.88.10:11211,n2:192.168.88.10:11212"
+             sticky="false"
+             sessionBackupAsync="false"
+             lockingMode="uriPattern:/path1|/path2"
+             requestUriIgnorePattern=".*\.(ico|png|gif|jpg|css|js)$"
+             transcoderFactoryClass="de.javakaffee.web.msm.serializer.kryo.KryoTranscoderFactory"
+    />
+
+</Context>

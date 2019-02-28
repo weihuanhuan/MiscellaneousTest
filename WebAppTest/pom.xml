@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.jasonfitch.test</groupId>
+    <artifactId>WebAppTest</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <tomcat.dir.install>C:/apache-tomcat-8.5.37</tomcat.dir.install>
+        <spring.version>5.1.5.RELEASE</spring.version>
+    </properties>
+
+    <dependencies>
+
+
+        <!-- https://mvnrepository.com/artifact/net.spy/spymemcached -->
+        <dependency>
+            <groupId>net.spy</groupId>
+            <artifactId>spymemcached</artifactId>
+            <version>2.12.3</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/de.javakaffee.msm/memcached-session-manager -->
+        <dependency>
+            <groupId>de.javakaffee.msm</groupId>
+            <artifactId>memcached-session-manager</artifactId>
+            <version>2.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/de.javakaffee.msm/memcached-session-manager-tc8 -->
+        <dependency>
+            <groupId>de.javakaffee.msm</groupId>
+            <artifactId>memcached-session-manager-tc8</artifactId>
+            <version>2.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/de.javakaffee.msm/msm-kryo-serializer -->
+        <dependency>
+            <groupId>de.javakaffee.msm</groupId>
+            <artifactId>msm-kryo-serializer</artifactId>
+            <version>2.1.1</version>
+            <scope>runtime</scope>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.25</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>jstl</artifactId>
+            <version>1.2</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <version>3.1.0</version>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+
+        <!--resources 直接形式-->
+        <resources>
+
+            <resource>
+                <!--指定java资源文件目录，这个资源位于java源码目录，一般是script，conf，template之类的-->
+                <directory>./src/main/resources</directory>
+                <!--filtering 用来做资源文件的变量替换的，而不是过滤文件的-->
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/spring-*.xml</include>
+                </includes>
+            </resource>
+
+        </resources>
+
+        <plugins>
+
+            <!--resources 插件形式-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-tomcat-configuration</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${tomcat.dir.install}/conf</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>./src/main/resources</directory>
+                                    <filtering>true</filtering>
+                                    <excludes>
+                                        <exclude>**/spring-*.xml</exclude>
+                                    </excludes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+
+                    <warName>${project.artifactId}</warName>
+                    <webXml>./web/WEB-INF/web.xml</webXml>
+                    <!--指定web资源目录，不同于java资源文件，这个资源位于web目录中，如jsp，html之类的文件-->
+                    <warSourceDirectory>./web</warSourceDirectory>
+
+                    <!--处理用于构建war包的资源时，相对于war资源目录的过滤-->
+                    <warSourceExcludes>WEB-INF/unused.jsp</warSourceExcludes>
+
+                    <!--打包时排除war包中的资源，相对于编译后的输出目录过滤-->
+                    <packagingIncludes>
+                        *,
+                        js/**,css/**,html/**,img/**,
+                        WEB-INF/*,
+                        WEB-INF/classes/**,
+                        WEB-INF/lib/slf4j-*.jar,WEB-INF/lib/spring-*.jar,WEB-INF/lib/jstl-*.jar,
+                        META-INF/**
+                    </packagingIncludes>
+
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+
+                    <execution>
+                        <id>copy-memcached-session-manager</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${tomcat.dir.install}/lib</outputDirectory>
+                            <includeScope>provided</includeScope>
+                            <excludeGroupIds>javax.servlet</excludeGroupIds>
+                            <!--msm-kryo-serializer其scope是runitme，这里只包括provided的所以无需排除-->
+                            <!--<excludeArtifactIds>msm-kryo-serializer</excludeArtifactIds>-->
+                            <excludeTransitive>true</excludeTransitive>
+                            <stripVersion>false</stripVersion>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+
+                    <execution>
+                        <id>copy-msm-kryo-serializer</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${tomcat.dir.install}/lib</outputDirectory>
+                            <includeScope>runtime</includeScope>
+                            <!--runtime域中包括 runtime and compile 的依赖所以要排除如下compile域的-->
+                            <!--
+                                The scopes being interpreted are the scopes as Maven sees them, not as specified in the pom。
+                                具体的规则详见includeScope便签的说明
+                            -->
+                            <excludeGroupIds>javax.servlet,org.springframework,org.slf4j</excludeGroupIds>
+                            <excludeTransitive>false</excludeTransitive>
+                            <stripVersion>false</stripVersion>
+                            <overWriteIfNewer>true</overWriteIfNewer>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+
+
+        </plugins>
+
+    </build>
+
+
+</project>
