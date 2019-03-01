@@ -23,7 +23,6 @@ public class SessionController {
 
     private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-
     private void sessionOperations(HttpServletRequest request) {
         HttpSession session = request.getSession();
         session.getAttribute("");
@@ -33,7 +32,7 @@ public class SessionController {
 
     @RequestMapping("/session")
     public ModelAndView doSessionGet(HttpServletRequest request) throws IOException {
-        System.out.println("-------------doSessionGet------------------");
+        logger.info("-------------doSessionGet------------------");
 
         infoPrint(request);
         ModelAndView modelAndView = new ModelAndView("session");
@@ -42,7 +41,7 @@ public class SessionController {
 
     @RequestMapping("/sessionset")
     public ModelAndView doSessionSet(HttpServletRequest request) throws IOException {
-        System.out.println("-------------doSessionSet------------------");
+        logger.info("-------------doSessionSet------------------");
 
         HttpSession session = request.getSession();
         Info info = new Info("name", "addr");
@@ -55,7 +54,7 @@ public class SessionController {
 
     @RequestMapping("/sessionmod")
     public ModelAndView doSessionMod(HttpServletRequest request) throws IOException {
-        System.out.println("-------------doSessionMod------------------");
+        logger.info("-------------doSessionMod------------------");
 
         HttpSession session = request.getSession();
         Info info = (Info) session.getAttribute("info");
@@ -72,7 +71,7 @@ public class SessionController {
     @PostMapping("/session")
     public String doSessionPost(HttpServletRequest request, HttpServletResponse resp)
             throws ServletException, IOException {
-        System.out.println("-------------doSessionPost------------------");
+        logger.info("-------------doSessionPost------------------");
         String attributeName = request.getParameter("attributeName");
         String attributeValue = request.getParameter("attributeValue");
         if (!(isBlank(attributeName) || isBlank(attributeValue))) {
@@ -85,39 +84,45 @@ public class SessionController {
 
     @RequestMapping("/sessionRedirect")
     public void doSessionRedirect(HttpServletRequest request, HttpServletResponse resp) throws IOException {
-        System.out.println("-------------doSessionRedirect------------------");
+        logger.info("-------------doSessionRedirect------------------");
 
         infoPrint(request);
         resp.sendRedirect(request.getContextPath() + "/session");
+    }
+
+
+    @RequestMapping("/exception")
+    public void doException() throws Exception {
+        logger.info("-------------doException------------------");
+        throw new RuntimeException("doException test");
     }
 
     private void infoPrint(HttpServletRequest request) {
         HttpSession session = request.getSession();
 
         if (session.isNew()) {
-            System.out.println("Is New ID:" + session.getId());
+            System.out.println("Is  New ID:" + session.getId());
         } else {
-            System.out.println("No New ID:" + session.getId());
+            System.out.println("Non New ID:" + session.getId());
         }
 
         Enumeration<String> attributeNames = session.getAttributeNames();
         while (attributeNames.hasMoreElements()) {
             String key = attributeNames.nextElement();
             Object value = session.getAttribute(key);
-            System.out.println("Session Attribute:" + key + "=" + value);
+            logger.info(("Session Attribute:" + key + "=" + value));
         }
 
         Cookie[] cookies = request.getCookies();
         if (cookies != null && cookies.length > 0) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("SESSION")) {
-                    System.out.println("SESSION Cookie:" + cookie.getName() + "=" + cookie.getValue());
+                    logger.info(("SESSION Cookie:" + cookie.getName() + "=" + cookie.getValue()));
                     break;
                 }
             }
         }
 
-        System.out.println();
     }
 
     private boolean isBlank(String string) {
