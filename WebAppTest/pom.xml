@@ -52,7 +52,6 @@
             <scope>runtime</scope>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -85,6 +84,13 @@
             <scope>runtime</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.7.8</version>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -92,6 +98,15 @@
             <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>8.5.31</version>
+            <scope>provided</scope>
+        </dependency>
+
 
     </dependencies>
 
@@ -121,7 +136,7 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-tomcat-configuration</id>
+                        <id>copy-tomcat-configuration-toTomcatConf</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -162,7 +177,7 @@
                         js/**,css/**,html/**,img/**,
                         WEB-INF/*,
                         WEB-INF/classes/**,
-                        WEB-INF/lib/slf4j-*.jar,WEB-INF/lib/spring-*.jar,WEB-INF/lib/jstl-*.jar,
+                        WEB-INF/lib/slf4j-*.jar,WEB-INF/lib/spring-*.jar,WEB-INF/lib/HikariCP-*.jar,WEB-INF/lib/jstl-*.jar,
                         META-INF/**
                     </packagingIncludes>
 
@@ -175,7 +190,7 @@
                 <executions>
 
                     <execution>
-                        <id>copy-memcached-session-manager</id>
+                        <id>copy-memcached-session-manager-toTomcatLib</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
@@ -183,7 +198,7 @@
                         <configuration>
                             <outputDirectory>${tomcat.dir.install}/lib</outputDirectory>
                             <includeScope>provided</includeScope>
-                            <excludeGroupIds>javax.servlet</excludeGroupIds>
+                            <excludeGroupIds>javax.servlet,org.apache.tomcat.embed</excludeGroupIds>
                             <!--msm-kryo-serializer其scope是runitme，这里只包括provided的所以无需排除-->
                             <!--<excludeArtifactIds>msm-kryo-serializer</excludeArtifactIds>-->
                             <excludeTransitive>true</excludeTransitive>
@@ -193,7 +208,7 @@
                     </execution>
 
                     <execution>
-                        <id>copy-msm-kryo-serializer</id>
+                        <id>copy-msm-kryo-serializer-toTomcatLib</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
@@ -206,7 +221,7 @@
                                 The scopes being interpreted are the scopes as Maven sees them, not as specified in the pom。
                                 具体的规则详见includeScope便签的说明
                             -->
-                            <excludeGroupIds>javax.servlet,org.springframework,org.slf4j</excludeGroupIds>
+                            <excludeGroupIds>javax.servlet,org.springframework,org.slf4j,com.zaxxer</excludeGroupIds>
                             <excludeTransitive>false</excludeTransitive>
                             <stripVersion>false</stripVersion>
                             <overWriteIfNewer>true</overWriteIfNewer>
