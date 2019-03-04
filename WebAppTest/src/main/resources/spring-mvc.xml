@@ -3,7 +3,20 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+    <!--
+        JF xmlns:schemaLocation，是错误的！是错误的！是错误的！
+        注意这里的 schemaLocation 属性是命名空间 xsi 的，起作用是指出url对应的xsd文件，
+        而xmlns指的是定义一个xml命名空间，如xmlns:jason，定义了命令空间jason，
+        所有切不可写成xmlns:schemaLocation，这就成了定义命令空间，解析时就会报错Cannot find the declaration of element 'beans'，
+        因为本来是要使用xsi:schemaLocation来指明定义beans命名空间的xsd文件的位置，结果却声明了一个新的命名空间schemaLocation
+    -->
 
     <!-- 自动扫描包，实现支持注解的IOC -->
     <context:component-scan base-package="session"/>
