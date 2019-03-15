@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class CustomThreadFactory implements ThreadFactory {
 
-    private static AtomicInteger createCount = new AtomicInteger(0);
+    private AtomicInteger createCount = new AtomicInteger(0);
 
     private String prefix;
 
