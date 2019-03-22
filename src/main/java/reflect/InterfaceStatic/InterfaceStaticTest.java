@@ -34,9 +34,18 @@ public class InterfaceStaticTest {
 
         try {
             assert clazz != null;
-            Method getSingletonMethod = clazz.getMethod("getSingleton", null);
+
+            Method getSingletonMethod = clazz.getMethod("getSingleton",null);
             //JF 反射调用静态方法，将第一个对象参数传递为null即可，如果方法没有参数，将参数列表参数也传递为null
             LogFactory logFactory = (LogFactory) getSingletonMethod.invoke(null, null);
+
+            //JF 注意JDK1.5编译，即使无参数时，也不要传null作为参数，会报 违规的参数异常：参数数量错误
+            //   而JDK1.8编译的代码没有此问题
+            Method getSingletonMethod1 = clazz.getMethod("getSingleton");
+            LogFactory logFactory1 = (LogFactory) getSingletonMethod1.invoke(null);
+
+            assert  logFactory ==logFactory1;
+
             Logger reflectMethodInvokeLogger = logFactory.getLogInterface("ReflectMethodInvokeLogger");
             reflectMethodInvokeLogger.log(Level.INFO, "TestMessage");
         } catch (NoSuchMethodException e) {
