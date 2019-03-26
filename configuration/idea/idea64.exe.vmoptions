@@ -1,0 +1,19 @@
+-server
+-Xms1024m
+-Xmx1024m
+-XX:NewRatio=3
+-Xss2m
+-XX:+UseConcMarkSweepGC
+-XX:+CMSParallelRemarkEnabled
+-XX:ConcGCThreads=4
+-XX:ReservedCodeCacheSize=240m
+-XX:+AlwaysPreTouch
+-XX:+TieredCompilation
+-XX:+UseCompressedOops
+-XX:SoftRefLRUPolicyMSPerMB=50
+-Dsun.io.useCanonCaches=false
+-Djava.net.preferIPv4Stack=true
+-Djsse.enableSNIExtension=fasle
+-Xverify:none
+-ea
+-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2017.1.4\bin\JetbrainsCrack-2.6.2.jar
