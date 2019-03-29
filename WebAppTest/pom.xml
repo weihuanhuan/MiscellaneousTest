@@ -103,7 +103,7 @@
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
-            <version>8.5.31</version>
+            <version>8.5.35</version>
             <scope>provided</scope>
         </dependency>
 
@@ -162,7 +162,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
-
                     <warName>${project.artifactId}</warName>
                     <webXml>./web/WEB-INF/web.xml</webXml>
                     <!--指定web资源目录，不同于java资源文件，这个资源位于web目录中，如jsp，html之类的文件-->
