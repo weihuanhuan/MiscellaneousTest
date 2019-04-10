@@ -8,10 +8,6 @@ import org.apache.geronimo.transaction.manager.GeronimoTransactionManager;
 import org.apache.geronimo.transaction.manager.TransactionManagerImpl;
 import org.apache.xbean.recipe.ObjectRecipe;
 import org.apache.xbean.recipe.Option;
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.Attribute;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
 
 import javax.transaction.xa.XAException;
 import java.util.Collections;
@@ -80,54 +76,7 @@ public class JDBCDataSource {
         System.out.println(isContainsAll);
         hashMap.keySet().containsAll(null);   //NullPointerException
 
-        // asm3 is Interface
 
-        new org.objectweb.asm.ClassVisitor() {
-            @Override
-            public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-
-            }
-
-            @Override
-            public void visitSource(String source, String debug) {
-
-            }
-
-            @Override
-            public void visitOuterClass(String owner, String name, String desc) {
-
-            }
-
-            @Override
-            public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-                return null;
-            }
-
-            @Override
-            public void visitAttribute(Attribute attr) {
-
-            }
-
-            @Override
-            public void visitInnerClass(String name, String outerName, String innerName, int access) {
-
-            }
-
-            @Override
-            public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-                return null;
-            }
-
-            @Override
-            public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-                return null;
-            }
-
-            @Override
-            public void visitEnd() {
-
-            }
-        };
 
     }
 }
