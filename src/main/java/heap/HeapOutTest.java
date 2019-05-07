@@ -14,6 +14,12 @@ public class HeapOutTest {
 
     public static void main(String[] args) {
 
+        //JF new Throwable 时其调用堆栈并不是立即填充的。
+        Throwable throwable = new Throwable();
+        //当调用如下需要使用栈帧信息时的方法时才会正真的填充。
+        throwable.getStackTrace();
+        throwable.printStackTrace();
+
         HeapOutTest heapOutTest = new HeapOutTest();
 
         AtomicInteger precounter = new AtomicInteger(0);
