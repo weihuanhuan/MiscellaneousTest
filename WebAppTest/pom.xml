@@ -14,13 +14,12 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <tomcat.dir.install>C:/apache-tomcat-8.5.37</tomcat.dir.install>
-        <spring.version>5.1.5.RELEASE</spring.version>
+        <spring.version>3.1.0.RELEASE</spring.version>
     </properties>
 
     <dependencies>
 
-
-        <!-- https://mvnrepository.com/artifact/net.spy/spymemcached -->
+        <!-- memcached 客户端-->
         <dependency>
             <groupId>net.spy</groupId>
             <artifactId>spymemcached</artifactId>
@@ -28,7 +27,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/de.javakaffee.msm/memcached-session-manager -->
+        <!-- msm 主体实现  -->
         <dependency>
             <groupId>de.javakaffee.msm</groupId>
             <artifactId>memcached-session-manager</artifactId>
@@ -36,7 +35,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/de.javakaffee.msm/memcached-session-manager-tc8 -->
+        <!-- msm tomcat8支持  -->
         <dependency>
             <groupId>de.javakaffee.msm</groupId>
             <artifactId>memcached-session-manager-tc8</artifactId>
@@ -44,7 +43,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/de.javakaffee.msm/msm-kryo-serializer -->
+        <!--msm 序列化工具-->
         <dependency>
             <groupId>de.javakaffee.msm</groupId>
             <artifactId>msm-kryo-serializer</artifactId>
@@ -52,15 +51,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
-            <scope>compile</scope>
-        </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
@@ -68,7 +59,7 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
+        <!--测试扫描路径是*时，为什么cache会加载-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
@@ -76,7 +67,24 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
+        <!--测试扫描路径是*时，为什么cache会加载，有如下日常先屏蔽
+         Caused by: java.lang.ArrayIndexOutOfBoundsException: 22056
+        at org.springframework.asm.ClassReader.readClass(Unknown Source)
+        at org.springframework.asm.ClassReader.accept(Unknown Source)
+        at org.springframework.asm.ClassReader.accept(Unknown Source)
+        at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:54)
+        at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:80)
+        at org.springframework.core.type.classreading.CachingMetadataReaderFactory.getMetadataReader(CachingMetadataReaderFactory.java:101)
+        at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.findCandidateComponents(ClassPathScanningCandidateComponentProvider.java:236)
+        -->
+        <!--<dependency>-->
+            <!--<groupId>com.zaxxer</groupId>-->
+            <!--<artifactId>HikariCP</artifactId>-->
+            <!--<version>2.7.8</version>-->
+            <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
+
+
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
@@ -85,21 +93,12 @@
         </dependency>
 
         <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>2.7.8</version>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
-        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.tomcat.embed/tomcat-embed-core -->
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
@@ -131,6 +130,7 @@
         <plugins>
 
             <!--resources 插件形式-->
+            <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -156,6 +156,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
 
 
             <plugin>
@@ -177,6 +178,10 @@
                         WEB-INF/*,
                         WEB-INF/classes/**,
                         WEB-INF/lib/slf4j-*.jar,WEB-INF/lib/spring-*.jar,WEB-INF/lib/HikariCP-*.jar,WEB-INF/lib/jstl-*.jar,
+                        WEB-INF/lib/aopalliance-*.jar,
+                        <!-- spring-web = aopalliance -->
+                        WEB-INF/lib/commons-*.jar,
+                        <!-- spring-core = commons-logging -->
                         META-INF/**
                     </packagingIncludes>
 

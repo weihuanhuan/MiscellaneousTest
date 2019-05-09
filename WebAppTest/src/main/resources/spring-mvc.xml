@@ -2,14 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:mvc="http://www.springframework.org/schema/mvc"
-       xsi:schemaLocation="
-       http://www.springframework.org/schema/beans
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/mvc
-       http://www.springframework.org/schema/mvc/spring-mvc.xsd">
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd">
     <!--
         JF xmlns:schemaLocation，是错误的！是错误的！是错误的！
         注意这里的 schemaLocation 属性是命名空间 xsi 的，起作用是指出url对应的xsd文件，
@@ -19,7 +18,7 @@
     -->
 
     <!-- 自动扫描包，实现支持注解的IOC -->
-    <context:component-scan base-package="session"/>
+    <context:component-scan base-package="spring"/>
 
     <!-- Spring MVC不处理静态资源 -->
     <mvc:default-servlet-handler/>
@@ -39,4 +38,56 @@
         <!-- 后缀 -->
         <property name="suffix" value=".jsp"/>
     </bean>
+
+    <!--context:annotation-config这个的作用是什么-->
+    <!--<context:annotation-config />-->
+
+    <!--测试扫描路径是 * 时，为什么cache会加载
+
+        <context:component-scan base-package="*"/>
+
+    但是 tomcat7 没有这个问题，tomcat8 则有，初步调查发现
+    org.springframework.core.io.support.PathMatchingResourcePatternResolver.findAllClassPathResources
+    方法使用 Enumeration<URL> resourceUrls = getClassLoader().getResources(path)， 来取得服务器资源，
+     tomcat7返回 不包括WEB-INF/lib下的jar，而tomcat8返回则包括，则jar包就也变成了spring可扫描的资源了。
+     而多余的WEB-INF/lib下的spring-context-3.1.0.RELEASE.jar中存在ProxyCachingConfiguration类，
+     其类上注解有 @Configuration 在全扫描时会实例化，
+     同时其父类的方法 reconcileCacheManager 上有注解 @PostConstruct 实例化是会调用这个方法，
+     但这时该bean的前置条件并不满足，导致实例化错误，出现如下提示。
+
+
+    对于如下设置 任务注解，有什么用?
+
+    <task:annotation-driven/>
+
+    当没有这个设置时：
+    Caused by: java.lang.IllegalArgumentException:
+    @EnableAsync annotation metadata was not injected
+        at org.springframework.util.Assert.notNull(Assert.java:112)
+        at org.springframework.scheduling.annotation.ProxyAsyncConfiguration.asyncAdvisor(ProxyAsyncConfiguration.java:45)
+        at org.springframework.scheduling.annotation.ProxyAsyncConfiguration$$EnhancerByCGLIB$$f0b0e7f1.CGLIB$asyncAdvisor$0(<generated>)
+        at org.springframework.scheduling.annotation.ProxyAsyncConfiguration$$EnhancerByCGLIB$$f0b0e7f1$$FastClassByCGLIB$$c012a15f.invoke(<generated>)
+        at net.sf.cglib.proxy.MethodProxy.invokeSuper(MethodProxy.java:167)
+        at org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor.intercept(ConfigurationClassEnhancer.java:280)
+        at org.springframework.scheduling.annotation.ProxyAsyncConfiguration$$EnhancerByCGLIB$$f0b0e7f1.asyncAdvisor(<generated>)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:149)
+
+    当有这个注解时：
+    Caused by: java.lang.IllegalStateException:
+    No bean of type CacheManager could be found.
+    Register a CacheManager bean or remove the @EnableCaching annotation from your configuration.
+        at org.springframework.cache.annotation.AbstractCachingConfiguration.reconcileCacheManager(AbstractCachingConfiguration.java:98)
+        at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        at java.lang.reflect.Method.invoke(Method.java:498)
+        at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleElement.invoke(InitDestroyAnnotationBeanPostProcessor.java:346)
+        at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor$LifecycleMetadata.invokeInitMethods(InitDestroyAnnotationBeanPostProcessor.java:299)
+        at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:132)
+    -->
+
 </beans>

@@ -1,4 +1,4 @@
-package session;
+package spring.session;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
+//import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -30,7 +31,7 @@ public class SessionController {
         session.removeAttribute("");
     }
 
-    @RequestMapping("/session")
+    @RequestMapping("/sessionlist")
     public ModelAndView doSessionGet(HttpServletRequest request) throws IOException {
         logger.info("-------------doSessionGet------------------");
 
@@ -68,7 +69,9 @@ public class SessionController {
         return modelAndView;
     }
 
-    @PostMapping("/session")
+//    JF Spring 3.1.0 没有这个注解
+//    @PostMapping("/sessionjsp")
+    @RequestMapping(value = "/sessionmod",method = RequestMethod.POST)
     public String doSessionPost(HttpServletRequest request, HttpServletResponse resp)
             throws ServletException, IOException {
         logger.info("-------------doSessionPost------------------");
@@ -82,12 +85,12 @@ public class SessionController {
         return "session";
     }
 
-    @RequestMapping("/sessionRedirect")
+    @RequestMapping("/sessionredirect")
     public void doSessionRedirect(HttpServletRequest request, HttpServletResponse resp) throws IOException {
         logger.info("-------------doSessionRedirect------------------");
 
         infoPrint(request);
-        resp.sendRedirect(request.getContextPath() + "/session");
+        resp.sendRedirect(request.getContextPath() + "/spring/session");
     }
 
 
