@@ -34,7 +34,7 @@ tomcat.*/
 **/*~
 **/*.swp
 **/*.orig
-!ConfigurationTest/
-!ConfigurationTest/**/*.jar
-!ScriptTest/ext/
-!ScriptTest/ext/**/*.jar
+!configuration/
+!configuration/**/*.jar
+!script/ext/
+!script/ext/**/*.jar
