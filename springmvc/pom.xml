@@ -6,7 +6,6 @@
 
     <groupId>com.jasonfitch.test</groupId>
     <artifactId>springmvc</artifactId>
-    <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <parent>
@@ -15,26 +14,38 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <tomcat.dir.install>C:/apache-tomcat-8.5.37</tomcat.dir.install>
-        <tomcat.version>8.5.37</tomcat.version>
-        <spring.version>3.1.0.RELEASE</spring.version>
-        <msm.version>2.1.1</msm.version>
-        <slf4j.version>1.7.25</slf4j.version>
-        <servlet-api.version>3.1.0</servlet-api.version>
-        <jstl.version>1.2</jstl.version>
-    </properties>
-
     <dependencies>
+
+        <!--测试扫描路径是*时，为什么cache会加载-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!--测试扫描路径是*时，为什么cache会加载，有如下日常先屏蔽
+         Caused by: java.lang.ArrayIndexOutOfBoundsException: 22056
+        at org.springframework.asm.ClassReader.readClass(Unknown Source)
+        at org.springframework.asm.ClassReader.accept(Unknown Source)
+        at org.springframework.asm.ClassReader.accept(Unknown Source)
+        at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:54)
+        at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:80)
+        at org.springframework.core.type.classreading.CachingMetadataReaderFactory.getMetadataReader(CachingMetadataReaderFactory.java:101)
+        at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.findCandidateComponents(ClassPathScanningCandidateComponentProvider.java:236)
+        -->
+        <!--<dependency>-->
+        <!--<groupId>com.zaxxer</groupId>-->
+        <!--<artifactId>HikariCP</artifactId>-->
+        <!--<version>2.7.8</version>-->
+        <!--<scope>runtime</scope>-->
+        <!--</dependency>-->
 
         <!-- memcached 客户端-->
         <dependency>
             <groupId>net.spy</groupId>
             <artifactId>spymemcached</artifactId>
-            <version>2.12.3</version>
+            <version>${spymemcached.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -62,39 +73,12 @@
             <scope>runtime</scope>
         </dependency>
 
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
             <scope>compile</scope>
         </dependency>
-
-        <!--测试扫描路径是*时，为什么cache会加载-->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>${spring.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <!--测试扫描路径是*时，为什么cache会加载，有如下日常先屏蔽
-         Caused by: java.lang.ArrayIndexOutOfBoundsException: 22056
-        at org.springframework.asm.ClassReader.readClass(Unknown Source)
-        at org.springframework.asm.ClassReader.accept(Unknown Source)
-        at org.springframework.asm.ClassReader.accept(Unknown Source)
-        at org.springframework.core.type.classreading.SimpleMetadataReader.<init>(SimpleMetadataReader.java:54)
-        at org.springframework.core.type.classreading.SimpleMetadataReaderFactory.getMetadataReader(SimpleMetadataReaderFactory.java:80)
-        at org.springframework.core.type.classreading.CachingMetadataReaderFactory.getMetadataReader(CachingMetadataReaderFactory.java:101)
-        at org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider.findCandidateComponents(ClassPathScanningCandidateComponentProvider.java:236)
-        -->
-        <!--<dependency>-->
-            <!--<groupId>com.zaxxer</groupId>-->
-            <!--<artifactId>HikariCP</artifactId>-->
-            <!--<version>2.7.8</version>-->
-            <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
-
 
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -116,7 +100,6 @@
             <version>${tomcat.version}</version>
             <scope>provided</scope>
         </dependency>
-
 
     </dependencies>
 
