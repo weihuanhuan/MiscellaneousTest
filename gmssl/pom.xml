@@ -19,9 +19,12 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bctls-jdk15on</artifactId>
-            <version>1.60</version>
-            <!-- 必须声明为某个 pom 的 module 元素时，才可以使用其 property -->
-            <!--<version>${bouncycastle.version}</version>-->
+            <!--
+                必须声明为某个 pom 的 module 元素时，才可以找见其 property 的定义
+                需要注意的是只要自己将某个 pom 声明为自己的 parent 元素，
+                那么即使找不见属性的定义也可以在编译时，从 parent 中取得这个元素的正确值。
+            -->
+            <version>${bouncycastle.version}</version>
         </dependency>
 
     </dependencies>
