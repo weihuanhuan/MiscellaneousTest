@@ -5,20 +5,20 @@
     <modelVersion>4.0.0</modelVersion>
 
 
+
     <groupId>com.jasonfitch.test</groupId>
-    <artifactId>GMSSLJDKTest</artifactId>
+    <artifactId>GMSSLTest</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk15on -->
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-            <version>1.60</version>
-        </dependency>
+    <parent>
+        <artifactId>MiscellaneouTest</artifactId>
+        <groupId>com.jasonfitch.Test</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
 
-        <!-- https://mvnrepository.com/artifact/org.bouncycastle/bctls-jdk15on -->
+    <dependencies>
+
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bctls-jdk15on</artifactId>

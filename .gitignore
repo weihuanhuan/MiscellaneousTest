@@ -27,13 +27,14 @@ hs_err_pid*
 out/
 target/
 dbembedded/
+logs/
 tomcat.*/
 
 **/*.iml
 **/*~
 **/*.swp
 **/*.orig
-!configuration/
-!configuration/**/*.jar
-!ext/
-!ext/**/*.jar
+!Script/configuration/
+!Script/configuration/**/*.jar
+!Script/ext/
+!Script/ext/**/*.jar
