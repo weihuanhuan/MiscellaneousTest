@@ -22,6 +22,7 @@ public class WebSocketTest {
 
     @OnMessage
     public void echo(Session session, String message) throws IOException {
+        System.out.println("received client message");
         session.getBasicRemote().sendText(message + " (from your server)");
         session.close();
     }
