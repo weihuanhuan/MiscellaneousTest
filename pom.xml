@@ -41,6 +41,7 @@
         <disruptor.version>3.4.2</disruptor.version>
         <asm.version>6.2.1</asm.version>
         <metadata-extractor.version>2.9.0</metadata-extractor.version>
+        <httpclient.version>4.2.1</httpclient.version>
 
         <!--springmvc-->
         <spring.version>3.1.0.RELEASE</spring.version>
