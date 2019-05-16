@@ -19,11 +19,11 @@ public class Main {
 
         //简单注解测试
         printAnnotationInfo(A.class);
-        //子类继承注解测试 @Inherited
+        //子类继承注解测试  @Inherited
         printAnnotationInfo(B.class);
-        //元注解测试     @注解的注解
+        //元注解测试      @注解的注解
         printAnnotationInfo(C.class);
-        //注解保留域测试  @Retention
+        //注解保留域测试   @Retention
         printAnnotationInfo(D.class);
 
         System.out.println();
@@ -43,7 +43,7 @@ public class Main {
             strOfC = Arrays.deepToString(annotations1);
             System.out.println(strOfC);
 
-            //查看注解的Class，原来是一个proxy Class啊
+            //查看注解的Class，原来是一个proxy Class 啊
             Class<? extends Annotation> aClass1 = anno.getClass();
             System.out.println(aClass1);
 
