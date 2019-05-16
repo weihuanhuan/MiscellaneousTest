@@ -24,7 +24,12 @@
 
         <!--feature springmvc-->
         <tomcat.dir.install>C:/apache-tomcat-8.5.37</tomcat.dir.install>
-        <tomcat.version>8.5.37</tomcat.version>
+        <!--8.5.37 NamingContextListener 的 containerEvent() 被标记为 @Deprecated
+            其方法体为 no-op,
+            同时提及将在tomcat10中移除 NamingContextListener类 ContainerListener的接口和实现
+        -->
+        <!--<tomcat.version>8.5.37</tomcat.version>-->
+        <tomcat.version>8.5.19</tomcat.version>
         <slf4j.version>1.7.25</slf4j.version>
 
         <!--feature-->
