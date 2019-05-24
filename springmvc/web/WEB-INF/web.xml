@@ -1,10 +1,12 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- //JF 注意xml文件的编码，如果指定的编码是不支持中文的，那么保存之后中文便会乱码，
+          同时这里的优先级是最高的，指定了之后便不能在ide中修改该文件的编码方案-->
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1" id="WebApp_ID">
 
-    <!--//JF servlet ????????? servlet ??? xmlns ???
+    <!--//JF servlet 版本问题 servlet 不同版本的 xmlns 也不同
         2.4 http://java.sun.com/xml/ns/j2ee
         3.0 http://java.sun.com/xml/ns/javaee
         3.1 http://xmlns.jcp.org/xml/ns/javaee
@@ -25,17 +27,17 @@
     <!-- spring DispatcherServlet servlet-->
     <servlet>
         <servlet-name>springmvc</servlet-name>
-        <!-- SpringMvc ??servlet???-->
+        <!-- SpringMvc核心 servlet 实现类-->
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <init-param>
-            <!--SpringMVC???? -->
+            <!--SpringMVC 配置文件 -->
             <param-name>contextConfigLocation</param-name>
             <param-value>classpath*:spring-mvc.xml</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>
 
-    <!--springmvc ?????? -->
+    <!--springmvc 路径映射 -->
     <servlet-mapping>
         <servlet-name>springmvc</servlet-name>
         <url-pattern>/</url-pattern>
