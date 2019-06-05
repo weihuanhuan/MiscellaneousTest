@@ -24,6 +24,21 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.jdbc.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+
         <!--测试扫描路径是*时，为什么cache会加载，有如下日常先屏蔽
          Caused by: java.lang.ArrayIndexOutOfBoundsException: 22056
         at org.springframework.asm.ClassReader.readClass(Unknown Source)
@@ -183,6 +198,7 @@
                         <!-- spring-web = aopalliance -->
                         WEB-INF/lib/commons-*.jar,
                         <!-- spring-core = commons-logging -->
+                        WEB-INF/lib/mysql-connector-java-*.jar,
                         META-INF/**
                     </packagingIncludes>
 
