@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+
+    <!--
+    
+    type="javax.sql.DataSource"  
+    driverClassName="com.mysql.jdbc.Driver"  
+
+    type="javax.sql.DataSource"  
+    driverClassName="com.mysql.jdbc.jdbc2.optional.MysqlDataSource"  
+    -->
+    
+    <Resource name="jdbc/javatest" auth="Container"   
+    type="javax.sql.DataSource"  
+    driverClassName="com.mysql.jdbc.Driver"  
+    url="jdbc:mysql://localhost:3306/javatest"  
+    username="root"  
+    password="123456"  
+    maxActive="50"  
+    maxIdle="30"  
+    maxWait="10000" />  
+
+    <Resource name="jdbc/demo" auth="Container"   
+    type="javax.sql.DataSource"  
+    driverClassName="com.mysql.jdbc.Driver"  
+    url="jdbc:mysql://localhost:3306/demo"  
+    username="root"  
+    password="123456"  
+    maxActive="50"  
+    maxIdle="30"  
+    maxWait="10000" />  
+
+</Context>
