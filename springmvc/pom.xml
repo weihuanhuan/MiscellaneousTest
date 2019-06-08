@@ -70,7 +70,7 @@
             <groupId>de.javakaffee.msm</groupId>
             <artifactId>msm-kryo-serializer</artifactId>
             <version>${msm.version}</version>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -81,10 +81,17 @@
         </dependency>
 
         <dependency>
+            <groupId>com.oracle.jdbc</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>${ojdbc.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>jstl</artifactId>
             <version>${jstl.version}</version>
-            <scope>runtime</scope>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
@@ -173,18 +180,18 @@
                     <warSourceExcludes>WEB-INF/unused.jsp</warSourceExcludes>
 
                     <!--打包时排除war包中的资源，相对于编译后的输出目录过滤-->
-                    <packagingIncludes>
-                        *,
-                        js/**,css/**,html/**,img/**,
-                        WEB-INF/*,
-                        WEB-INF/classes/**,
-                        WEB-INF/lib/slf4j-*.jar,WEB-INF/lib/spring-*.jar,WEB-INF/lib/HikariCP-*.jar,WEB-INF/lib/jstl-*.jar,
-                        WEB-INF/lib/aopalliance-*.jar,
-                        <!-- spring-web = aopalliance -->
-                        WEB-INF/lib/commons-*.jar,
-                        <!-- spring-core = commons-logging -->
-                        META-INF/**
-                    </packagingIncludes>
+                    <!--<packagingIncludes>-->
+                        <!--*,-->
+                        <!--js/**,css/**,html/**,img/**,-->
+                        <!--WEB-INF/*,-->
+                        <!--WEB-INF/classes/**,-->
+                        <!--WEB-INF/lib/slf4j-*.jar,WEB-INF/lib/spring-*.jar,WEB-INF/lib/HikariCP-*.jar,WEB-INF/lib/jstl-*.jar,-->
+                        <!--META-INF/**-->
+                    <!--</packagingIncludes>-->
+
+                    <!--<packagingExcludes>-->
+                        <!--WEB-INF/lib/kryo-*.jar,WEB-INF/lib/msm-*.jar,-->
+                    <!--</packagingExcludes>-->
 
                 </configuration>
             </plugin>
@@ -204,8 +211,8 @@
                             <outputDirectory>${tomcat.dir.install}/lib</outputDirectory>
                             <includeScope>provided</includeScope>
                             <excludeGroupIds>javax.servlet,org.apache.tomcat.embed</excludeGroupIds>
-                            <!--msm-kryo-serializer其scope是runitme，这里只包括provided的所以无需排除-->
-                            <!--<excludeArtifactIds>msm-kryo-serializer</excludeArtifactIds>-->
+                            <!--msm-kryo-serializer其scope是provided，这里包括provided的所以需排除-->
+                            <excludeArtifactIds>msm-kryo-serializer</excludeArtifactIds>
                             <excludeTransitive>true</excludeTransitive>
                             <stripVersion>false</stripVersion>
                             <overWriteIfNewer>true</overWriteIfNewer>
@@ -220,13 +227,14 @@
                         </goals>
                         <configuration>
                             <outputDirectory>${tomcat.dir.install}/lib</outputDirectory>
-                            <includeScope>runtime</includeScope>
+                            <includeScope>provided</includeScope>
                             <!--runtime域中包括 runtime and compile 的依赖所以要排除如下compile域的-->
                             <!--
                                 The scopes being interpreted are the scopes as Maven sees them, not as specified in the pom。
                                 具体的规则详见includeScope便签的说明
                             -->
-                            <excludeGroupIds>javax.servlet,org.springframework,org.slf4j,com.zaxxer</excludeGroupIds>
+                            <includeGroupIds>de.javakaffee,com.esotericsoftware</includeGroupIds>
+                            <excludeArtifactIds>memcached-session-manager,memcached-session-manager-tc8</excludeArtifactIds>
                             <excludeTransitive>false</excludeTransitive>
                             <stripVersion>false</stripVersion>
                             <overWriteIfNewer>true</overWriteIfNewer>
