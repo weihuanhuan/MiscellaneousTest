@@ -38,6 +38,13 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.oracle.jdbc</groupId>
+            <artifactId>ojdbc6</artifactId>
+            <version>${ojdbc.version}</version>
+            <scope>compile</scope>
+        </dependency>
+
 
         <!--测试扫描路径是*时，为什么cache会加载，有如下日常先屏蔽
          Caused by: java.lang.ArrayIndexOutOfBoundsException: 22056
@@ -92,13 +99,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${slf4j.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.oracle.jdbc</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>${ojdbc.version}</version>
             <scope>compile</scope>
         </dependency>
 
