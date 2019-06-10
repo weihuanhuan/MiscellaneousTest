@@ -53,7 +53,8 @@ public class RegularExpression {
         // 而填充的分组数据则会以最后一次的填充为准，因此这里的4个组的结果为开始的一堆ip和最后的一对ip。
         // 本质其实是由于贪婪匹配，把第二部分的所有可能的分组都迭代了,如若改成非贪婪的则可以每次只便利最少的数量,
         // 注意因为第二部分的量词修饰为 *（0-n次） ,所以仅有第一部分会匹配，第二部分选择了最小的 0 次。
-        String nodesMultiRegexImproveNonGreedy = nodeRegexImprove + "(?:(?:\\s+|,)" + nodeRegexImprove + ")*?";
+        String nodeRegexImproveNonGreedy = "(\\[[^\\[\\].]*\\]|[^:]+):([\\d]+)";
+        String nodesMultiRegexImproveNonGreedy = nodeRegexImproveNonGreedy + "(?:(?:\\s+|,))(" + nodeRegexImproveNonGreedy + ")*?";
         printMatchEchoGroups(ipLists, nodesMultiRegexImproveNonGreedy);
         System.out.println("----------------------------nodesMultiRegexImproveNonGreedy-----------------------------------");
 
