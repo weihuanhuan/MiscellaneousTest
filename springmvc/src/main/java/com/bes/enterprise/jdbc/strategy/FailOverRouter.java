@@ -19,11 +19,7 @@ package com.bes.enterprise.jdbc.strategy;
 
 import java.util.LinkedList;
 import javax.annotation.PostConstruct;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
-//import javax.transaction.Transaction;
-//import javax.transaction.TransactionManager;
-//import javax.transaction.TransactionSynchronizationRegistry;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -37,7 +33,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.regex.Pattern;
 
 public class FailOverRouter extends AbstractRouter {
 
@@ -254,9 +249,6 @@ public class FailOverRouter extends AbstractRouter {
     }
 
     private static class FacadeHandler implements InvocationHandler {
-//        private static final TransactionSynchronizationRegistry SYNCHRONIZATION_REGISTRY = SystemInstance.get().getComponent(TransactionSynchronizationRegistry.class);
-
-//        private final TransactionManager transactionManager;
         private final Collection<DataSourceHolder> delegates;
         private final Strategy strategy;
         private final ErrorHandler handler;
@@ -268,7 +260,6 @@ public class FailOverRouter extends AbstractRouter {
             this.strategy = strategy;
             this.handler = handler;
             this.selector = selector;
-//            this.transactionManager = OpenEJB.getTransactionManager();
         }
 
         @Override
@@ -284,14 +275,6 @@ public class FailOverRouter extends AbstractRouter {
                     return method.invoke(this, args);
                 }
             }
-
-//            final Transaction transaction = transactionManager.getTransaction();
-//            if (transaction != null) {
-//                final DataSource currentDs = DataSource.class.cast(SYNCHRONIZATION_REGISTRY.getResource(FacadeHandler.class.getName()));
-//                if (currentDs != null) {
-//                    return method.invoke(currentDs, args);
-//                }
-//            }
 
             int ex = 0;
             final Collection<DataSourceHolder> sources = strategy.prepare(delegates);
@@ -309,11 +292,6 @@ public class FailOverRouter extends AbstractRouter {
                     } else { // getConnection methods are here
                         out = method.invoke(ds.dataSource, args);
                     }
-
-//                    if (transaction != null) { // if a tx is in progress save the datasource to use for the tx
-//                        SYNCHRONIZATION_REGISTRY.putResource(FacadeHandler.class.getName(), ds.dataSource);
-//                        break;
-//                    }
 
                     if (!set) { // if no exception and not a set all is done so return out
                         break;

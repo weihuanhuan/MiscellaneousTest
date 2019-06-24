@@ -17,12 +17,7 @@
 
 package com.bes.enterprise.jdbc.strategy;
 
-
-import javax.naming.Context;
-import javax.naming.NamingException;
-
 public abstract class AbstractRouter implements Router {
-
 
     public AbstractRouter() {
     }

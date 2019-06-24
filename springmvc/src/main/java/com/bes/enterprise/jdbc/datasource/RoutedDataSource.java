@@ -24,13 +24,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.logging.Logger;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
-//import org.apache.openejb.loader.SystemInstance;
-//import org.apache.openejb.spi.ContainerSystem;
 
 public class RoutedDataSource implements DataSource {
-    private static final String OPENEJB_RESOURCE_PREFIX = "openejb:Resource/";
 
     protected Router delegate;
 
@@ -40,25 +36,6 @@ public class RoutedDataSource implements DataSource {
 
     public RoutedDataSource(final Router router) {
         delegate = router;
-    }
-
-    public RoutedDataSource(final String router) {
-        setRouter(router);
-    }
-
-    public void setRouter(final String router) {
-//        final Object o;
-//        try {
-////            o = SystemInstance.get().getComponent(ContainerSystem.class).getJNDIContext().lookup(OPENEJB_RESOURCE_PREFIX + router);
-////        } catch (final NamingException e) {
-////            throw new IllegalArgumentException("Can't find router [" + router + "]", e);
-////        }
-//
-//        if (Router.class.isInstance(o)) {
-//            delegate = Router.class.cast(o);
-//        } else {
-//            throw new IllegalArgumentException(o + " is not a router");
-//        }
     }
 
     public PrintWriter getLogWriter() throws SQLException {

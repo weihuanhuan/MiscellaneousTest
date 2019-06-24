@@ -20,7 +20,6 @@ package com.bes.enterprise.jdbc.reflection;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-//import org.apache.openejb.OpenEJBRuntimeException;
 
 public final class Reflections {
     private Reflections() {
