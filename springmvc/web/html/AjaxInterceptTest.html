@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <style>
+
+        div{
+            border: 2px solid lightgrey;
+            background-color: #dd82de;
+        }
+
+    </style>
+
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <script>
+
+        //JF 等待文档加载完成后在处理相关事件绑定，否则可能文档还没创建，绑定操作就完成导致绑定无效
+        //   比如如下的 div标签绑定的点击事件。
+        $(document).ready(function () {
+
+
+        //方法一：修改 XMLHttpRequest ，ajax的请求对象的行为
+        var open = window.XMLHttpRequest.prototype.open,
+            send = window.XMLHttpRequest.prototype.send;
+
+        function openReplacement(method, url, async, user, password) {
+            this._url = url;
+
+//            console.log("openReplacement");
+//            console.log(url);
+
+            return open.apply(this, arguments);
+        }
+
+        function sendReplacement(data) {
+            if(this.onreadystatechange) {
+                this._onreadystatechange = this.onreadystatechange;
+            }
+
+            /**
+            * PLACE HERE YOUR CODE WHEN REQUEST IS SENT
+            */
+//            console.log("sendReplacement");
+//            console.log(data);
+
+            this.onreadystatechange = onReadyStateChangeReplacement;
+            return send.apply(this, arguments);
+        }
+
+        function onReadyStateChangeReplacement() {
+
+            /**
+            * PLACE HERE YOUR CODE FOR READYSTATECHANGE
+            */
+//            console.log("onReadyStateChangeReplacement");
+//            console.log(this);
+
+            if(this._onreadystatechange) {
+                return this._onreadystatechange.apply(this, arguments);
+            }
+        }
+
+        window.XMLHttpRequest.prototype.open = openReplacement;
+        window.XMLHttpRequest.prototype.send = sendReplacement;
+
+        //JF 一下这句由控制台自动打印在调用ajax时触发。
+        //   XHR finished loading: GET "http://localhost:63342/MiscellaneousTest/springmvc/web/js/jquery-3.2.1.min.js".
+
+
+
+        //方法二：使用 ajaxSetup 设置每次 ajax调用的设置
+        $("#div_a").click(function () {
+
+            //JF 为什么放在这里才会让每次的ajax请求都能调用beforeSend方法，
+            //   而放在click之外就只能在每次加载文档后的第一次点击时调用呢。
+            $.ajaxSetup({
+                beforeSend: function (xhr,settings) {
+                    xhr.setRequestHeader("testHeadKey","testHeadValue");
+                    //这里的 xhr 和 settings 都是系统的回调参数，xhr代表 ajax请求的request，settings代表ajax请求设置。
+                    console.log(settings);
+                }
+            });
+
+            $.ajax(
+                {
+                    url: "../js/jquery-3.2.1.min.js",
+                    success: function (result) {
+                        $("#div_b").text(result);
+                        return;
+                    }
+                }
+            )
+
+        });
+
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('../serviceWorker.js').then(function(registration) {
+                    console.log('Service worker registered with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+
+        });//ready
+
+    </script>
+
+
+</head>
+<body>
+
+    <div id="div_a" style="height: 30px"></div>
+
+    <form id="from_a" action="pageA.html" method="post">
+
+        <!--JF input项目 需要有 name属性 才会提交数据 -->
+        <input id="in_text" type="text" name="in_text"  value="testValue"/>
+        <br/>
+
+        <!--JF checkbox 类型数据的 需要选中 才会提交数据-->
+        <input id="in_checked" type="checkbox" name="in_checked" checked="checked"/>
+        <br/>
+
+        <input id="in_submit" type="submit" value="in_submit" />
+    </form>
+
+    <div id="div_b"></div>
+
+</body>
+</html>
