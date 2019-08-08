@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<meta charset="UTF-8">
+ <head>
+  <title>login</title>
+  <style>
+
+      @font-face {
+          font-family: 'dotsfont';
+          src: url('../font/dotsfont.eot');
+          src: url('../font/dotsfont.eot?#iefix')          format('embedded-opentype'),
+               url('../font/dotsfont.woff')                format('woff'),
+               url('../font/dotsfont.ttf')                 format('truetype'),
+               url('../font/dotsfont.svg#dotsfontregular') format('svg');
+      }
+
+      [conceal]:not(:active):not(:focus) {
+          font-family: 'dotsfont';
+      }
+
+      /*定义要应用该样式的样式类名字*/
+      input.hidepasswd {
+
+          /*chrome 可以使用这个方法来设置，firefox不支持这个方法*/
+          -webkit-text-security:disc;
+
+          /*firefox使用这个方案*/
+          font-family: 'dotsfont';
+
+      }
+
+  </style>
+ </head>
+
+ <body>
+
+   <span conceal>hide me</span>
+
+   <form style="text-align:center" name="formlogin" id="formlogin" action="helloword.html" method="get" target="_top" autocomplete="off">
+
+       <div>
+	     <input type="text" name="username">
+		 <input type="text" name="password" class="hidepasswd" >
+  
+         <input type="button" value="login" onclick="document.forms.formlogin.submit();"/>
+       </div>
+
+   </form>
+ </body>
+
+</html>
