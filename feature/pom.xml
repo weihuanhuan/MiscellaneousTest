@@ -5,13 +5,13 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.jasonfitch.Test</groupId>
+    <groupId>com.jasonfitch.test</groupId>
     <artifactId>feature</artifactId>
     <packaging>jar</packaging>
 
     <parent>
         <artifactId>MiscellaneousTest</artifactId>
-        <groupId>com.jasonfitch.Test</groupId>
+        <groupId>com.jasonfitch.test</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
