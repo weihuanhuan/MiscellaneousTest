@@ -18,9 +18,16 @@
 
     <properties>
 
+        <!-- 而对于这个变量maven是会使用的，用来处理源码的字符编码问题 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!--注意单独在指定这里配置是无法对class编译版本生效的，这仅仅是相当于定了按个变量，maven是不会使用他们的
+            对于独立的pom工程，需要使用 maven-compiler-plugin 插件来指定编译的版本，见本pom下面的插件配置
+            对于全局的maven工程，需要在maven的 conf\setting.xml文件中配置，具体见maven配置
+        -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.compilerVersion>1.8</maven.compiler.compilerVersion>
 
         <!--feature springmvc-->
         <tomcat.dir.install>C:/apache-tomcat-8.5.37</tomcat.dir.install>
@@ -44,7 +51,7 @@
         <jedis.version>2.9.0</jedis.version>
         <log4j.version>2.11.1</log4j.version>
         <disruptor.version>3.4.2</disruptor.version>
-        <asm.version>6.2.1</asm.version>
+        <asm.version>6.1.1</asm.version>
         <metadata-extractor.version>2.9.0</metadata-extractor.version>
         <httpclient.version>4.2.1</httpclient.version>
 
@@ -89,6 +96,17 @@
                     </execution>
                 </executions>
             </plugin>
+
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </plugin>
+
         </plugins>
 
 
