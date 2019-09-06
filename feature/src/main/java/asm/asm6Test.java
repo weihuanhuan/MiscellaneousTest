@@ -17,6 +17,8 @@ public class asm6Test {
 //        <module>asm-analysis</module>
 //        <module>asm-commons</module>
 //        <module>asm-tree</module>
+//        <module>asm-util</module>
+//        <module>asm-xml</module>
 
     }
 }

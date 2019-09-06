@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>asm</module>
         <module>feature</module>
         <module>springmvc</module>
         <!--gmssl 工程需要特殊JDK编译，这里暂且不编译-->
