@@ -1,6 +1,7 @@
 <%@ page import="java.io.PrintWriter" %>
-<%@ page import="java.util.logging.Logger" %>
-<%@ page import="java.util.concurrent.atomic.AtomicInteger" %><%--
+<%@ page import="java.util.concurrent.atomic.AtomicInteger" %>
+<%@ page import="Servlet.RequestTest" %>
+<%--
   Created by IntelliJ IDEA.
   User: JasonFitch
   Date: 10/16/2019
@@ -18,6 +19,25 @@
     // java in jsp 的代码编译之后存在于 servlet 的 service 方法中，是方法级别的，而 带有 ! 号的声明则存在于 类级别，
     // 注意使用时的区别,后者可以做一些全局数据的操作。
     public AtomicInteger counter = new AtomicInteger(0);
+
+    //JF 注意使用如下方法 有时(不是绝对的) 无法区分出经过负载均衡后具体访问的tomcat实例时，现在有如下几种问题状况，原因暂时没有细查
+    //   具体如下调用的输出，可以参考 Servlet.RequestTest 这个 servlet 类来查看。
+
+    // 经过负载均衡后看见的URI是负载均衡器端收到的URL，场景是 apache mod_jk ajp13 连接方式
+    // String requestURI = req.getRequestURI();
+
+    // 无法获取到本机的端口信息。
+    // String localName = req.getLocalName();
+    // String localAddr = req.getLocalAddr();
+    // int localPort = req.getLocalPort();
+
+    // 无法获取到本机的端口信息
+    // String serverName = req.getServerName();
+    // int serverPort = req.getServerPort();
+
+    // 可以通过看  getProtectionDomain().getCodeSource() 来确认。
+    // 获取源文件的位置，得知一个类是从哪里加载到的，可以确定类加载的问题，通时也可以确定一台机器上多个 tomcat 实例的访问，无需端口信息。
+    public String tomcatLocaltion = RequestTest.class.getProtectionDomain().getCodeSource().getLocation().getFile();
 %>
 
 <%
@@ -26,6 +46,11 @@
 
     writer.write("" + counter.incrementAndGet());
     writer.write("<br/>");
+    writer.write(tomcatLocaltion);
+    writer.write("<br/>");
+    writer.write("<br/>");
+
+
     writer.write("java in jsp writer write");
     writer.write("<br/>");
     writer.write("<br/>");
@@ -54,6 +79,9 @@
     writer.write("java in jsp writer close after");
     writer.write("<br/>");
     writer.write("<br/>");
+
+    //关于编译后， jsp 所对应的 java 文件，可以在tomcat的 work 目录中找见，这里可以看见 jsp执行时的细节。
+    //"C:\apache-tomcat-8.5.37\work\Catalina\localhost\springmvc\org\apache\jsp\writerflushclose_jsp.java"
 
 %>
 
