@@ -75,6 +75,8 @@
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
+
         <plugins>
 
             <!-- 只要 某个pom 将 本pom 声明为自己的 parent 元素，那么 本pom 中的插件以及属性在 子pom 中都是有效的  -->

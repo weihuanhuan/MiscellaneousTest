@@ -192,7 +192,8 @@
                     <warSourceDirectory>./web</warSourceDirectory>
 
                     <!--处理用于构建war包的资源时，相对于war资源目录的过滤-->
-                    <warSourceExcludes>WEB-INF/unused.jsp</warSourceExcludes>
+                    <!--对路径名结尾使用 / 来标记，就会变成对整个目录的处理，否则按照文件来处理 -->
+                    <warSourceExcludes>WEB-INF/unused.jsp,external/</warSourceExcludes>
 
                     <!--打包时排除war包中的资源，相对于编译后的输出目录过滤-->
                     <!--<packagingIncludes>-->

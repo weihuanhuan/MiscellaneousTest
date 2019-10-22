@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+
+    <Resources>
+
+        <!--采用目录的模式会将该目录下所有的资源都遍历进去-->
+        <PostResources base="C:\external\dir"
+                       className="org.apache.catalina.webresources.DirResourceSet"
+                       webAppMount="/WEB-INF/lib"/>
+
+        <PostResources base="C:\external\jar.jar"
+                       className="org.apache.catalina.webresources.JarResourceSet"
+                       webAppMount="/WEB-INF/classes"/>
+
+        <PostResources base="C:\external\file\externaljsp.jsp"
+                       className="org.apache.catalina.webresources.FileResourceSet"
+                       webAppMount="/externaljsp.jsp"/>
+
+        <PostResources base="C:\external\jarinwar.war"
+                       className="org.apache.catalina.webresources.WarResourceSet"
+                       webAppMount="/"/>
+
+        <!-- WarResourceSet使用时对文件类型没有具体的要求 -->
+        <PostResources base="C:\external\jarincar.car"
+                       className="org.apache.catalina.webresources.WarResourceSet"
+                       webAppMount="/"/>
+
+        <!--
+            org.apache.catalina.webresources.JarWarResourceSet
+            JarWar 资源集代表的是 War 包中内嵌的Jar包，是由 WarResourceSet 来使用，用以表示 War 中内嵌的 Jar，
+            所以他不能代表，含有 内嵌 Jar 包的 War 包整体，这个整体是由 WarResourceSet 代替的。
+
+            注意加载了特别多jar包的时候会导致，应用部署的时间大大增加，
+            可以通过配置 tomcat 的 Jar Scan Filter 组件来处理。
+
+            另外同名的Jar包，会出现覆盖的问题，假如jarA 有 A， 另一个JarA 有A、B，那么在前面的JarA是最终有效的Jar。
+        -->
+
+    </Resources>
+
+
+</Context>
