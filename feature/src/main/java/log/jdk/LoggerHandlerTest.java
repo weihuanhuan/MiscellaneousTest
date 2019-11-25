@@ -6,6 +6,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
 import java.util.logging.Handler;
@@ -20,14 +21,16 @@ public class LoggerHandlerTest {
 
 
     public static void main(String[] args) throws IOException {
-
         try {
             String logfileName = System.getProperty("user.dir") + "/logs/handler.log";
             String logfilePath = new File(logfileName).getAbsolutePath();
             checkFileDir(logfileName);
 
             FileHandler fileHandler = new FileHandler(logfilePath, true);
-            fileHandler.setFormatter(getFormatter("yyyy-MM-dd HH:mm:ss.SS"));
+
+//          这里设置的时间字符串格式化后的效果是这样的: ####|2019-11-24T20:54:42.329-0800|INFO|_ThreadID=1|test=1574657682328|####
+            // Z 时区
+            fileHandler.setFormatter(getFormatter("yyyy-MM-dd'T'HH:mm:ss.SSZ"));
 
             Logger logger = Logger.getLogger(LoggerHandlerTest.class.getCanonicalName());
 
@@ -63,6 +66,7 @@ public class LoggerHandlerTest {
 
     public static Formatter getFormatter(String dateFormatString) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormatString);
+        simpleDateFormat.setTimeZone((TimeZone.getTimeZone("America/Los_Angeles")));
 
         Formatter formatter = new Formatter() {
             @Override
