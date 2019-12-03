@@ -30,7 +30,8 @@ public class LoggerHandlerTest {
 
 //          这里设置的时间字符串格式化后的效果是这样的: ####|2019-11-24T20:54:42.329-0800|INFO|_ThreadID=1|test=1574657682328|####
             // Z 时区
-            fileHandler.setFormatter(getFormatter("yyyy-MM-dd'T'HH:mm:ss.SSZ"));
+            // S 毫秒位，S的个数表示毫秒的精确度，比如 SSS 则对于 28 毫秒显示 028，其他占位符也有此规律。
+            fileHandler.setFormatter(getFormatter("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
 
             Logger logger = Logger.getLogger(LoggerHandlerTest.class.getCanonicalName());
 
