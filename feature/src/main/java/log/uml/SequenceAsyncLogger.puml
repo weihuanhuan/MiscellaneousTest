@@ -1,0 +1,61 @@
+@startuml
+'style
+hide footbox
+
+'participant
+actor User
+participant Logger
+collections Disruptor
+participant LogManager
+participant LogRecord
+participant LogEvent
+participant Handler
+database File
+
+'get logger flow
+==user get logger ==
+... ignore get logger flow ...
+
+'use logger flow
+==user/system logging start ==
+
+User -> Logger : logger.info()
+activate Logger
+
+create LogRecord
+Logger -> LogRecord : new LogRecord()
+activate LogRecord
+create LogEvent
+Logger -> LogEvent : encapsulation LogRecord to LogEvent
+activate LogEvent
+Logger -> Disruptor : add LogEvent to disruptor
+activate Disruptor
+return logging end
+
+Logger -> User
+
+==user logging end ==
+
+loop LogEvents
+
+    Logger -> Disruptor : get LogEvent from disruptor
+    activate Disruptor
+    Logger -> LogEvent : get LogRecord  from LogEvent
+    loop handlers with LogRecord
+        Logger -> Handler : handler.publish()
+        activate Handler
+        Handler -> File : write LogRecord
+        activate File
+        return write end
+        return one handler end
+    end
+end
+destroy LogEvent
+destroy LogRecord
+
+==system logging end ==
+
+'other flow
+... ignore other flow ...
+
+@enduml

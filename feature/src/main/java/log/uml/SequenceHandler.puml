@@ -1,0 +1,50 @@
+@startuml
+'style
+hide footbox
+
+'participant
+actor User
+participant Logger
+participant LogManager
+participant LogRecord
+participant Handler
+database File
+
+'get logger flow
+==user get logger ==
+
+User -> Logger : getLogger()
+activate Logger
+Logger -> LogManager : demandLogger()
+activate LogManager
+return logger
+return logger
+
+'use logger flow
+==user/system logging start ==
+
+User -> Logger : logger.info()
+activate Logger
+
+create LogRecord
+Logger -> LogRecord : new LogRecord()
+activate LogRecord
+
+loop handlers with LogRecord
+    Logger -> Handler : handler.publish()
+    activate Handler
+    Handler -> File : write LogRecord
+    activate File
+    return write end
+    return one handler end
+end
+destroy LogRecord
+
+Logger -> User
+
+==user/system logging end ==
+
+'other flow
+... ignore other flow ...
+
+@enduml

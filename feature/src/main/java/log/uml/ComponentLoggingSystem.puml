@@ -1,0 +1,33 @@
+@startuml
+
+package "Store"{
+    database LogFile
+}
+
+package "config"{
+    database ConfigFile
+}
+
+package "Logging System" {
+
+    [config parser] -> ConfigFile : translate
+    [config parser] <-- [LogManager] : parse
+
+    node "Async Logger"{
+        [Disruptor] --> [Logger] : work thread put LogEvent
+        [Disruptor] <-- [Logger] : logging thread take LogEvent
+        [Handler] -> [LogRecord] : use
+        [Formatter] <- [Handler] : format
+        [Logger] --> [Handler] : publish
+        [Handler] --> LogFile : write
+    }
+
+    [LogManager] -> [Logger] : get/add logger
+
+}
+
+package User {
+    [Application] -> [Logger] : logger.info()
+}
+
+@enduml

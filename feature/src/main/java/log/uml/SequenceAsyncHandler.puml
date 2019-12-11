@@ -1,0 +1,66 @@
+@startuml
+'style
+hide footbox
+
+'participant
+actor User
+participant Logger
+participant LogManager
+participant LogRecord
+participant Handler
+collections Queue
+database File
+
+'get logger flow
+==user get logger ==
+... ignore get logger flow ...
+
+'use logger flow
+==user/system logging start ==
+
+User -> Logger : logger.info()
+activate Logger
+create LogRecord
+Logger -> LogRecord : new LogRecord()
+activate LogRecord
+
+loop handlers with LogRecord
+    alt sync handler
+        Logger -> Handler : handler.publish()
+        activate Handler
+        Handler -> File : write LogRecord
+        activate File
+        return write end
+        return one handler end
+    else async handler
+         Logger -> Handler : handler.publish()
+         activate Handler
+         Handler -> Queue : add LogRecord to queue
+         activate Queue
+         return publish end
+         return one handler end
+    end
+end
+
+Logger -> User
+
+==user logging end ==
+
+loop LogRecords
+    Handler -> Queue : get LogRecord from Queue
+    activate Queue
+    activate Handler
+    return LogRecord
+    Handler -> File : write LogRecord
+    activate File
+    return write end
+    deactivate Handler
+    destroy LogRecord
+end
+
+==system logging end ==
+
+'other flow
+... ignore other flow ...
+
+@enduml
