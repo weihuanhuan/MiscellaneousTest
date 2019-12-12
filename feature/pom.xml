@@ -136,6 +136,21 @@
             <version>${gson.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/commons-el/commons-el -->
+        <dependency>
+            <groupId>commons-el</groupId>
+            <artifactId>commons-el</artifactId>
+            <version>${commons-el.version}</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/javax.servlet.jsp.jstl/jstl-api -->
+        <dependency>
+            <groupId>javax.servlet.jsp.jstl</groupId>
+            <artifactId>jstl-api</artifactId>
+            <version>${jstl-api.version}</version>
+        </dependency>
+
+
     </dependencies>
 
 </project>
