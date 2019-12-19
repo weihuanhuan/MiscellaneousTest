@@ -13,11 +13,12 @@ public class FieldTest {
     boolean enableBool = true;
     Boolean enableBoolean = Boolean.FALSE;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IllegalAccessException {
 
         FieldTest fieldTest = new FieldTest();
 
         for (Field field : fieldTest.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
 
             System.out.println("########################");
             String name = field.getName();
@@ -26,6 +27,7 @@ public class FieldTest {
             System.out.println(type);
 
             if (type.isAssignableFrom(String.class)) {
+                field.set(fieldTest, "newHello");
                 System.out.println("String:" + name);
 
             } else if (type.isAssignableFrom(int.class)) {
@@ -41,7 +43,29 @@ public class FieldTest {
                 System.out.println("Boolean:" + name);
             }
         }
+
+
+        System.out.println("########################");
+        System.out.println(fieldTest.getName());
     }
 
+    public String getName() {
+        return name;
+    }
 
+    public int getCountInt() {
+        return countInt;
+    }
+
+    public Integer getCountInteger() {
+        return countInteger;
+    }
+
+    public boolean isEnableBool() {
+        return enableBool;
+    }
+
+    public Boolean getEnableBoolean() {
+        return enableBoolean;
+    }
 }
