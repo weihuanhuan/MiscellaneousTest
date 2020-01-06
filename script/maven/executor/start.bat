@@ -9,19 +9,19 @@ set "CLASSPATH=%CLASSPATH%"
 
 "%JAVA_EXE%" -Djava.util.logging.config.file="C:\apache-tomcat-8.5.32\conf\logging.properties" -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager  "-Djdk.tls.ephemeralDHKeySize=2048" -Djava.protocol.handler.pkgs=org.apache.catalina.webresources  -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=28003 -Dignore.endorsed.dirs="" -classpath "C:\apache-tomcat-8.5.32\bin\bootstrap.jar;C:\apache-tomcat-8.5.32\bin\tomcat-juli.jar" -Dcatalina.base="C:\apache-tomcat-8.5.32" -Dcatalina.home="C:\apache-tomcat-8.5.32" -Djava.io.tmpdir="C:\apache-tomcat-8.5.32\temp" org.apache.catalina.startup.Bootstrap  start
 
-REM ²»Ê¹ÓÃ start ÃüÁî£¬Ïàµ±ÓÚÖ´ÐÐÁËÒ»¸ödosÃüÁî£¬¾ÍÏñÖ´ÐÐ echo XXX Ò»Ñù
-REM Ôò»áÔÚ¡¾±¾cmdÊµÀý¡¿ÖÐ£¬¼´Í¬Ò»¸ö½ø³ÌÖ´ÐÐ java ÃüÁî£¬»á×èÈû×¡±¾CMDµÄÖ´ÐÐ
-REM ¸Ã JAVA³ÌÐò µÄÊäÈëÊä³öÁ÷»á×Ô¶¯µÄÊ¹ÓÃ CMDÊµÀý µÄÊäÈëÊä³öÁ÷¡£
-REM ´ËÊ±Èç¹ûCMDÕý³£½áÊø£¬ÄÇÃ´JAVAÒ²»á½áÊø£¬µ«ÊÇÒòÎª×èÈû£¬ËùÒÔ²»»á³öÏÖÕâ¸öÇé¿ö£»
-REM Èç¹û CMD½ø³Ì ÒâÍâÍ£Ö¹£¬Ôò JAVA³ÌÐò ±äÎª¹Â¶ù½ø³Ì£¬²¢³ÖÓÐËÀÈ¥µÄCMD½ø³ÌµÄIOÁ÷
+REM ä¸ä½¿ç”¨ start å‘½ä»¤ï¼Œç›¸å½“äºŽæ‰§è¡Œäº†ä¸€ä¸ªdoså‘½ä»¤ï¼Œå°±åƒæ‰§è¡Œ echo XXX ä¸€æ ·
+REM åˆ™ä¼šåœ¨ã€æœ¬cmdå®žä¾‹ã€‘ä¸­ï¼Œå³åŒä¸€ä¸ªè¿›ç¨‹æ‰§è¡Œ java å‘½ä»¤ï¼Œä¼šé˜»å¡žä½æœ¬CMDçš„æ‰§è¡Œ
+REM è¯¥ JAVAç¨‹åº çš„è¾“å…¥è¾“å‡ºæµä¼šè‡ªåŠ¨çš„ä½¿ç”¨ CMDå®žä¾‹ çš„è¾“å…¥è¾“å‡ºæµã€‚
+REM æ­¤æ—¶å¦‚æžœCMDæ­£å¸¸ç»“æŸï¼Œé‚£ä¹ˆJAVAä¹Ÿä¼šç»“æŸï¼Œä½†æ˜¯å› ä¸ºé˜»å¡žï¼Œæ‰€ä»¥ä¸ä¼šå‡ºçŽ°è¿™ä¸ªæƒ…å†µï¼›
+REM å¦‚æžœ CMDè¿›ç¨‹ æ„å¤–åœæ­¢ï¼Œåˆ™ JAVAç¨‹åº å˜ä¸ºå­¤å„¿è¿›ç¨‹ï¼Œå¹¶æŒæœ‰æ­»åŽ»çš„CMDè¿›ç¨‹çš„IOæµ
 
-REM Ê¹ÓÃ start ÃüÁîÔò»áÔÚ¡¾±¾cmdÊµÀý¡¿¿ªÆô¡¾Ò»¸öÐÂµÄCMDÊµÀý¡¿£¬¼´ÐÂµÄ½ø³ÌÖÐÀ´Ö´ÐÐ java ÃüÁî£¬²»»á×èÈû×¡±¾CMDµÄÖ´ÐÐ¡£¸ñÊ½ start "Title" command
-REM ÐÂµÄ×Ó½ø³ÌµÄÊäÈëÊä³öÁ÷ÊÇÆä×Ô¼ºµÄ¶ÀÁ¢µÄ£¬²»Ê¹ÓÃ¸¸½ø³ÌµÄ¡£
-REM Í¬Ê±Èç¹û¸¸½ø³ÌÕý³£½áÊø£¬ÄÇÃ´×Ó½ø³ÌÈÔÈ»»á±£³ÖÔËÐÐ£¬³ÉÎªÒ»¸ö¹Â¶ù½ø³Ì¡£
+REM ä½¿ç”¨ start å‘½ä»¤åˆ™ä¼šåœ¨ã€æœ¬cmdå®žä¾‹ã€‘å¼€å¯ã€ä¸€ä¸ªæ–°çš„CMDå®žä¾‹ã€‘ï¼Œå³æ–°çš„è¿›ç¨‹ä¸­æ¥æ‰§è¡Œ java å‘½ä»¤ï¼Œä¸ä¼šé˜»å¡žä½æœ¬CMDçš„æ‰§è¡Œã€‚æ ¼å¼ start "Title" command
+REM æ–°çš„å­è¿›ç¨‹çš„è¾“å…¥è¾“å‡ºæµæ˜¯å…¶è‡ªå·±çš„ç‹¬ç«‹çš„ï¼Œä¸ä½¿ç”¨çˆ¶è¿›ç¨‹çš„ã€‚
+REM åŒæ—¶å¦‚æžœçˆ¶è¿›ç¨‹æ­£å¸¸ç»“æŸï¼Œé‚£ä¹ˆå­è¿›ç¨‹ä»ç„¶ä¼šä¿æŒè¿è¡Œï¼Œæˆä¸ºä¸€ä¸ªå­¤å„¿è¿›ç¨‹ã€‚
 
-REM ¿ÉÒÔÊ¹ÓÃ ProcessExplorer ²é¿´ ½áÊøÒ»¸öCMDÊµÀýÊ±£¬»áÒ»ÆðÉ±ËÀµÄ¹ØÁª½ø³Ì¡£
-REM Í¬Ê±ÕâÀïµÄwindowsÉÏ½ø³ÌµÄ¸¸×Ó¹ØÏµ×éÖ¯ÓÐÐ©Ææ¹Ö£¬ºÍÃüÁîµÄµ¥¶à½ø³Ì¶ÔÓ¦µÄ²»Ã÷ÀÊ£¬ÎªÊ²Ã´ÄØ£¿
-REM ¿ÉÒÔÊ¹ÓÃ pause À´¹Û²ìÔÚ start Æô¶¯Ê±£¬Èç¹û¸¸½ø³Ì»î×Å£¬ÐÂµÄ×Ó½ø³ÌÊôÓÚËû
+REM å¯ä»¥ä½¿ç”¨ ProcessExplorer æŸ¥çœ‹ ç»“æŸä¸€ä¸ªCMDå®žä¾‹æ—¶ï¼Œä¼šä¸€èµ·æ€æ­»çš„å…³è”è¿›ç¨‹ã€‚
+REM åŒæ—¶è¿™é‡Œçš„windowsä¸Šè¿›ç¨‹çš„çˆ¶å­å…³ç³»ç»„ç»‡æœ‰äº›å¥‡æ€ªï¼Œå’Œå‘½ä»¤çš„å•å¤šè¿›ç¨‹å¯¹åº”çš„ä¸æ˜Žæœ—ï¼Œä¸ºä»€ä¹ˆå‘¢ï¼Ÿ
+REM å¯ä»¥ä½¿ç”¨ pause æ¥è§‚å¯Ÿåœ¨ start å¯åŠ¨æ—¶ï¼Œå¦‚æžœçˆ¶è¿›ç¨‹æ´»ç€ï¼Œæ–°çš„å­è¿›ç¨‹å±žäºŽä»–
 
 endlocal
 if %ERRORLEVEL% == "1" goto error
