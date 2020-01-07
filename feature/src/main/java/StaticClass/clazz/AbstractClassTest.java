@@ -1,6 +1,4 @@
-package StaticClass;
-
-import IntergerTest.Main;
+package StaticClass.clazz;
 
 /**
  * Created by JasonFitch on 3/21/2019.

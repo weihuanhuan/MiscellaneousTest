@@ -1,4 +1,4 @@
-package StaticClass;
+package StaticClass.clazz;
 
 // import com.sun.org.apache.xpath.internal.operations.String;   这个String 会覆盖 java.lang 下的 String 类导致main方法识别失败！！！
 import java.io.IOException;
