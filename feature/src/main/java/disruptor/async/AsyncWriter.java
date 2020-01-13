@@ -13,6 +13,8 @@ public class AsyncWriter extends Writer {
 
     private transient boolean start;
 
+    private boolean discard;
+
     public AsyncWriter(File file) {
         super(file);
         loggerDisruptor.start();
@@ -43,13 +45,16 @@ public class AsyncWriter extends Writer {
 
     private void publish(final RingBufferLogEventTranslator translator) {
         if (!loggerDisruptor.tryPublish(translator)) {
-            loggerDisruptor.enqueueLogMessageInfo(translator);
+            if (!discard) {
+                loggerDisruptor.enqueueLogMessageInfo(translator);
+            }
         }
     }
 
     public void actualWriterMessage(final RingBufferLogEvent event) {
         char[] message = event.getMessage();
         writer.write(message, 0, message.length);
+        counter.incrementAndGet();
     }
 
     @Override
@@ -59,8 +64,8 @@ public class AsyncWriter extends Writer {
 
     public synchronized void close() {
         if (start) {
-            loggerDisruptor.stop(10, TimeUnit.SECONDS);
             start = false;
+            loggerDisruptor.stop(10, TimeUnit.SECONDS);
         }
         super.close();
     }

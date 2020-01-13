@@ -10,11 +10,13 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Writer {
 
     protected PrintWriter writer;
     protected Charset charset = StandardCharsets.ISO_8859_1;
+    protected AtomicInteger counter = new AtomicInteger(0);
 
     public Writer(File file) {
         try {
@@ -30,9 +32,14 @@ public class Writer {
     public synchronized void writerMessage(final CharArrayWriter message) {
         try {
             message.writeTo(writer);
+            counter.incrementAndGet();
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public AtomicInteger getCounter() {
+        return counter;
     }
 
     public synchronized void close() {
