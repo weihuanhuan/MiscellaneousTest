@@ -14,15 +14,24 @@ public class JarFileListTest {
 
     public static void main(String[] args) throws IOException {
 
-        String path = "F:\\JetBrains\\IntelliJ IDEA\\MiscellaneousTest\\springmvc\\target\\springmvc.war";
-        path.replaceAll("\\\\","/");
+        String userDir = System.getProperty("user.dir");
+        System.out.println(userDir);
+
+        String path = userDir + "/springmvc/target/springmvc.war";
         System.out.println(path);
 
         File file = new File(path);
         if (!file.exists() || !file.isFile()) {
             System.out.println("error");
+            return;
         }
 
+        System.out.println("################### JarFileGetJarEntrys ###################");
+        JarFileGetJarEntrys(file);
+
+    }
+
+    public static void JarFileGetJarEntrys(File file) throws IOException {
         JarFile jarFile = new JarFile(file);
 
         Enumeration<JarEntry> entries = jarFile.entries();
@@ -32,8 +41,24 @@ public class JarFileListTest {
             System.out.println(name);
         }
 
+        System.out.println("-----------------------");
+        //JF jar包中的路径不能以 /(根路径) 开始来查找
+//        JarEntry jarEntryRoot = jarFile.getJarEntry("");
+//        String name = jarEntryRoot.getName();
+//        System.out.println(name);
 
+//        JarEntry jarEntryRoot = jarFile.getJarEntry("/");
+//        String name = jarEntryRoot.getName();
+//        System.out.println(name);
+
+//        JarEntry jarEntryFile = jarFile.getJarEntry("/writerflushclose.jsp");
+//        String nameFile = jarEntryFile.getName();
+//        System.out.println(nameFile);
+
+        JarEntry jarEntryFile2 = jarFile.getJarEntry("writerflushclose.jsp");
+        String nameFile2 = jarEntryFile2.getName();
+        System.out.println(nameFile2);
+
+        jarFile.close();
     }
-
-
 }
