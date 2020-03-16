@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<project name="antContribXML" basedir=".">
+
+
+    <target name="antContrib">
+
+        <echo message="entrancing antContribXML antContrib"/>
+
+        <taskdef resource="net/sf/antcontrib/antlib.xml">
+            <classpath>
+                <pathelement location="E:\Temporary\libs-jar\ant-contrib-1.0b3.jar"/>
+            </classpath>
+        </taskdef>
+
+    </target>
+
+</project>

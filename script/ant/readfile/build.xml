@@ -1,0 +1,92 @@
+<project name="main" default="all" basedir=".">
+
+    <!--//JF import 的文件必须是完整的一个ant build 工程文件，即根结点是 <project>，-->
+    <!-- <!ENTITY extXML SYSTEM "./ext/ext.xml" > -->
+    <!-- 不同于xml文件的本身语法 ENTITY，这里的 import 是一个 ant 任务，前者是 xml 文件通用的语法，后则只属于 ant-->
+    <!-- entity 将指定的xml文件的内容插入到 实体名 出现的地方，即用实例变量来替换指定文件中的内容，所以他只需要一段对ant有意义的文本-->
+    <!-- 而 import 则是导入了另一个 ant 工程中的 target 和 properties，所以他需要指定一个符合 ant 的 build xml文件 -->
+    <import file="antContribXML.xml"/>
+
+    <!--//JF 使用 import 进来的 target 大部分情况就像使用本文件的 target 一样，具体区别看 ant 文档-->
+    <target name="all" depends="antContrib">
+
+        <echo>loadfile testing with properties substitute</echo>
+
+        <echo>load property from file</echo>
+        <property file="ssh.properties"></property>
+
+        <echo>set property directly</echo>
+        <property name="command.template.1" value="set value property from property directly"></property>
+
+        <echo>call testing target</echo>
+
+        <!-- property is immutable -->
+        <antcall target="loadfile-oldname"></antcall>
+
+        <!-- use a new  property to setting for loadfile -->
+        <antcall target="loadfile-newname"></antcall>
+
+        <antcall target="loadfile-striplinebreaks"></antcall>
+
+        <antcall target="loadfile-expandproperties"></antcall>
+
+        <!-- antContrib using variable substitution by default -->
+        <antcall target="loadfile-antContrib-For"></antcall>
+
+    </target>
+
+    <target name="loadfile-oldname">
+        <loadfile property="command.template.1" srcFile="command-template.sh"></loadfile>
+        <echo>${command.template.1}</echo>
+    </target>
+
+    <target name="loadfile-newname">
+        <loadfile property="command.template.2" srcFile="command-template.sh"></loadfile>
+        <echo>${command.template.2}</echo>
+    </target>
+
+    <target name="loadfile-striplinebreaks">
+        <loadfile property="command.template.3" srcFile="command-template.sh">
+            <filterchain>
+                <striplinebreaks/>
+            </filterchain>
+        </loadfile>
+
+        <echo>${command.template.3}</echo>
+    </target>
+
+    <target name="loadfile-expandproperties">
+        <loadfile property="command.template.4" srcFile="command-template.sh">
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </loadfile>
+
+        <echo>${command.template.4}</echo>
+    </target>
+
+    <target name="loadfile-antContrib-For">
+        <loadfile property="command.template.5" srcfile="command-template.sh"/>
+
+        <for param="line" list="${command.template.5}" delimiter="${line.separator}">
+            <sequential>
+                <echo>@{line}</echo>
+            </sequential>
+        </for>
+
+        <echo>
+            //JF
+            ${property} is used to reference Properties.
+            @{attribute} is used to reference Attributes in macrodef Tasks.
+            所以像 antContrib 中 自定义的参数 在传递的时只能使用 @{attribute name} 来引用
+        </echo>
+
+        <for param="line" list="${command.template.5}" delimiter="${line.separator}">
+            <sequential>
+                <echo>${line}</echo>
+            </sequential>
+        </for>
+
+    </target>
+
+</project>
