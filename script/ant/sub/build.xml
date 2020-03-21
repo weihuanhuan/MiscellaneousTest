@@ -1,12 +1,12 @@
 <!DOCTYPE project [
-<!ENTITY extXML SYSTEM "../ext/ext.xml" >
+  <!ENTITY antContribEntity SYSTEM "../common/antContribEntity.xml" >
 ]>
 
 <project name="sub" default="all" basedir=".">
   
-  &extXML;    
+  &antContribEntity;
 
-  <target name="all" depends="extTaskdef" >
+  <target name="all" depends="antContribEntity" >
       <echo message="entrancing sub all" />
       <antcall target="sub-for" />
       <echo message="exiting sub all" />

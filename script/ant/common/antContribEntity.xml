@@ -1,6 +1,6 @@
-<target name="extTaskdef" >
+<target name="antContribEntity" >
     
-    <echo message="entrancing extXML extTaskdef"/>
+    <echo message="entrancing antContribEntity"/>
     
     <taskdef resource="net/sf/antcontrib/antlib.xml">
         <classpath>

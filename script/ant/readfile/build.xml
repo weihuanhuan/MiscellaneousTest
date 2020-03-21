@@ -1,14 +1,14 @@
 <project name="main" default="all" basedir=".">
 
     <!--//JF import 的文件必须是完整的一个ant build 工程文件，即根结点是 <project>，-->
-    <!-- <!ENTITY extXML SYSTEM "./ext/ext.xml" > -->
+    <!-- <!ENTITY extXML SYSTEM "./antContribEntity.xml.xml" > -->
     <!-- 不同于xml文件的本身语法 ENTITY，这里的 import 是一个 ant 任务，前者是 xml 文件通用的语法，后则只属于 ant-->
     <!-- entity 将指定的xml文件的内容插入到 实体名 出现的地方，即用实例变量来替换指定文件中的内容，所以他只需要一段对ant有意义的文本-->
     <!-- 而 import 则是导入了另一个 ant 工程中的 target 和 properties，所以他需要指定一个符合 ant 的 build xml文件 -->
-    <import file="antContribXML.xml"/>
+    <import file="../common/antContribProject.xml"/>
 
     <!--//JF 使用 import 进来的 target 大部分情况就像使用本文件的 target 一样，具体区别看 ant 文档-->
-    <target name="all" depends="antContrib">
+    <target name="all" depends="antContribTarget">
 
         <echo>loadfile testing with properties substitute</echo>
 
