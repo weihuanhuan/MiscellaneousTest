@@ -1,0 +1,39 @@
+<project name="main" default="all" basedir=".">
+
+    <import file="../common/antContribProject.xml"/>
+
+    <target name="all" depends="antContribTarget">
+
+
+        <!--
+            //JF 注意设置 环境变量前缀的时机，
+            如果他开启的早于 file properties 的解析，那么属性文件中可以使用 env. 来引用OS环境变量。
+            否则，由于 properties 先解析，解析时 key 对应的 env引用 还是普通的 字面量，没有特殊含义，
+            此时即使再打开 环境变量前缀，也不会再发生 $变量扩展，而是直接使用 解析时 设置的字面量。
+        -->
+        <property environment="env"/>
+
+        <!--引用符合 java.util.Properties 格式的文件-->
+        <property file="java.properties"></property>
+
+        <!--properties文件中，允许在当前文件的变量中引用同文件中出现的变量值，而且他们出现的顺序无关紧要-->
+        <echo>${jvmoptions}</echo>
+        <echo>${jvmoptions.debug}</echo>
+
+        <!--启用OS环境变量，并指定前缀为 env-->
+        <property environment="env"/>
+
+        <echo></echo>
+        <!--JVM系统属性，注意JVM系统属性是 小写的，以点分割 -->
+        <echo>${java.home}</echo>
+        <!--OS环境变量，而OS环境变量的名字取决于OS的配置-->
+        <echo>${env.JAVA_HOME}</echo>
+
+        <echo></echo>
+        <!--properties可以引用JVM属性，但是不能引用OS环境变量-->
+        <echo>${java.home.jvm}</echo>
+        <echo>${java.home.os}</echo>
+
+    </target>
+
+</project>
