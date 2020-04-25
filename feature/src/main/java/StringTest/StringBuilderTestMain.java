@@ -3,7 +3,7 @@ package StringTest;
 /**
  * Created by JasonFitch on 1/7/2019.
  */
-public class StringTestMain {
+public class StringBuilderTestMain {
 
 
     public static void main(String[] args) {
