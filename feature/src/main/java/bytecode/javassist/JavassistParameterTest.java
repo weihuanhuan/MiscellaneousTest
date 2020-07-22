@@ -1,5 +1,6 @@
 package bytecode.javassist;
 
+import bytecode.material.MyChildInteger;
 import bytecode.material.SleeperParameter;
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -25,8 +26,8 @@ public class JavassistParameterTest {
 
         Class<?> aClass = ctClass.toClass();
 
-        SleeperParameter<Integer> integerSleeperParameter = new SleeperParameter<>();
-        Class<? extends SleeperParameter> aClass1 = integerSleeperParameter.getClass();
+        SleeperParameter integerSleeperParameter = new SleeperParameter<MyChildInteger>(){};
+        Class<? extends SleeperParameter> integerSleeperParameterClass = integerSleeperParameter.getClass();
 
         System.out.println();
     }

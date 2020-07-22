@@ -3,7 +3,7 @@ package bytecode.material;
 /**
  * Created by JasonFitch on 7/22/2020.
  */
-public class SleeperParameter<CTI extends Integer> {
+public abstract class SleeperParameter<CTI extends MyInteger> {
 
     public SleeperParameter() {
     }
@@ -17,7 +17,7 @@ public class SleeperParameter<CTI extends Integer> {
     public SleeperParameter(long timeout, Long timeoutL, CTI timeoutCTI) {
     }
 
-    public <CPL extends Long> SleeperParameter(long timeout, Long timeoutL, CPL timeoutCPL) {
+    public <CPL extends MyLong> SleeperParameter(long timeout, Long timeoutL, CPL timeoutCPL) {
     }
 
     //注意构造方法没有返回值部分，连 void 都没有，void 也是返回值的一种，代表返回的是 空，
@@ -52,21 +52,21 @@ public class SleeperParameter<CTI extends Integer> {
     //而在类型擦出后，这个泛型方法将和 上面的 Long 类型的 sleep 重载拥有相同的函数签名，导致无法 javac 编译。
     //编译时 方法的返回值是不考虑在签名中的，但是 jvm 是会区分重载方法的返回值的。
     //Error:(22, 34) java: name clash: <T>sleep(T) and sleep(java.lang.Long) have the same erasure
-    public <PL extends Long> void anotherSleep(PL timeoutPL) throws InterruptedException {
+    public <PL extends MyLong> void anotherSleep(PL timeoutPL) throws InterruptedException {
         long start = System.currentTimeMillis();
-        Thread.sleep(timeoutPL);
+        Thread.sleep(Long.parseLong(String.valueOf(timeoutPL)));
         long end = System.currentTimeMillis();
         System.out.println(end - start);
     }
 
-    public <PL extends Long> void sleep(long timeout, Long timeoutL, PL timeoutPL) throws InterruptedException {
+    public <PL extends MyLong> void sleep(long timeout, Long timeoutL, PL timeoutPL) throws InterruptedException {
         long start = System.currentTimeMillis();
         Thread.sleep(timeout);
         long end = System.currentTimeMillis();
         System.out.println(end - start);
     }
 
-    public <PL extends Long> void sleep(long[] timeoutA, Long[] timeoutLA, PL[] timeoutPLA) throws InterruptedException {
+    public <PL extends MyLong> void sleep(long[] timeoutA, Long[] timeoutLA, PL[] timeoutPLA) throws InterruptedException {
         long start = System.currentTimeMillis();
         Thread.sleep(timeoutA[0]);
         long end = System.currentTimeMillis();
