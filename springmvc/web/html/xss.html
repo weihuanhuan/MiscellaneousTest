@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>xss attack</title>
+
+</head>
+<body>
+<h1>xss attack</h1>
+
+<!-- img 标签的 xss 攻击的前提-->
+
+<!--
+    div 标签中可以存在有效的 img 子标签，所以这里会执行 img 的加载，由于 src 是一个错误的地址
+    进而触发 onerror 时间的执行，导致 img 标签执行了攻击者的自定义的 prompt 函数
+-->
+<div>
+    <img id="imgInDiv1" src="dummy-src" onerror="prompt('normal hit from div1')">
+</div>
+
+<!-- 但是在 select 标签中由于 img 是无效标签，其直接在解析时被忽略，故不会触发图片加载，所以没有机会执行攻击者的脚本 -->
+<select id="select1">
+    <!--有效的标签-->
+    <option value="value1" title="title1">description1</option>
+    <!--无效的标签-->
+    <img id="imgInSelect" src="dummy-src" onerror="prompt('normal hit from select1')">
+</select>
+
+
+<!--利用合法标签的攻击例子-->
+
+<!--攻击代码:
+通过 "> 组合来提前结束一个标签的属性赋值操作，并提前闭合该标签，来使攻击标签生效
+"><img id="imgInDiv" src="dummy-src" onerror="prompt('you are attacked from div')" alt="miss-pic-div">
+ -->
+
+<!--原始代码:
+原始代码中 ${value} 可以在运行时替换为真实的用户输出的 string 值来显示
+<div id="div1" onclick="alert('click from div to display ${value}')"></div>
+-->
+
+<!--攻击后的代码
+被攻击的代码中，由于攻击者输入了 value 的值为攻击代码，导致了 div 提前被闭合，从而执行了攻击者的 img 标签，
+这就是典型的 xss 反射型攻击，每次的攻击数据来源于攻击者每次的输入数据。
+如果这个 value 的内容是攻击者通过提交到数据库中，而网页在展示时会将其读取出来的话，那么这个攻击的数据来源变成了后台数据库，这是典型的 xss 存储型攻击。
+-->
+<div id="div2" onclick="alert('click from div to display "><img id="imgInDiv2" src="dummy-src" onerror="prompt('you are attacked from div2')">${value}')"></div>
+
+
+<!--
+     虽然在 select 中 img 是无效标签，但是攻击者可以利用修改注释的闭合范围来将 select 标签注释掉，
+     此时内部的 img 标签变成外围标签了,那么他依旧可以触发 img 的加载，进而执行攻击者的函数
+-->
+
+<!--利用合法注释的攻击例子-->
+
+<!--
+代码原本的起始注释，
+这里代码的原意是这个 select2 是不应该使用的，但是其没有删掉代码，而是通过注释的形式来屏蔽，样这样注释可能被攻击者利用
+
+<select id="select2">
+    <!--有效的标签-->
+    <option value=" value2" title="title2">description2</option>
+    <!--攻击者提前结束了代码原本注释的标签-->
+    --><img id="imgInSelect2" src="dummy-src" onerror="prompt('you are attacked from select2')">
+</select>
+
+-->
+代码原本的结束注释
+
+
+<!--攻击参数的传递-->
+
+<!--
+    由于 http 对于 url 的合法字符有特殊的规定，因此如果攻击代码出现在 url 中我们应该先对其进行编码，
+    防止在 http 协议解析阶段，由于 url 中存在不符合 rfc 标准中的字符，直接使得 http 处理失败，那就更不要谈攻击了。
+
+    使用 chrome 调试时我们可以方便的在其 console 中直接调用浏览器的相关函数来处理我们的数据，
+    比如要编码 url 中的攻击代码片段，可以直接在 console 中执行下面函数即可
+
+    处理整个 url 中的一部分，指完整http请求地址中的某个参数
+    无视特殊的 http 协议字符，将所有字符作为普通字符统一编码
+    encodeURIComponent("\"><iMg SrC=1 oNeRrOr=prompt(1)>")
+    "%22%3E%3CiMg%20SrC%3D1%20oNeRrOr%3Dprompt(1)%3E"
+
+    处理整个 url，指一个完整的http请求地址
+    考虑rfc定义的http中有特殊含义的保留字符,比如 = 用于分割请求参数值和名，其不会被编码
+    encodeURI("\"><iMg SrC=1 oNeRrOr=prompt(1)>")
+    "%22%3E%3CiMg%20SrC=1%20oNeRrOr=prompt(1)%3E"
+
+    而如果攻击数据是存在于 http 报文体中的话，那么就不一定要进行编码处理，此时没有 url 合法字符解析的问题。
+    比如 post 提交的时候数据往往在报文体中。
+
+-->
+
+</body>
+</html>
