@@ -18,6 +18,11 @@
     <img id="imgInDiv1" src="dummy-src" onerror="prompt('normal hit from div1')">
 </div>
 
+<!--另外注意各种 HTML Event Attributes 都可以触发之类攻击， 比如 onclick=xxx 这样子-->
+<div>
+    <img id="imgInDiv11" src="dummy-src" onclick="prompt('normal hit from div11 with onclick')">
+</div>
+
 <!-- 但是在 select 标签中由于 img 是无效标签，其直接在解析时被忽略，故不会触发图片加载，所以没有机会执行攻击者的脚本 -->
 <select id="select1">
     <!--有效的标签-->
