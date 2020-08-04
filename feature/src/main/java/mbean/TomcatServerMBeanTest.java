@@ -26,9 +26,24 @@ public class TomcatServerMBeanTest {
 
     public static void main(String[] args) throws IOException, MalformedObjectNameException, IntrospectionException, InstanceNotFoundException, ReflectionException, AttributeNotFoundException, MBeanException {
         //server enable jmx jvm options
+        //mbean server 开启 jmx connector 监听，并指定端口
         //-Dcom.sun.management.jmxremote.port=6600
+        //mbean server 指定 RMI Registry 端口为特定的端口，
+        //注意如果不指定为和 jmx connector 使用相同的端口，那么他将使用一个随机的端口开监听，这会造成 tomcat 多开启一个端口。
+        //-Dcom.sun.management.jmxremote.rmi.port=6600
+        //mbean server 禁用 ssl 认证
         //-Dcom.sun.management.jmxremote.ssl=false
+        //mbean server 禁用 任何 认证
         //-Dcom.sun.management.jmxremote.authenticate=false
+
+        //tomcat server debug
+        //jdk 1.5+，只会开启一个监听端口，
+        //虽然下面的 jdk1.4 形式的还是可以使用的，但是新版本推荐使用这种形式，
+        //原因是从 java5 开始，java变更了他的 debug 模式，提供了这里的jdk1.5+的 debug 选项，
+        //如果使用jdk1.4形式的选项，会导致使用 -javaagent 启动的程序在 main 执行之前的代码无法 debug 到。
+        //-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=28003
+        //jdk 1.4，只会开启一个监听端口
+        //-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=28003
 
         String host = "localhost";
         String port = "6600";
