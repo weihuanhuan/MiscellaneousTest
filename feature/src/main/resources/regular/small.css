@@ -1,0 +1,15 @@
+@font-face {
+    font-family: 'dotsfont';
+    src: url('data:application/x-font-woff2;charset=utf-8;base64,asdsdwdsadasdsdwdsadasdsdwdsadasdsdwdsadasdsdwdsadasdsdwdsad');
+}
+
+/* 有转义，正常闭合 */
+.icon:before {
+    content: "\e656 有转义，正常闭合";
+}
+
+/* 有转义，没有闭合 */
+/* 这里是最后一个内容快，所以是内容的结束，合法就匹配，不可发就不匹配 */
+.icon:before {
+    content: "\e601 有转义，没有闭合\";
+}
