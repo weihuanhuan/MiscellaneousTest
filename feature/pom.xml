@@ -17,6 +17,10 @@
 
     <properties>
         <trilead-ssh2.version>1.0.0-build217</trilead-ssh2.version>
+
+        <rhino-js.version>1.7R2</rhino-js.version>
+        <org.mozilla-rhino.version>1.7.7.2</org.mozilla-rhino.version>
+
         <!--jdk8-->
         <!--<javassist.version>3.27.0-GA</javassist.version>-->
         <!--jdk7-->
@@ -174,6 +178,19 @@
             <version>${javassist.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/rhino/js -->
+        <!--<dependency>-->
+            <!--<groupId>rhino</groupId>-->
+            <!--<artifactId>js</artifactId>-->
+            <!--<version>${rhino-js.version}</version>-->
+        <!--</dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/org.mozilla/rhino -->
+        <dependency>
+            <groupId>org.mozilla</groupId>
+            <artifactId>rhino</artifactId>
+            <version>${org.mozilla-rhino.version}</version>
+        </dependency>
 
     </dependencies>
 
