@@ -1,12 +1,12 @@
 package crypto.gm;
 
 import java.security.SecureRandom;
-
 import org.bouncycastle.crypto.BufferedBlockCipher;
 import org.bouncycastle.crypto.CipherKeyGenerator;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.bouncycastle.crypto.KeyGenerationParameters;
 import org.bouncycastle.crypto.engines.SM4Engine;
+import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.paddings.BlockCipherPadding;
 import org.bouncycastle.crypto.paddings.PKCS7Padding;
 import org.bouncycastle.crypto.paddings.PaddedBufferedBlockCipher;
@@ -18,6 +18,21 @@ import org.bouncycastle.crypto.params.KeyParameter;
 public class SM4Cipher {
 
     private static int SM4_KEY_LENGTH = 128;
+
+    private static int PKCS5S2_GENERATOR_ITERATION_COUNT = 1024;
+
+    public static byte[] generateKeyFromPasswd(String password) {
+        PKCS5S2ParametersGenerator parametersGenerator = new PKCS5S2ParametersGenerator();
+
+        char[] toCharArray = password.toCharArray();
+        byte[] toUTF8Bytes = PKCS5S2ParametersGenerator.PKCS5PasswordToUTF8Bytes(toCharArray);
+        parametersGenerator.init(toUTF8Bytes, toUTF8Bytes, PKCS5S2_GENERATOR_ITERATION_COUNT);
+
+        KeyParameter keyParameter = (KeyParameter) parametersGenerator.generateDerivedParameters(SM4_KEY_LENGTH);
+
+        byte[] key = keyParameter.getKey();
+        return key;
+    }
 
     public static byte[] generateKey() {
         CipherKeyGenerator keyGenerator = new CipherKeyGenerator();
