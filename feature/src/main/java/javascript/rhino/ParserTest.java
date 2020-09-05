@@ -34,6 +34,14 @@ public class ParserTest {
         CompilerEnvirons compilerEnvirons = new CompilerEnvirons();
         compilerEnvirons.setLanguageVersion(Context.VERSION_1_6);
 
+        //对于 rhino 来说其 1.7版本的正式发布，其更新了语法树的解析，
+        //而且还变动了 rhino 的发布坐标
+        //新版本 1.7.7.2 ---> org.mozilla:rhino:jar:1.7.7.2
+        //老版本 1.7R2   ---> rhino:js:jar:1.7R2
+
+        //另外 1.7.7.2 之后的发布版本为 1.7.8 其将 java运行时升级为了 jdk8
+
+        //而且这个设置默认就是 true 了，但是对于老版本的 1.7R2 需要手动设置才行
         compilerEnvirons.setReservedKeywordAsIdentifier(true);
 //        compilerEnvirons.setAllowMemberExprAsFunctionName(true);
 //        compilerEnvirons.setXmlAvailable(true);
