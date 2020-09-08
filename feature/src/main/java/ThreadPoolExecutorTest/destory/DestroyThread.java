@@ -11,12 +11,19 @@ public class DestroyThread extends Thread {
         this.runnable = runnable;
     }
 
+    public DestroyThread(String name, Runnable runnable) {
+        this.runnable = runnable;
+        setName(name);
+    }
+
     @Override
     public void run() {
         try {
             runnable.run();
         } catch (ThreadNormalStopException ex) {
-            System.out.println("ThreadNormalStopException threadID:" + this.getId());
+            //由 DestroyableThreadPoolExecutor.afterExecute 中抛出的异常， 终止了 runWorker 中的循环
+            //然后由 java.util.concurrent.ThreadPoolExecutor.processWorkerExit 来善后处理 Worker 的退出
+            System.out.println("ThreadNormalStopException threadName:" + this.getName());
         }
     }
 }

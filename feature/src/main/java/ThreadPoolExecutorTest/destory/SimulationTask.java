@@ -9,9 +9,8 @@ public class SimulationTask implements Runnable {
 
     @Override
     public void run() {
-
-        System.out.println("TaskThreadID: " + Thread.currentThread().getId());
         try {
+            System.out.println("TaskThreadName: " + Thread.currentThread().getName());
             TimeUnit.MILLISECONDS.sleep(10);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
