@@ -31,13 +31,15 @@ public class SSHLoginTest {
         arrayOutputStream.reset();
 
         System.out.println("---------------- login connection login -----------------------");
-        String commandLogin = "echo hello-login";
+        String commandLogin = "echo ---- login env ---- && env";
         SSHConnection.loginExec(commandLogin, arrayOutputStream);
         System.out.print(arrayOutputStream.toString());
         arrayOutputStream.reset();
 
+        //对比 login 和 non-login 的 env 命令结果，可以发现 bash 在执行时确实使用了不同的 环境变量
+        //而这些有差异的环境变量正式来源于 login 和 non-login 对于登录脚本的调用不同而造成的，主要就是 profile 系列的脚本
         System.out.println("---------------- login connection non-login -----------------------");
-        String commandNonLogin = "echo hello-non-login";
+        String commandNonLogin = "echo ---- non-login env ---- && env";
         SSHConnection.nonLoginExec(commandNonLogin, arrayOutputStream);
         System.out.print(arrayOutputStream.toString());
         arrayOutputStream.reset();
