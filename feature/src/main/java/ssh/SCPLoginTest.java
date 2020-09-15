@@ -45,10 +45,14 @@ public class SCPLoginTest {
 
         //请求一个 pty ，将返回一个类似 xshell 一样的交互式界面，其中包含了提示符，终端显示状态等，如颜色之类的，
         //如果不请求 pty ，那么将仅仅在 stream（in，out，err） 中包含原始的 shell 处理数据
+        //这里的请求 pty 其实相当于是启用了一个 interactive shell 。
 //        session.requestPTY("vt100", 0, 0, 0, 0, null);
 
         //开启一个 shell,来执行 bash 命令，可以触发 bash 的 login 脚本，而且执行命令时不是必须需要 pty 的存在。
         //这里其实是在 ssh的 session 中启动了 bash 命令，可以通过在 linux 上的 pstree 发现 sshd 下面增加了 bash 的子进程
+        //这个函数实质上是发起了一个 login shell 来执行命令，
+
+        //如果配合上请求 pty 一起使用那么就是 交互式登录 shell 了，这就是和 ssh u@h 的效果一样了。
         session.startShell();
 
         //执行一个 shell 命令，注意需要我们提供一个换行来标识命令输入完毕，就像在终端中按下回车时一样。
@@ -68,7 +72,8 @@ public class SCPLoginTest {
         //同时最好在使用 login shell 时，最后的命令后执行 exit 这样子可以正确的执行从 login 到 logout 的所有 bash 脚本。
         stdin.close();
 
-        //Session.execCommand 模式使用 交互式非登陆 bash 执行命令，不会调用 bash 的 profile 系列文件
+        //Session.execCommand 模式使用 非交互式非登陆 bash 执行命令，在本地 bash 中他是不会调用 profile 以及 bashrc 系列的文件
+        //但是由于他是使用 sshd 远程调用的，那么 bash 在这种特殊情况下会默认加载 .bashrc 的文件。
         //而且使用 Session.startShell 和 Session.execCommand 是相互冲突的，不能一起使用。
         //Exception in thread "main" java.io.IOException: A remote execution has already started.
         //session.execCommand(cmd);
@@ -82,6 +87,7 @@ public class SCPLoginTest {
         System.out.println("---------------- ssh command -----------------------");
 
         SCPClient scpClient = connection.createSCPClient();
+        //scp 命令的本质是使用了 非登陆非交互式的 bash 模式
         //scp 的 put 接口会调用 com.trilead.ssh2.Connection.openSession() 以及 com.trilead.ssh2.Session.close()
         scpClient.put(sourceFile, targetDir);
         //在 session 关闭后，session 的状态以及其流中的内容依旧是可以读取的

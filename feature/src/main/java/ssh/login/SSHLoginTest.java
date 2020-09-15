@@ -23,19 +23,22 @@ public class SSHLoginTest {
         ByteArrayOutputStream arrayOutputStream = new ByteArrayOutputStream();
         SSHConnection SSHConnection = new SSHConnection(connection);
 
-        System.out.println("---------------- login connection login -----------------------");
+        //交互登录
+        System.out.println("---------------- login connection login with pty -----------------------");
         String term = "vt100";
-        String commandPTY = "ls -l";
+        String commandPTY = "ls -l && env";
         SSHConnection.loginWithPTYExec(term, commandPTY, arrayOutputStream);
         System.out.print(arrayOutputStream.toString());
         arrayOutputStream.reset();
 
+        //非交互登录
         System.out.println("---------------- login connection login -----------------------");
         String commandLogin = "echo ---- login env ---- && env";
         SSHConnection.loginExec(commandLogin, arrayOutputStream);
         System.out.print(arrayOutputStream.toString());
         arrayOutputStream.reset();
 
+        //非交互非登录
         //对比 login 和 non-login 的 env 命令结果，可以发现 bash 在执行时确实使用了不同的 环境变量
         //而这些有差异的环境变量正式来源于 login 和 non-login 对于登录脚本的调用不同而造成的，主要就是 profile 系列的脚本
         System.out.println("---------------- login connection non-login -----------------------");
