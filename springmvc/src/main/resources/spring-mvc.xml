@@ -90,35 +90,36 @@
         at org.springframework.beans.factory.annotation.InitDestroyAnnotationBeanPostProcessor.postProcessBeforeInitialization(InitDestroyAnnotationBeanPostProcessor.java:132)
     -->
 
+    <!--单数据源，被动态数据源所使用-->
+    <!--<bean id="javatest" class="org.springframework.jndi.JndiObjectFactoryBean">-->
+        <!--<property name="jndiName">-->
+            <!--<value>java:comp/env/jdbc/javatest</value>-->
+        <!--</property>-->
+    <!--</bean>-->
 
-    <bean id="javatest" class="org.springframework.jndi.JndiObjectFactoryBean">
-        <property name="jndiName">
-            <value>java:comp/env/jdbc/javatest</value>
-        </property>
-    </bean>
+    <!--<bean id="demo" class="org.springframework.jndi.JndiObjectFactoryBean">-->
+        <!--<property name="jndiName">-->
+            <!--<value>java:comp/env/jdbc/demo</value>-->
+        <!--</property>-->
+    <!--</bean>-->
 
-    <bean id="demo" class="org.springframework.jndi.JndiObjectFactoryBean">
-        <property name="jndiName">
-            <value>java:comp/env/jdbc/demo</value>
-        </property>
-    </bean>
+    <!--动态数据源，提供对多个单数据的负载均衡-->
+    <!--<bean id="dynamic" class="com.bes.enterprise.jdbc.datasource.LoadBalanceDataSource">-->
+        <!--<property name="targetDataSources">-->
+            <!--<map key-type="java.lang.String">-->
+                <!--<entry key="javatest" value-ref="javatest"/>-->
+                <!--<entry key="demo" value-ref="demo"/>-->
+            <!--</map>-->
+        <!--</property>-->
+        <!--&lt;!&ndash; 默认目标数据源为主库数据源 &ndash;&gt;-->
+        <!--<property name="defaultTargetDataSource" ref="javatest"/>-->
+    <!--</bean>-->
 
-    <!--动态数据源-->
-    <bean id="dynamic" class="com.bes.enterprise.jdbc.datasource.LoadBalanceDataSource">
-        <property name="targetDataSources">
-            <map key-type="java.lang.String">
-                <entry key="javatest" value-ref="javatest"/>
-                <entry key="demo" value-ref="demo"/>
-            </map>
-        </property>
-        <!-- 默认目标数据源为主库数据源 -->
-        <property name="defaultTargetDataSource" ref="javatest"/>
-    </bean>
-
-    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource">
-            <ref bean="dynamic"/>
-        </property>
-    </bean>
+    <!--jdbcTemlate，使用动态数据源来访问数据库-->
+    <!--<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">-->
+        <!--<property name="dataSource">-->
+            <!--<ref bean="dynamic"/>-->
+        <!--</property>-->
+    <!--</bean>-->
 
 </beans>

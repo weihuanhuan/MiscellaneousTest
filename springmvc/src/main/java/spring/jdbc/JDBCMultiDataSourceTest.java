@@ -1,14 +1,13 @@
 package spring.jdbc;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Properties;
-import javax.annotation.Resource;
-import javax.sql.DataSource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Created by JasonFitch on 6/5/2019.
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class JDBCMultiDataSourceTest {
 
-    @Resource
+//    @Resource
     private JdbcTemplate jdbcTemplate;
 
     @GetMapping("multijdbc")
