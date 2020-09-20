@@ -54,4 +54,40 @@
     <!--<res-auth>Container</res-auth>-->
     <!--</resource-ref>-->
 
+    <!--应用的默认首页-->
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!--受保护的web资源集配置-->
+    <security-constraint>
+        <!--受保护的资源集-->
+        <web-resource-collection>
+            <web-resource-name>protected resource</web-resource-name>
+            <url-pattern>/auth/*</url-pattern>
+        </web-resource-collection>
+        <!--可以合法访问本资源集的角色-->
+        <auth-constraint>
+            <role-name>springweb</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <!--应用的认证配置-->
+    <login-config>
+        <!--指定具体的认证方法-->
+        <auth-method>FORM</auth-method>
+        <!--BASIC 认证方式的安全域配置，用来username和password的哪个安全域中验证其合法性-->
+        <realm-name>file</realm-name>
+        <!--FORM 认证方式的特定配置-->
+        <form-login-config>
+            <form-login-page>/auth/login.jsp</form-login-page>
+            <form-error-page>/auth/error.jsp</form-error-page>
+        </form-login-config>
+    </login-config>
+
+    <!--应用使用的角色配置,这里的角色需要对应到具体的 server 中，对于 tomcat 而言默认就是 tomcat-users.xml 中存在的角色 -->
+    <security-role>
+        <role-name>springweb</role-name>
+    </security-role>
+
 </web-app>
