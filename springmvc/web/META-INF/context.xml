@@ -1,29 +1,29 @@
 <?xml version='1.0' encoding='utf-8'?>
 <Context>
 
-    <Resources>
-
+    <!-- 配置额外的应用资源，他们以外挂的形式放在应用外部，但是其使用效果就像是和应用打包到了一起一样 -->
+    <!--<Resources>-->
         <!--采用目录的模式会将该目录下所有的资源都遍历进去-->
-        <PostResources base="C:\external\dir"
-                       className="org.apache.catalina.webresources.DirResourceSet"
-                       webAppMount="/WEB-INF/lib"/>
+        <!--<PostResources base="C:\external\dir"-->
+                       <!--className="org.apache.catalina.webresources.DirResourceSet"-->
+                       <!--webAppMount="/WEB-INF/lib"/>-->
 
-        <PostResources base="C:\external\jar.jar"
-                       className="org.apache.catalina.webresources.JarResourceSet"
-                       webAppMount="/WEB-INF/classes"/>
+        <!--<PostResources base="C:\external\jar.jar"-->
+                       <!--className="org.apache.catalina.webresources.JarResourceSet"-->
+                       <!--webAppMount="/WEB-INF/classes"/>-->
 
-        <PostResources base="C:\external\file\externaljsp.jsp"
-                       className="org.apache.catalina.webresources.FileResourceSet"
-                       webAppMount="/externaljsp.jsp"/>
+        <!--<PostResources base="C:\external\file\externaljsp.jsp"-->
+                       <!--className="org.apache.catalina.webresources.FileResourceSet"-->
+                       <!--webAppMount="/externaljsp.jsp"/>-->
 
-        <PostResources base="C:\external\jarinwar.war"
-                       className="org.apache.catalina.webresources.WarResourceSet"
-                       webAppMount="/"/>
+        <!--<PostResources base="C:\external\jarinwar.war"-->
+                       <!--className="org.apache.catalina.webresources.WarResourceSet"-->
+                       <!--webAppMount="/"/>-->
 
         <!-- WarResourceSet使用时对文件类型没有具体的要求 -->
-        <PostResources base="C:\external\jarincar.car"
-                       className="org.apache.catalina.webresources.WarResourceSet"
-                       webAppMount="/"/>
+        <!--<PostResources base="C:\external\jarincar.car"-->
+                       <!--className="org.apache.catalina.webresources.WarResourceSet"-->
+                       <!--webAppMount="/"/>-->
 
         <!--
             org.apache.catalina.webresources.JarWarResourceSet
@@ -35,8 +35,7 @@
 
             另外同名的Jar包，会出现覆盖的问题，假如jarA 有 A， 另一个JarA 有A、B，那么在前面的JarA是最终有效的Jar。
         -->
-
-    </Resources>
+    <!--</Resources>-->
 
 
 </Context>
