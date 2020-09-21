@@ -38,5 +38,5 @@ tomcat.*/
 !configuration/**/*.jar
 !script/ext/
 !script/ext/**/*.jar
-!external/
-!external/**/*.*
+!springmvc/web/external/
+!springmvc/web/external/**/*.*
