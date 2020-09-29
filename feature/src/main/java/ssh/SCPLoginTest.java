@@ -101,7 +101,7 @@ public class SCPLoginTest {
         System.out.println("---------------- connection close -----------------------");
     }
 
-    private static void printSessionStatus(Session session) {
+    public static void printSessionStatus(Session session) {
         int waitForCondition = session.waitForCondition(ChannelCondition.EXIT_STATUS, 1000 * 5);
         System.out.println("waitForCondition: " + waitForCondition);
 
@@ -109,7 +109,7 @@ public class SCPLoginTest {
         System.out.println("exitStatus: " + exitStatus);
     }
 
-    private static void processSessionStream(Session session) throws IOException {
+    public static void processSessionStream(Session session) throws IOException {
         InputStream stdout = session.getStdout();
         readStream(stdout);
         System.out.println("---- session.getStdout() ----");
@@ -119,7 +119,7 @@ public class SCPLoginTest {
         System.out.println("---- session.getStderr() ----");
     }
 
-    private static void readStream(InputStream inputStream) throws IOException {
+    public static void readStream(InputStream inputStream) throws IOException {
         //整行整行的读取，避免 stdout 或者 stderr 中的某行数据被拆分掉，影响结果的观察。
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
