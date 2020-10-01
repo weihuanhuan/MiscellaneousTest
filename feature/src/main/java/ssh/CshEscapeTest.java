@@ -6,7 +6,7 @@ import com.trilead.ssh2.Session;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class CshEsacpeTest {
+public class CshEscapeTest {
 
     public static void main(String[] args) throws IOException {
         String hostname = "192.168.88.150";
