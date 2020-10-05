@@ -35,6 +35,5 @@
 
     <a href="http://ltpa.com:8080/springmvc/auth/protected.jsp">cross-domain ltpa.com protected.jsp</a>
     <br/>
-
   </body>
 </html>

@@ -2,12 +2,12 @@
 
 <html>
     <head>
-        <title>login protected page</title>
+        <title>protected page</title>
     </head>
 
     <body>
         <div>
-            <p>login page protected</p>
+            <p>protected page</p>
 
             <%
                 String remoteUser = request.getRemoteUser();
@@ -16,7 +16,12 @@
             <p>request.getRemoteUser():    <%= remoteUser %>.</p>
             <p>request.getUserPrincipal(): <%= userPrincipal %>.</p>
 
-            <a href="logout.jsp">logout.jsp</a>
+            <a href="requestLogout.jsp">requestLogout.jsp</a>
+            <br/>
+            <a href="sessionLogout.jsp">sessionLogout.jsp</a>
+            <br/>
+            <a href="protected.jsp">protected.jsp</a>
+            <br/>
         </div>
     </body>
 </html>

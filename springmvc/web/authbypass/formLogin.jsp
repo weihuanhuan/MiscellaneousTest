@@ -2,12 +2,12 @@
 <html>
 
     <head>
-    <title>login auth page</title>
+    <title>form login page</title>
     </head>
 
     <body>
         <div>
-            <p>login auth page</p>
+            <p>form login page</p>
 
             <%
                 String remoteUser = request.getRemoteUser();
@@ -27,8 +27,16 @@
             <form action="<%= response.encodeURL("j_security_check") %>" method="post">
                 <input type="text" name="j_username" />
                 <input type="password" name="j_password"/>
-                <input type="submit" value="login"/>
+                <input type="submit" value="javaeeAuthLogin.jsp"/>
             </form>
+            <br/>
+
+            <form action="../authbypass/requestLogin.jsp" method="get">
+                <input type="text" name="username"/>
+                <input type="password" name="password"/>
+                <input type="submit" value="requestLogin.jsp"/>
+            </form>
+            <br/>
 
             <%--
                 注意，登录成功后，server 会跳转到登录前的页面，
@@ -36,8 +44,12 @@
                 此时虽然看起来页面没有进行跳转，其实当前用户的身份已经变为了登录后的身份了，那些需要认证的页面也可以访问了。
             --%>
 
-            <a href="logout.jsp">logout.jsp</a>
-            <a href="protected.jsp">protected.jsp</a>
+            <a href="../auth/requestLogout.jsp">requestLogout.jsp</a>
+            <br/>
+            <a href="../auth/sessionLogout.jsp">sessionLogout.jsp</a>
+            <br/>
+            <a href="../auth/protected.jsp">protected.jsp</a>
+            <br/>
         </div>
     </body>
 

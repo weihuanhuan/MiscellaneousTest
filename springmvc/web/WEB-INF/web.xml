@@ -65,6 +65,8 @@
         <web-resource-collection>
             <web-resource-name>protected resource</web-resource-name>
             <url-pattern>/auth/*</url-pattern>
+            <!-- 用于登录的页面没有必要进行保护 -->
+            <!--<url-pattern>/authbypass/*</url-pattern>-->
         </web-resource-collection>
         <!--可以合法访问本资源集的角色-->
         <auth-constraint>
@@ -80,7 +82,7 @@
         <realm-name>file</realm-name>
         <!--FORM 认证方式的特定配置-->
         <form-login-config>
-            <form-login-page>/auth/login.jsp</form-login-page>
+            <form-login-page>/authbypass/formLogin.jsp</form-login-page>
             <form-error-page>/auth/error.jsp</form-error-page>
         </form-login-config>
     </login-config>
