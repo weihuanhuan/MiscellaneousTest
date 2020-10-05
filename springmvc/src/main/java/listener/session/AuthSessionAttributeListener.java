@@ -17,8 +17,8 @@ public class AuthSessionAttributeListener implements HttpSessionAttributeListene
 
     @Override
     public void attributeRemoved(HttpSessionBindingEvent event) {
-        printSessionBindingEvent(event);
         logger.fine("listener.session.AuthSessionAttributeListener.attributeRemoved");
+        printSessionBindingEvent(event);
     }
 
     @Override
@@ -28,16 +28,16 @@ public class AuthSessionAttributeListener implements HttpSessionAttributeListene
     }
 
     private void printSessionBindingEvent(HttpSessionBindingEvent event) {
-        logger.fine(event.toString());
+        logger.fine("event.toString():" + event.toString());
 
         String name = event.getName();
         if (name != null) {
-            logger.fine(name);
+            logger.fine("event.getName():" + name);
         }
 
         Object value = event.getValue();
         if (value != null) {
-            logger.fine(value.toString());
+            logger.fine("event.getValue():" + value.toString());
         }
 
         HttpSession session = event.getSession();

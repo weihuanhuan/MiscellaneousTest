@@ -22,7 +22,7 @@ public class AuthSessionEventListener implements HttpSessionListener {
     }
 
     public void printHttpSessionEventInfo(HttpSessionEvent se) {
-        logger.fine(se.toString());
+        logger.fine("se.toString():" + se.toString());
 
         HttpSession session = se.getSession();
         if (session != null) {
