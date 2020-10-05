@@ -92,4 +92,14 @@
         <role-name>springweb</role-name>
     </security-role>
 
+    <!-- 用于监听 session 的创建和销毁 -->
+    <listener>
+        <listener-class>listener.session.AuthSessionEventListener</listener-class>
+    </listener>
+
+    <!-- 用于监听 session 属性的变化过程 -->
+    <listener>
+        <listener-class>listener.session.AuthSessionAttributeListener</listener-class>
+    </listener>
+
 </web-app>
