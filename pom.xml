@@ -36,7 +36,7 @@
             其方法体为 no-op,
             同时提及将在tomcat10中移除 NamingContextListener类 ContainerListener的接口和实现
         -->
-        <tomcat.version>8.5.37</tomcat.version>
+        <tomcat.version>9.0.38</tomcat.version>
         <!--<tomcat.version>8.5.19</tomcat.version>-->
         <slf4j.version>1.7.25</slf4j.version>
 
