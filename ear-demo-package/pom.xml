@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>MiscellaneousTest</artifactId>
+        <groupId>com.jasonfitch.test</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.jasonfitch.test</groupId>
+    <artifactId>ear-demo-package</artifactId>
+    <!--
+        只要将工程的打包类型指定为 ear 后，maven就会自动引用 maven-ear-plugin 插件，
+        并自动将该工程的依赖作为 ear 应用的子模块打包成一个 ear 包。
+        这里子模块的类型识别主要是依赖于子模块的 <type> 属性值。
+        比如 ejb 子模块应该指定其 type 为 <type>ejb</type>
+    -->
+    <packaging>ear</packaging>
+
+    <build>
+        <plugins>
+            <!--
+                这里手动引入 maven-ear-plugin 插件的作用是为了显示的配置打包后的 ear 模块。
+                比如修改打包后的 ear 模块内部 web 子模块的模块文件名字。
+                例如这个依赖的这里的 web 子模块默认命名为 【springmvc-1.0-SNAPSHOT.war】 ，而我们可以手动的将他配置为 【springmvc.jar】
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <configuration>
+                    <!--
+                        默认情况下 maven 的 packaging 类型是没有 app-client 的，但是 maven-ear-plugin 插件却支持 app-client 模块的配置
+                        因此 maven-ear-plugin 插件提供 artifactTypeMapping 配置来实现将 jar 打包的模块映射到 app-client 模块。
+                        可以这么做的根本原因是由于 application client 模块本身和可执行 jar 包的打包是相同的，所以需要注意添加 MANIFEST 中的 main-class 属性。
+                    -->
+                    <artifactTypeMappings>
+                        <artifactTypeMapping type="jar" mapping="app-client"/>
+                    </artifactTypeMappings>
+
+                    <modules>
+                        <webModule>
+                            <groupId>com.jasonfitch.test</groupId>
+                            <artifactId>springmvc</artifactId>
+                            <bundleFileName>springmvc.jar</bundleFileName>
+                        </webModule>
+
+                        <appClientModule>
+                            <groupId>com.jasonfitch.test</groupId>
+                            <artifactId>feature</artifactId>
+                            <bundleFileName>feature.jar</bundleFileName>
+                        </appClientModule>
+                    </modules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.jasonfitch.test</groupId>
+            <artifactId>springmvc</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jasonfitch.test</groupId>
+            <artifactId>feature</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+
+</project>
