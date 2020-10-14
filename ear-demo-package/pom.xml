@@ -43,7 +43,7 @@
                         <webModule>
                             <groupId>com.jasonfitch.test</groupId>
                             <artifactId>springmvc</artifactId>
-                            <bundleFileName>springmvc.jar</bundleFileName>
+                            <bundleFileName>springmvc.war</bundleFileName>
                         </webModule>
 
                         <appClientModule>
