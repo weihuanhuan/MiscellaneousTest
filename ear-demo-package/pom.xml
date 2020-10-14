@@ -75,6 +75,18 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
+            <!--
+                对于一个确定的依赖其指定的 type 必须是在 maven 库中可以成定位的 artifact ，比如这里不能使用 app-client ，
+                因为根本没有打包类型为 app-client 的符合这个坐标的 artifact，
+                实际上这个坐标的原始打包类型就是 jar ，所以我们这里要填写 jar，而后续可以用
+
+                另外，
+                1.实际上 maven 中有专门的 maven-acr-plugin 插件，可以用来扩展 package 的类型，从而支持 app-client 类型的打包和依赖，
+                  但是我们这里的场景中没有使用他的必要，
+                  通过使用 maven-ear-plugin 插件的映射功能，我们可以将 jar 或者任何类型的依赖映射为 app-client 模块供其打包时使用。
+
+                2.这不是一个真实的 app client 工程，其是一个普通的 jar 包，这里是当作 app client 模块来演示 ear 的子模块打包来使用的
+            -->
             <type>jar</type>
         </dependency>
     </dependencies>
