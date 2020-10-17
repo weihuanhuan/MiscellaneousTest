@@ -162,4 +162,8 @@ public class SSHConnection {
             }
         }
     }
+
+    public Connection getConnection() {
+        return connection;
+    }
 }
