@@ -14,6 +14,7 @@
         <module>feature</module>
         <module>springmvc</module>
         <module>ear-demo-package</module>
+        <module>ear-demo-app</module>
         <!--gmssl 工程需要特殊JDK编译，这里暂且不编译-->
         <!--<module>gmssl</module>-->
     </modules>
