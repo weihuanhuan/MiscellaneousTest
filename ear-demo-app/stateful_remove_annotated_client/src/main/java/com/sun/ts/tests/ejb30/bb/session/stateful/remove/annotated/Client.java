@@ -20,16 +20,29 @@
 
 package com.sun.ts.tests.ejb30.bb.session.stateful.remove.annotated;
 
+import com.sun.ts.lib.harness.Fault;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.ClientBase;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.Remove2IF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveIF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveNotRetainIF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.TestIF;
+import com.sun.ts.tests.ejb30.common.helper.TLogger;
+import com.sun.ts.tests.ejb30.common.helper.TestFailedException;
 import com.sun.ts.tests.ejb30.common.migration.twothree.TwoRemoteHome;
+import com.sun.ts.tests.ejb30.common.migration.twothree.TwoRemoteIF;
 import java.lang.reflect.Method;
+import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import javax.ejb.CreateException;
 import javax.ejb.EJB;
+import javax.ejb.EJBHome;
+import javax.ejb.EJBMetaData;
+import javax.ejb.Handle;
+import javax.ejb.HomeHandle;
+import javax.ejb.NoSuchEJBException;
+import javax.ejb.RemoveException;
 
 public class Client extends ClientBase {
     @EJB(name = "removeBean")
@@ -55,9 +68,17 @@ public class Client extends ClientBase {
         Set<String> methodList = new LinkedHashSet<>();
         methodList.add("setup");
         if (args == null || args.length == 0) {
+            //原始的测试
             methodList.add("removeTwoRemoteHome");
             methodList.add("removeTwoRemoteHomeHandle");
             methodList.add("testBeanRemoveTwoLocal");
+
+            //测试间接的 bean
+            methodList.add("testGetRemoveRemoteBeanReturn");
+            methodList.add("testGetRemoveRemoteBean2Return");
+            methodList.add("testGetTwoRemoteHomeReturn");
+            methodList.add("testGetTwoRemoteHomeReturnHandle");
+            methodList.add("testGetTwoRemoteHomeReturnHomeHandle");
         }
         for (String arg : args) {
             if (arg.equals("setup") || arg.equals("cleanup")) {
@@ -115,6 +136,184 @@ public class Client extends ClientBase {
 
     protected TwoRemoteHome getTwoRemoteHome() {
         return twoRemoteHome;
+    }
+
+    /**
+     * 相似的测试和 removeBeanRemote 使用 bean removeBeanRemote, 但是他使用 server lookup 后的结果.
+     *
+     * @see com.sun.ts.tests.ejb30.bb.session.stateful.remove.annotated.StatelessTestBean#getRemoveRemoteBean()
+     * @see com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.TestBeanBase#removeBeanRemote()
+     */
+    public void testGetRemoveRemoteBeanReturn() throws TestFailedException {
+        RemoveIF removeRemoteBeanReturn = testBean.getRemoveRemoteBeanReturn();
+
+        removeRemoteBeanReturn.hi();
+        removeRemoteBeanReturn.remove();
+        try {
+            removeRemoteBeanReturn.remove2();
+            throw new TestFailedException(
+                    "Expecting javax.ejb.NoSuchEJBException, " + "but got none");
+        } catch (NoSuchEJBException e) {
+            // good.
+        }
+    }
+
+    /**
+     * 相似的测试和 removeBean2Remote 使用 bean removeBean2Remote, 但是他使用 server lookup 后的结果.
+     *
+     * @see com.sun.ts.tests.ejb30.bb.session.stateful.remove.annotated.StatelessTestBean#getRemoveRemoteBean2()
+     * @see com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.TestBeanBase#removeBean2Remote()
+     */
+    public void testGetRemoveRemoteBean2Return() throws TestFailedException {
+        Remove2IF removeRemoteBean2Return = testBean.getRemoveRemoteBean2Return();
+
+        try {
+            removeRemoteBean2Return.hi();
+            removeRemoteBean2Return.remove();
+        } catch (RemoteException e) {
+            throw new TestFailedException(e);
+        }
+        try {
+            removeRemoteBean2Return.remove2();
+            throw new TestFailedException(
+                    "Expecting java.rmi.NoSuchObjectException, " + "but got none");
+        } catch (java.rmi.NoSuchObjectException e) {
+            // good.
+            // note that Remove2IF extends java.rmi.Remote and so we are expecting
+            // java.rmi.NoSuchObjectException, rather than NoSuchEJBException.
+        } catch (RemoteException e) {
+            throw new TestFailedException(e);
+        }
+    }
+
+    /**
+     * 相似的测试和 removeTwoRemoteHome 使用 bean twoRemoteHome, 但是他使用 server lookup 后的结果.
+     *
+     * @see ClientBase#getTwoRemoteHome()
+     * @see ClientBase#removeTwoRemoteHome()
+     */
+    public void testGetTwoRemoteHomeReturn() throws RemoteException, Fault {
+        TwoRemoteHome twoRemoteHomeReturn = testBean.getTwoRemoteHomeReturn();
+
+        TwoRemoteIF bean = null;
+        try {
+            bean = twoRemoteHomeReturn.create();
+            bean.remove();
+        } catch (RemoveException e) {
+            throw new Fault(e);
+        } catch (CreateException e) {
+            throw new Fault(e);
+        } catch (RemoteException e) {
+            throw new Fault(e);
+        }
+        try {
+            bean.remove();
+            throw new Fault(
+                    "Expecting java.rmi.NoSuchObjectException, but got none.");
+        } catch (NoSuchObjectException e) {
+            TLogger.log("Got expected exception: " + e.toString());
+        } catch (RemoveException e) {
+            throw new Fault(e);
+        } catch (RemoteException e) {
+            throw new Fault(e);
+        }
+    }
+
+    /**
+     * 相似的测试和 removeTwoRemoteHomeHandle 使用 bean twoRemoteHome, 但是他使用 server lookup 后的结果.
+     *
+     * @see ClientBase#getTwoRemoteHome()
+     * @see ClientBase#removeTwoRemoteHomeHandle()
+     */
+    public void testGetTwoRemoteHomeReturnHandle() throws RemoteException, Fault {
+        TwoRemoteHome twoRemoteHomeReturn = testBean.getTwoRemoteHomeReturn();
+
+        TwoRemoteIF bean = null;
+        try {
+            bean = twoRemoteHomeReturn.create();
+            twoRemoteHomeReturn.remove(bean);
+        } catch (RemoveException e) {
+            TLogger.log("Got expected exception " + e.toString());
+        } catch (CreateException e) {
+            throw new Fault(e);
+        } catch (RemoteException e) {
+            throw new Fault(e);
+        }
+
+        try {
+            Handle handle = bean.getHandle();
+            twoRemoteHomeReturn.remove(handle);
+            TLogger.log("Successfully removed bean handler " + handle);
+        } catch (RemoveException e) {
+            throw new Fault(e);
+        } catch (RemoteException e) {
+            throw new Fault(e);
+        }
+
+        try {
+            bean.remove();
+            throw new Fault(
+                    "Expecting java.rmi.NoSuchObjectException, but got none.");
+        } catch (NoSuchObjectException e) {
+            TLogger.log("Got expected exception: " + e.toString());
+        } catch (RemoveException e) {
+            throw new Fault(e);
+        } catch (RemoteException e) {
+            throw new Fault(e);
+        }
+
+    }
+
+    /**
+     * 相似的测试和 removeTwoRemoteHomeHandle 使用 bean twoRemoteHome, 但是他使用 server lookup 后的结果,
+     * 并且这里使用的是 HomeHandle， 之前的测试使用的是 ObjectHandle
+     *
+     * @see ClientBase#getTwoRemoteHome()
+     * @see ClientBase#removeTwoRemoteHomeHandle()
+     */
+    public void testGetTwoRemoteHomeReturnHomeHandle() throws RemoteException, Fault {
+        TwoRemoteHome twoRemoteHomeReturn = testBean.getTwoRemoteHomeReturn();
+        HomeHandle homeHandle = twoRemoteHomeReturn.getHomeHandle();
+        TwoRemoteHome ejbHomeByHomeHandle = (TwoRemoteHome) homeHandle.getEJBHome();
+
+        TwoRemoteIF bean = null;
+        try {
+            bean = ejbHomeByHomeHandle.create();
+            ejbHomeByHomeHandle.remove(bean);
+        } catch (RemoveException e) {
+            TLogger.log("Got expected exception " + e.toString());
+        } catch (CreateException e) {
+            throw new Fault(e);
+        } catch (RemoteException e) {
+            throw new Fault(e);
+        }
+
+        try {
+            Handle handle = bean.getHandle();
+            ejbHomeByHomeHandle.remove(handle);
+            TLogger.log("Successfully removed bean handler " + handle);
+        } catch (RemoveException e) {
+            throw new Fault(e);
+        } catch (RemoteException e) {
+            throw new Fault(e);
+        }
+
+        try {
+            bean.remove();
+            throw new Fault(
+                    "Expecting java.rmi.NoSuchObjectException, but got none.");
+        } catch (NoSuchObjectException e) {
+            TLogger.log("Got expected exception: " + e.toString());
+        } catch (RemoveException e) {
+            throw new Fault(e);
+        } catch (RemoteException e) {
+            throw new Fault(e);
+        }
+
+        EJBMetaData twoRemoteHomeReturnEJBMetaData = twoRemoteHomeReturn.getEJBMetaData();
+        EJBMetaData ejbMetaDataByHomeHandle = ejbHomeByHomeHandle.getEJBMetaData();
+        System.out.println("twoRemoteHomeReturnEJBMetaData" + twoRemoteHomeReturnEJBMetaData);
+        System.out.println("ejbMetaData" + ejbMetaDataByHomeHandle);
     }
 
   /*

@@ -27,6 +27,7 @@ import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveLocalIF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.TestBeanBase;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.TestIF;
 import com.sun.ts.tests.ejb30.common.migration.twothree.TwoLocalHome;
+import com.sun.ts.tests.ejb30.common.migration.twothree.TwoRemoteHome;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.Remote;
@@ -53,6 +54,9 @@ public class StatelessTestBean extends TestBeanBase implements TestIF {
 
     @EJB(name = "twoLocalHome")
     private TwoLocalHome twoLocalHome;
+
+    @EJB(name = "twoRemoteHome")
+    private TwoRemoteHome twoRemoteHome;
 
     public void remove() {
     }
@@ -93,5 +97,20 @@ public class StatelessTestBean extends TestBeanBase implements TestIF {
 
     protected RemoveIF getRemoveRemoteBean() {
         return (RemoveIF) (sessionContext.lookup("removeBeanRemote"));
+    }
+
+    @Override
+    public RemoveIF getRemoveRemoteBeanReturn() {
+        return (RemoveIF) sessionContext.lookup("removeBeanRemote");
+    }
+
+    @Override
+    public Remove2IF getRemoveRemoteBean2Return() {
+        return (Remove2IF) sessionContext.lookup("removeBean2Remote");
+    }
+
+    @Override
+    public TwoRemoteHome getTwoRemoteHomeReturn() {
+        return (TwoRemoteHome) sessionContext.lookup("twoRemoteHome");
     }
 }

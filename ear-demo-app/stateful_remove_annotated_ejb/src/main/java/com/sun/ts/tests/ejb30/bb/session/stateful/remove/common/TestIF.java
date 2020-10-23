@@ -21,6 +21,7 @@
 package com.sun.ts.tests.ejb30.bb.session.stateful.remove.common;
 
 import com.sun.ts.tests.ejb30.common.helper.TestFailedException;
+import com.sun.ts.tests.ejb30.common.migration.twothree.TwoRemoteHome;
 
 public interface TestIF {
     void remove();
@@ -50,4 +51,13 @@ public interface TestIF {
     //////////////////////////////////////////////////////////////////////
 
     void removeTwoLocal() throws TestFailedException;
+
+    ////////////////////////////////////////////////////////////////////
+    // 测试返回间接的 remote ejb
+
+    RemoveIF getRemoveRemoteBeanReturn();
+
+    Remove2IF getRemoveRemoteBean2Return();
+
+    TwoRemoteHome getTwoRemoteHomeReturn();
 }
