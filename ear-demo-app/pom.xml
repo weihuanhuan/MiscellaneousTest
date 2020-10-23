@@ -25,7 +25,6 @@
                 <groupId>javax.ejb</groupId>
                 <artifactId>javax.ejb-api</artifactId>
                 <version>3.2</version>
-                <scope>provided</scope>
             </dependency>
 
         </dependencies>

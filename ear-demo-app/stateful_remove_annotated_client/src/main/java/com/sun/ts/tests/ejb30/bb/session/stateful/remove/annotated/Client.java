@@ -70,16 +70,16 @@ public class Client extends ClientBase {
         Client theTests = new Client();
         for (String methodName : methodList) {
             System.out.println(String.format(messageFormat, startTag, "start", methodName, endTag));
-            theTests.execMethod(theTests, methodName);
+            execMethod(theTests, methodName);
             System.out.println(String.format(messageFormat, startTag, "end", methodName, endTag));
             System.out.println();
         }
 
     }
 
-    protected void execMethod(Object object, String methodName) {
+    protected static void execMethod(Object object, String methodName) {
         try {
-            Method testMethod = getTestMethod(methodName);
+            Method testMethod = getTestMethod(object, methodName);
             testMethod.invoke(object, null);
             System.out.println(String.format(messageFormat, startTag, "success", methodName, endTag));
         } catch (Exception e) {
@@ -88,9 +88,13 @@ public class Client extends ClientBase {
         }
     }
 
-    protected Method getTestMethod(String methodName) throws NoSuchMethodException {
-        Method method = this.getClass().getMethod(methodName);
-        return method;
+    protected static Method getTestMethod(Object object, String methodName) throws NoSuchMethodException {
+        for (Method method : object.getClass().getMethods()) {
+            if (method.getName().equals(methodName)) {
+                return method;
+            }
+        }
+        throw new NoSuchMethodException(String.format("cannot find method:%s from class %s.", methodName, object.getClass().getName()));
     }
 
     protected TestIF getTestBean() {

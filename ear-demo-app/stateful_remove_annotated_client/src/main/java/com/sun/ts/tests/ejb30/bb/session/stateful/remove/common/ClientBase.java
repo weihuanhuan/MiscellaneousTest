@@ -56,8 +56,8 @@ abstract public class ClientBase {
 
     abstract protected TwoRemoteHome getTwoRemoteHome();
 
-    public void setup(String[] args, Properties p) throws Fault {
-        props = p;
+    public void setup() throws Fault {
+        props = null;
         removeBean = getRemoveBean();
         removeBean2 = getRemoveBean2();
         testBean = getTestBean();
