@@ -24,29 +24,28 @@ import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.Remove2IF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveIF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveLocal2IF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveLocalIF;
-import com.sun.ts.tests.ejb30.common.appexception.AtUncheckedAppException;
-import com.sun.ts.tests.ejb30.common.helper.TestFailedException;
 import com.sun.ts.tests.ejb30.common.migration.twothree.TwoLocalHome;
 import com.sun.ts.tests.ejb30.common.migration.twothree.TwoRemoteHome;
+
+import javax.annotation.PreDestroy;
+import javax.annotation.Resource;
 import javax.ejb.CreateException;
+import javax.ejb.Init;
 import javax.ejb.Local;
 import javax.ejb.LocalHome;
-import javax.annotation.PreDestroy;
 import javax.ejb.Remote;
 import javax.ejb.RemoteHome;
-import javax.ejb.Init;
 import javax.ejb.Remove;
-import javax.ejb.Stateful;
 import javax.ejb.SessionContext;
-import javax.annotation.Resource;
+import javax.ejb.Stateful;
 
 @Stateful(name = "RemoveBean")
 @Remote({RemoveIF.class, Remove2IF.class})
 @Local({RemoveLocalIF.class, RemoveLocal2IF.class})
 @RemoteHome(TwoRemoteHome.class)
 @LocalHome(TwoLocalHome.class)
-public class RemoveBean
-        implements RemoveIF, Remove2IF, RemoveLocal2IF, RemoveLocalIF {
+public class RemoveBean implements RemoveIF, Remove2IF, RemoveLocal2IF, RemoveLocalIF {
+
     @Resource(name = "sessionContext")
     private SessionContext sessionContext;
 
@@ -80,35 +79,6 @@ public class RemoveBean
     public void remove2() {
     }
 
-    @Remove(retainIfException = true)
-    public void retain() throws TestFailedException {
-        throw new TestFailedException("Not to remove this bean");
-    }
-
-    @Remove(retainIfException = true)
-    public void retain2() throws AtUncheckedAppException {
-        throw new AtUncheckedAppException("Not to remove this bean");
-    }
-
     public void hi() {
     }
-
-    //////////////////////////////////////////////////////////////////////
-
-    public String from2RemoteClient() {
-        return "from2RemoteClient";
-    }
-
-    public void remoteSameTxContext() {
-
-    }
-
-    public String from2LocalClient() {
-        return "from2LocalClient";
-    }
-
-    public void localSameTxContext() {
-
-    }
-
 }

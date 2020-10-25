@@ -24,6 +24,7 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBLocalHome;
 
 public interface TwoLocalHome extends EJBLocalHome {
+
     public TwoLocalIF create() throws CreateException;
 
 }

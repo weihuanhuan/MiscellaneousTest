@@ -23,8 +23,6 @@ package com.sun.ts.tests.ejb30.bb.session.stateful.remove.annotated;
 import com.sun.ts.lib.harness.Fault;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.Remove2IF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveIF;
-import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveLocal2IF;
-import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveLocalIF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.TestBeanBase;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.TestIF;
 import com.sun.ts.tests.ejb30.common.helper.TLogger;
@@ -41,7 +39,6 @@ import javax.ejb.Remote;
 import javax.ejb.RemoveException;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
-import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 
 @Remote({TestIF.class})
@@ -50,12 +47,6 @@ public class StatelessTestBean extends TestBeanBase implements TestIF {
 
     @Resource(name = "sessionContext")
     private SessionContext sessionContext;
-
-    @EJB(name = "removeBean")
-    private RemoveLocalIF removeBean;
-
-    @EJB(name = "removeBean2")
-    private RemoveLocal2IF removeBean2;
 
     @EJB(name = "removeBeanRemote")
     private RemoveIF removeBeanRemote;
@@ -69,45 +60,9 @@ public class StatelessTestBean extends TestBeanBase implements TestIF {
     @EJB(name = "twoRemoteHome")
     private TwoRemoteHome twoRemoteHome;
 
-    public void remove() {
-    }
-
-    protected RemoveLocalIF getRemoveLocalBean() {
-        // return removeBean;
-        return (RemoveLocalIF) (sessionContext.lookup("removeBean"));
-    }
-
-    protected RemoveLocal2IF getRemoveLocalBean2() {
-        // return removeBean2;
-        return (RemoveLocal2IF) (sessionContext.lookup("removeBean2"));
-    }
 
     protected TwoLocalHome getTwoLocalHome() {
         return (TwoLocalHome) (sessionContext.lookup("twoLocalHome"));
-    }
-
-    protected void setRemoveLocalBean(RemoveLocalIF b) {
-        this.removeBean = b;
-    }
-
-    protected void setRemoveLocalBean2(RemoveLocal2IF b) {
-        this.removeBean2 = b;
-    }
-
-    protected void setRemoveRemoteBean2(Remove2IF b) {
-        this.removeBean2Remote = b;
-    }
-
-    protected void setRemoveRemoteBean(RemoveIF b) {
-        this.removeBeanRemote = b;
-    }
-
-    protected Remove2IF getRemoveRemoteBean2() {
-        return (Remove2IF) (sessionContext.lookup("removeBean2Remote"));
-    }
-
-    protected RemoveIF getRemoveRemoteBean() {
-        return (RemoveIF) (sessionContext.lookup("removeBeanRemote"));
     }
 
     //远程接口用于直接返回 remote bean 到 client

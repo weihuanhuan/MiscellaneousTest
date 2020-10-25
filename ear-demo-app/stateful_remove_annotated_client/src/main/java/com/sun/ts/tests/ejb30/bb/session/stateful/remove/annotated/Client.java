@@ -24,7 +24,6 @@ import com.sun.ts.lib.harness.Fault;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.ClientBase;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.Remove2IF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveIF;
-import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveNotRetainIF;
 import com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.TestIF;
 import com.sun.ts.tests.ejb30.common.helper.TLogger;
 import com.sun.ts.tests.ejb30.common.helper.TestFailedException;
@@ -55,9 +54,6 @@ public class Client extends ClientBase {
 
     @EJB(name = "testBean")
     private static TestIF testBean;
-
-    @EJB(name = "removeNotRetainBean")
-    private static RemoveNotRetainIF removeNotRetainBean;
 
     @EJB(name = "twoRemoteHome")
     private static TwoRemoteHome twoRemoteHome;
@@ -135,10 +131,6 @@ public class Client extends ClientBase {
 
     protected Remove2IF getRemoveBean2() {
         return removeBean2;
-    }
-
-    protected RemoveNotRetainIF getRemoveNotRetainBean() {
-        return removeNotRetainBean;
     }
 
     protected TwoRemoteHome getTwoRemoteHome() {

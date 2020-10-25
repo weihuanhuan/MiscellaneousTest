@@ -25,6 +25,7 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBHome;
 
 public interface TwoRemoteHome extends EJBHome {
+
     public TwoRemoteIF create() throws RemoteException, CreateException;
 
 }

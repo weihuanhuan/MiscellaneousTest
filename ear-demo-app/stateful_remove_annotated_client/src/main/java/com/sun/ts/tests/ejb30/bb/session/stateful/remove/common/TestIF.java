@@ -29,30 +29,6 @@ import javax.ejb.HomeHandle;
 import java.rmi.RemoteException;
 
 public interface TestIF {
-    void remove();
-
-    //////////////////////////////////////////////////////////////////////
-
-    void removeBean() throws TestFailedException;
-
-    void removeBean2() throws TestFailedException;
-
-    void removeBeanRemote() throws TestFailedException;
-
-    void removeBean2Remote() throws TestFailedException;
-
-    //////////////////////////////////////////////////////////////////////
-
-    void retainBean() throws TestFailedException;
-
-    void retainBeanOverloaded() throws TestFailedException;
-
-    void retainBean2() throws TestFailedException;
-
-    void retainBeanRemote() throws TestFailedException;
-
-    void retainBean2Remote() throws TestFailedException;
-
     //////////////////////////////////////////////////////////////////////
 
     void removeTwoLocal() throws TestFailedException;
