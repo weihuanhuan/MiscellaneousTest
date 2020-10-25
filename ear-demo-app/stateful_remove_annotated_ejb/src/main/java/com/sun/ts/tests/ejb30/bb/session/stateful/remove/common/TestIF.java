@@ -20,8 +20,13 @@
 
 package com.sun.ts.tests.ejb30.bb.session.stateful.remove.common;
 
+import com.sun.ts.lib.harness.Fault;
 import com.sun.ts.tests.ejb30.common.helper.TestFailedException;
 import com.sun.ts.tests.ejb30.common.migration.twothree.TwoRemoteHome;
+
+import javax.ejb.Handle;
+import javax.ejb.HomeHandle;
+import java.rmi.RemoteException;
 
 public interface TestIF {
     void remove();
@@ -60,4 +65,8 @@ public interface TestIF {
     Remove2IF getRemoveRemoteBean2Return();
 
     TwoRemoteHome getTwoRemoteHomeReturn();
+
+    Handle getTwoRemoteHomeObjectHandleReturn() throws Fault;
+
+    HomeHandle getTwoRemoteHomeHomeHandleReturn() throws RemoteException;
 }

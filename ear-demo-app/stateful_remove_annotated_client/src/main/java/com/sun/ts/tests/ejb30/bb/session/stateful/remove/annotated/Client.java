@@ -30,6 +30,7 @@ import com.sun.ts.tests.ejb30.common.helper.TLogger;
 import com.sun.ts.tests.ejb30.common.helper.TestFailedException;
 import com.sun.ts.tests.ejb30.common.migration.twothree.TwoRemoteHome;
 import com.sun.ts.tests.ejb30.common.migration.twothree.TwoRemoteIF;
+
 import java.lang.reflect.Method;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
@@ -38,13 +39,14 @@ import java.util.Set;
 import javax.ejb.CreateException;
 import javax.ejb.EJB;
 import javax.ejb.EJBHome;
-import javax.ejb.EJBMetaData;
+import javax.ejb.EJBObject;
 import javax.ejb.Handle;
 import javax.ejb.HomeHandle;
 import javax.ejb.NoSuchEJBException;
 import javax.ejb.RemoveException;
 
 public class Client extends ClientBase {
+
     @EJB(name = "removeBean")
     private static RemoveIF removeBean;
 
@@ -68,17 +70,22 @@ public class Client extends ClientBase {
         Set<String> methodList = new LinkedHashSet<>();
         methodList.add("setup");
         if (args == null || args.length == 0) {
-            //原始的测试
+            //原始的测试， client 端用 server 的 testBean 间接使用 bean 的测试
             methodList.add("removeTwoRemoteHome");
             methodList.add("removeTwoRemoteHomeHandle");
             methodList.add("testBeanRemoveTwoLocal");
 
-            //测试间接的 bean
+            // client 直接使用 bean 的测试
             methodList.add("testGetRemoveRemoteBeanReturn");
             methodList.add("testGetRemoveRemoteBean2Return");
             methodList.add("testGetTwoRemoteHomeReturn");
-            methodList.add("testGetTwoRemoteHomeReturnHandle");
+
+            // client 直接使用 object handle 的测试
+            methodList.add("testGetTwoRemoteHomeReturnObjectHandle");
+            methodList.add("testGetTwoRemoteHomeObjectHandleReturn");
+            // client 直接使用 home handle 的测试
             methodList.add("testGetTwoRemoteHomeReturnHomeHandle");
+            methodList.add("testGetTwoRemoteHomeHomeHandleReturn");
         }
         for (String arg : args) {
             if (arg.equals("setup") || arg.equals("cleanup")) {
@@ -225,7 +232,7 @@ public class Client extends ClientBase {
      * @see ClientBase#getTwoRemoteHome()
      * @see ClientBase#removeTwoRemoteHomeHandle()
      */
-    public void testGetTwoRemoteHomeReturnHandle() throws RemoteException, Fault {
+    public void testGetTwoRemoteHomeReturnObjectHandle() throws RemoteException, Fault {
         TwoRemoteHome twoRemoteHomeReturn = testBean.getTwoRemoteHomeReturn();
 
         TwoRemoteIF bean = null;
@@ -242,8 +249,28 @@ public class Client extends ClientBase {
 
         try {
             Handle handle = bean.getHandle();
-            twoRemoteHomeReturn.remove(handle);
-            TLogger.log("Successfully removed bean handler " + handle);
+            doEjbObjectByObjectHandleTest(handle);
+        } catch (RemoteException e) {
+            throw new Fault(e);
+        }
+    }
+
+    /**
+     * 相似的测试和 removeTwoRemoteHomeHandle 使用 bean twoRemoteHome 的 object handle 对象, 但是他使用 server lookup 后的结果.
+     */
+    public void testGetTwoRemoteHomeObjectHandleReturn() throws RemoteException, Fault {
+        Handle objectHandleReturn = testBean.getTwoRemoteHomeObjectHandleReturn();
+
+        doEjbObjectByObjectHandleTest(objectHandleReturn);
+    }
+
+    public void doEjbObjectByObjectHandleTest(Handle objectHandle) throws RemoteException, Fault {
+        EJBObject ejbObject;
+        try {
+            ejbObject = objectHandle.getEJBObject();
+            EJBHome ejbHome = ejbObject.getEJBHome();
+            ejbHome.remove(objectHandle);
+            TLogger.log("Successfully removed bean handler " + objectHandle);
         } catch (RemoveException e) {
             throw new Fault(e);
         } catch (RemoteException e) {
@@ -251,7 +278,7 @@ public class Client extends ClientBase {
         }
 
         try {
-            bean.remove();
+            ejbObject.remove();
             throw new Fault(
                     "Expecting java.rmi.NoSuchObjectException, but got none.");
         } catch (NoSuchObjectException e) {
@@ -274,8 +301,21 @@ public class Client extends ClientBase {
     public void testGetTwoRemoteHomeReturnHomeHandle() throws RemoteException, Fault {
         TwoRemoteHome twoRemoteHomeReturn = testBean.getTwoRemoteHomeReturn();
         HomeHandle homeHandle = twoRemoteHomeReturn.getHomeHandle();
-        TwoRemoteHome ejbHomeByHomeHandle = (TwoRemoteHome) homeHandle.getEJBHome();
 
+        doEjbHomeByHomeHandleTest(homeHandle);
+    }
+
+    /**
+     * 相似的测试和 removeTwoRemoteHomeHandle 使用 bean twoRemoteHome 的 home handle 对象, 但是他使用 server lookup 后的结果,
+     */
+    public void testGetTwoRemoteHomeHomeHandleReturn() throws RemoteException, Fault {
+        HomeHandle homeHandleReturn = testBean.getTwoRemoteHomeHomeHandleReturn();
+
+        doEjbHomeByHomeHandleTest(homeHandleReturn);
+    }
+
+    public void doEjbHomeByHomeHandleTest(HomeHandle homeHandle) throws RemoteException, Fault {
+        TwoRemoteHome ejbHomeByHomeHandle = (TwoRemoteHome) homeHandle.getEJBHome();
         TwoRemoteIF bean = null;
         try {
             bean = ejbHomeByHomeHandle.create();
@@ -309,186 +349,6 @@ public class Client extends ClientBase {
         } catch (RemoteException e) {
             throw new Fault(e);
         }
-
-        EJBMetaData twoRemoteHomeReturnEJBMetaData = twoRemoteHomeReturn.getEJBMetaData();
-        EJBMetaData ejbMetaDataByHomeHandle = ejbHomeByHomeHandle.getEJBMetaData();
-        System.out.println("twoRemoteHomeReturnEJBMetaData" + twoRemoteHomeReturnEJBMetaData);
-        System.out.println("ejbMetaData" + ejbMetaDataByHomeHandle);
     }
-
-  /*
-   * @testName: removeBean
-   * 
-   * @assertion_ids: EJB:JAVADOC:148; EJB:JAVADOC:126; EJB:JAVADOC:125;
-   * EJB:JAVADOC:147
-   * 
-   * @test_Strategy:
-   * 
-   */
-
-  /*
-   * @testName: removeBean2
-   * 
-   * @assertion_ids: EJB:JAVADOC:148; EJB:JAVADOC:126; EJB:JAVADOC:125;
-   * EJB:JAVADOC:147
-   * 
-   * @test_Strategy:
-   *
-   */
-
-  /*
-   * @testName: testBeanremoveBean
-   * 
-   * @assertion_ids: EJB:JAVADOC:148; EJB:JAVADOC:126; EJB:JAVADOC:125;
-   * EJB:JAVADOC:147
-   * 
-   * @test_Strategy:
-   *
-   */
-
-  /*
-   * @testName: testBeanremoveBeanRemote
-   * 
-   * @assertion_ids: EJB:JAVADOC:148; EJB:JAVADOC:126; EJB:JAVADOC:125;
-   * EJB:JAVADOC:147
-   * 
-   * @test_Strategy: client remotely invokes testBean, which remotely invokes
-   * RemoveBean via RemoteIF.
-   *
-   */
-
-  /*
-   * @testName: testBeanremoveBean2
-   * 
-   * @assertion_ids: EJB:JAVADOC:148; EJB:JAVADOC:126; EJB:JAVADOC:125;
-   * EJB:JAVADOC:147
-   * 
-   * @test_Strategy:
-   *
-   */
-  /*
-   * @testName: testBeanremoveBean2Remote
-   * 
-   * @assertion_ids: EJB:JAVADOC:148; EJB:JAVADOC:126; EJB:JAVADOC:125;
-   * EJB:JAVADOC:147
-   * 
-   * @test_Strategy: client remotely invokes testBean, which remotely invokes
-   * RemoveBean via RemoteIF2.
-   *
-   */
-  /*
-   * @testName: retainBean
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy:
-   *
-   */
-  /*
-   * @testName: retainBean2
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy:
-   *
-   */
-  /*
-   * @testName: testBeanretainBean
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy:
-   *
-   */
-  /*
-   * @testName: testBeanretainBeanRemote
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy: client remotely invokes testBean, which remotely invokes
-   * RemoveBean via RemoteIF.
-   *
-   */
-
-  /*
-   * @testName: testBeanretainBean2
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy:
-   *
-   */
-  /*
-   * @testName: testBeanretainBean2Remote
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy: client remotely invokes testBean, which remotely invokes
-   * RemoveBean via RemoteIF2.
-   *
-   */
-
-  /*
-   * @testName: removeNotRetainBean
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy:
-   *
-   */
-  /*
-   * @testName: removeNotRetainBean2
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy:
-   *
-   */
-  /*
-   * @testName: alwaysRemoveAfterSystemException
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy: a bean must always be removed after a system exception,
-   * even though the remove method is retainIfException true.
-   *
-   */
-  /*
-   * @testName: removeTwoRemoteHome
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy:
-   *
-   */
-  /*
-   * @testName: removeTwoRemoteHomeHandle
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy:
-   *
-   */
-  /*
-   * @testName: testBeanRemoveTwoLocal
-   * 
-   * @assertion_ids:
-   * 
-   * @test_Strategy:
-   *
-   */
-
-  /*
-   * @testName: testBeanretainBeanOverloaded
-   * 
-   * @test_Strategy:
-   *
-   */
-  /*
-   * @testName: retainBeanOverloaded
-   * 
-   * @test_Strategy:
-   *
-   */
 
 }
