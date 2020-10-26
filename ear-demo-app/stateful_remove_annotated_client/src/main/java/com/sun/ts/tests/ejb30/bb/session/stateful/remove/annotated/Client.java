@@ -43,6 +43,7 @@ import javax.ejb.Handle;
 import javax.ejb.HomeHandle;
 import javax.ejb.NoSuchEJBException;
 import javax.ejb.RemoveException;
+import javax.naming.NamingException;
 
 public class Client extends ClientBase {
 
@@ -75,6 +76,9 @@ public class Client extends ClientBase {
             methodList.add("testGetRemoveRemoteBeanReturn");
             methodList.add("testGetRemoveRemoteBean2Return");
             methodList.add("testGetTwoRemoteHomeReturn");
+
+            // 跨 jvm 的 server 端 jndi 调用
+            methodList.add("testGetTwoRemoteHomeByRemoteCtxReturn");
 
             // client 直接使用 object handle 的测试
             methodList.add("testGetTwoRemoteHomeReturnObjectHandle");
@@ -191,12 +195,28 @@ public class Client extends ClientBase {
      * @see ClientBase#getTwoRemoteHome()
      * @see ClientBase#removeTwoRemoteHome()
      */
-    public void testGetTwoRemoteHomeReturn() throws RemoteException, Fault {
+    public void testGetTwoRemoteHomeReturn() throws RemoteException, Fault, NamingException {
         TwoRemoteHome twoRemoteHomeReturn = testBean.getTwoRemoteHomeReturn();
 
+        doTwoRemoteTest(twoRemoteHomeReturn);
+    }
+
+    /**
+     * 相似的测试和 removeTwoRemoteHome 使用 bean twoRemoteHome, 但是他使用 server remote lookup 后的结果.
+     *
+     * @see ClientBase#getTwoRemoteHome()
+     * @see ClientBase#removeTwoRemoteHome()
+     */
+    public void testGetTwoRemoteHomeByRemoteCtxReturn() throws RemoteException, Fault, NamingException {
+        TwoRemoteHome twoRemoteHomeCtxReturn = testBean.getTwoRemoteHomeByRemoteCtxReturn();
+
+        doTwoRemoteTest(twoRemoteHomeCtxReturn);
+    }
+
+    public void doTwoRemoteTest(TwoRemoteHome twoRemoteHome) throws RemoteException, Fault, NamingException {
         TwoRemoteIF bean = null;
         try {
-            bean = twoRemoteHomeReturn.create();
+            bean = twoRemoteHome.create();
             bean.remove();
         } catch (RemoveException e) {
             throw new Fault(e);

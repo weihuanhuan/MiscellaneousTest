@@ -26,6 +26,7 @@ import com.sun.ts.tests.ejb30.common.migration.twothree.TwoRemoteHome;
 
 import javax.ejb.Handle;
 import javax.ejb.HomeHandle;
+import javax.naming.NamingException;
 import java.rmi.RemoteException;
 
 public interface TestIF {
@@ -41,6 +42,8 @@ public interface TestIF {
     Remove2IF getRemoveRemoteBean2Return();
 
     TwoRemoteHome getTwoRemoteHomeReturn();
+
+    TwoRemoteHome getTwoRemoteHomeByRemoteCtxReturn() throws NamingException;
 
     Handle getTwoRemoteHomeObjectHandleReturn() throws Fault;
 

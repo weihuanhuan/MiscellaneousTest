@@ -39,7 +39,11 @@ import javax.ejb.Remote;
 import javax.ejb.RemoveException;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.rmi.RemoteException;
+import java.util.Properties;
 
 @Remote({TestIF.class})
 @Stateless(name = "StatelessTestBean")
@@ -79,7 +83,26 @@ public class StatelessTestBean extends TestBeanBase implements TestIF {
 
     @Override
     public TwoRemoteHome getTwoRemoteHomeReturn() {
+        //这里使用的是同 jvm 的调用
         return (TwoRemoteHome) sessionContext.lookup("twoRemoteHome");
+    }
+
+    @Override
+    public TwoRemoteHome getTwoRemoteHomeByRemoteCtxReturn() throws NamingException {
+        //直接使用 RemoteInitialContextFactory 来使用通过远程客户端的模式获取远程序列化过来的 ejb home 对象。
+        //相当于跨 jvm 的 jndi 调用
+        Properties properties = new Properties();
+        properties.put(Context.PROVIDER_URL, "http://127.0.0.1:8080/tomee/ejb");
+        properties.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.openejb.client.RemoteInitialContextFactory");
+        properties.setProperty("openejb.client.moduleId", "openejb/global");
+
+        //这里的信息来源于下面的类方法
+        //org.apache.openejb.server.ejbd.JndiRequestHandler#getPrefix
+        //org.apache.openejb.server.ejbd.JndiRequestHandler#doLookup
+        InitialContext initialContext = new InitialContext(properties);
+        TwoRemoteHome lookup = (TwoRemoteHome) initialContext.
+                lookup("global/stateful_remove_annotated/stateful_remove_annotated_ejb/RemoveBean!com.sun.ts.tests.ejb30.common.migration.twothree.TwoRemoteHome");
+        return lookup;
     }
 
     //远程接口用于直接返回 remote bean 的 object handle 和 home handle 到 client
@@ -113,4 +136,5 @@ public class StatelessTestBean extends TestBeanBase implements TestIF {
         TwoRemoteHome twoRemoteHome = (TwoRemoteHome) sessionContext.lookup("twoRemoteHome");
         return twoRemoteHome.getHomeHandle();
     }
+
 }
