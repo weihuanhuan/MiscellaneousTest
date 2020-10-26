@@ -39,7 +39,11 @@ public interface TestIF {
 
     RemoveIF getRemoveRemoteBeanReturn();
 
+    RemoveIF getRemoveRemoteBeanByRemoteCtxReturn() throws NamingException;
+
     Remove2IF getRemoveRemoteBean2Return();
+
+    Remove2IF getRemoveRemoteBean2ByRemoteCtxReturn() throws NamingException;
 
     TwoRemoteHome getTwoRemoteHomeReturn();
 

@@ -67,9 +67,11 @@ public class Client extends ClientBase {
         Set<String> methodList = new LinkedHashSet<>();
         methodList.add("setup");
         if (args == null || args.length == 0) {
-            //原始的测试， client 端用 server 的 testBean 间接使用 bean 的测试
+            //原始的测试， client 端使用由 app client 容器注入的 ejb 来测试。
             methodList.add("removeTwoRemoteHome");
             methodList.add("removeTwoRemoteHomeHandle");
+
+            //原始的测试， client 端用 server 的 StatelessTestBean 间接使用 bean 的测试
             methodList.add("testBeanRemoveTwoLocal");
 
             // client 直接使用 bean 的测试
@@ -78,11 +80,14 @@ public class Client extends ClientBase {
             methodList.add("testGetTwoRemoteHomeReturn");
 
             // 跨 jvm 的 server 端 jndi 调用
+            methodList.add("testGetRemoveRemoteBeanByRemoteCtxReturn");
+            methodList.add("testGetRemoveRemoteBean2ByRemoteCtxReturn");
             methodList.add("testGetTwoRemoteHomeByRemoteCtxReturn");
 
             // client 直接使用 object handle 的测试
             methodList.add("testGetTwoRemoteHomeReturnObjectHandle");
             methodList.add("testGetTwoRemoteHomeObjectHandleReturn");
+
             // client 直接使用 home handle 的测试
             methodList.add("testGetTwoRemoteHomeReturnHomeHandle");
             methodList.add("testGetTwoRemoteHomeHomeHandleReturn");
@@ -150,10 +155,23 @@ public class Client extends ClientBase {
     public void testGetRemoveRemoteBeanReturn() throws TestFailedException {
         RemoveIF removeRemoteBeanReturn = testBean.getRemoveRemoteBeanReturn();
 
-        removeRemoteBeanReturn.hi();
-        removeRemoteBeanReturn.remove();
+        doRemoveRemoteBeanTest(removeRemoteBeanReturn);
+    }
+
+    /**
+     * 相似的测试和 removeBeanRemote 使用 bean removeBeanRemote, 但是他使用 server remote lookup 后的结果.
+     */
+    public void testGetRemoveRemoteBeanByRemoteCtxReturn() throws TestFailedException, NamingException {
+        RemoveIF removeRemoteBeanByRemoteCtxReturn = testBean.getRemoveRemoteBeanByRemoteCtxReturn();
+
+        doRemoveRemoteBeanTest(removeRemoteBeanByRemoteCtxReturn);
+    }
+
+    public void doRemoveRemoteBeanTest(RemoveIF removeRemoteBean) throws TestFailedException {
+        removeRemoteBean.hi();
+        removeRemoteBean.remove();
         try {
-            removeRemoteBeanReturn.remove2();
+            removeRemoteBean.remove2();
             throw new TestFailedException(
                     "Expecting javax.ejb.NoSuchEJBException, " + "but got none");
         } catch (NoSuchEJBException e) {
@@ -170,14 +188,27 @@ public class Client extends ClientBase {
     public void testGetRemoveRemoteBean2Return() throws TestFailedException {
         Remove2IF removeRemoteBean2Return = testBean.getRemoveRemoteBean2Return();
 
+        doRemoveRemoteBean2Test(removeRemoteBean2Return);
+    }
+
+    /**
+     * 相似的测试和 removeBean2Remote 使用 bean removeBean2Remote, 但是他使用 server remote lookup 后的结果.
+     */
+    public void testGetRemoveRemoteBean2ByRemoteCtxReturn() throws TestFailedException, NamingException {
+        Remove2IF removeRemoteBean2ByRemoteCtxReturn = testBean.getRemoveRemoteBean2ByRemoteCtxReturn();
+
+        doRemoveRemoteBean2Test(removeRemoteBean2ByRemoteCtxReturn);
+    }
+
+    public void doRemoveRemoteBean2Test(Remove2IF removeRemoteBean2) throws TestFailedException {
         try {
-            removeRemoteBean2Return.hi();
-            removeRemoteBean2Return.remove();
+            removeRemoteBean2.hi();
+            removeRemoteBean2.remove();
         } catch (RemoteException e) {
             throw new TestFailedException(e);
         }
         try {
-            removeRemoteBean2Return.remove2();
+            removeRemoteBean2.remove2();
             throw new TestFailedException(
                     "Expecting java.rmi.NoSuchObjectException, " + "but got none");
         } catch (java.rmi.NoSuchObjectException e) {
@@ -198,22 +229,19 @@ public class Client extends ClientBase {
     public void testGetTwoRemoteHomeReturn() throws RemoteException, Fault, NamingException {
         TwoRemoteHome twoRemoteHomeReturn = testBean.getTwoRemoteHomeReturn();
 
-        doTwoRemoteTest(twoRemoteHomeReturn);
+        doTwoRemoteHomeTest(twoRemoteHomeReturn);
     }
 
     /**
      * 相似的测试和 removeTwoRemoteHome 使用 bean twoRemoteHome, 但是他使用 server remote lookup 后的结果.
-     *
-     * @see ClientBase#getTwoRemoteHome()
-     * @see ClientBase#removeTwoRemoteHome()
      */
     public void testGetTwoRemoteHomeByRemoteCtxReturn() throws RemoteException, Fault, NamingException {
-        TwoRemoteHome twoRemoteHomeCtxReturn = testBean.getTwoRemoteHomeByRemoteCtxReturn();
+        TwoRemoteHome twoRemoteHomeByRemoteCtxReturn = testBean.getTwoRemoteHomeByRemoteCtxReturn();
 
-        doTwoRemoteTest(twoRemoteHomeCtxReturn);
+        doTwoRemoteHomeTest(twoRemoteHomeByRemoteCtxReturn);
     }
 
-    public void doTwoRemoteTest(TwoRemoteHome twoRemoteHome) throws RemoteException, Fault, NamingException {
+    public void doTwoRemoteHomeTest(TwoRemoteHome twoRemoteHome) throws RemoteException, Fault, NamingException {
         TwoRemoteIF bean = null;
         try {
             bean = twoRemoteHome.create();

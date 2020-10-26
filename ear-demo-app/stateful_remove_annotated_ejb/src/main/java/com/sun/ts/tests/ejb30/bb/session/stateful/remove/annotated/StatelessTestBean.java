@@ -77,13 +77,40 @@ public class StatelessTestBean extends TestBeanBase implements TestIF {
     }
 
     @Override
+    public RemoveIF getRemoveRemoteBeanByRemoteCtxReturn() throws NamingException {
+        Properties properties = new Properties();
+        properties.put(Context.PROVIDER_URL, "http://127.0.0.1:8080/tomee/ejb");
+        properties.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.openejb.client.RemoteInitialContextFactory");
+        properties.setProperty("openejb.client.moduleId", "openejb/global");
+
+        InitialContext initialContext = new InitialContext(properties);
+        RemoveIF lookup = (RemoveIF) initialContext.
+                lookup("global/stateful_remove_annotated/stateful_remove_annotated_ejb/RemoveBean!com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.RemoveIF");
+        return lookup;
+    }
+
+    @Override
     public Remove2IF getRemoveRemoteBean2Return() {
         return (Remove2IF) sessionContext.lookup("removeBean2Remote");
     }
 
     @Override
+    public Remove2IF getRemoveRemoteBean2ByRemoteCtxReturn() throws NamingException {
+        Properties properties = new Properties();
+        properties.put(Context.PROVIDER_URL, "http://127.0.0.1:8080/tomee/ejb");
+        properties.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.openejb.client.RemoteInitialContextFactory");
+        properties.setProperty("openejb.client.moduleId", "openejb/global");
+
+        InitialContext initialContext = new InitialContext(properties);
+        Remove2IF lookup = (Remove2IF) initialContext.
+                lookup("global/stateful_remove_annotated/stateful_remove_annotated_ejb/RemoveBean!com.sun.ts.tests.ejb30.bb.session.stateful.remove.common.Remove2IF");
+        return lookup;
+    }
+
+    @Override
     public TwoRemoteHome getTwoRemoteHomeReturn() {
-        //这里使用的是同 jvm 的调用
+        //这里使用的是 ejb 容器环境中的 context，
+        //一般是属于同 jvm 的调用
         return (TwoRemoteHome) sessionContext.lookup("twoRemoteHome");
     }
 
@@ -94,6 +121,9 @@ public class StatelessTestBean extends TestBeanBase implements TestIF {
         Properties properties = new Properties();
         properties.put(Context.PROVIDER_URL, "http://127.0.0.1:8080/tomee/ejb");
         properties.put(Context.INITIAL_CONTEXT_FACTORY, "org.apache.openejb.client.RemoteInitialContextFactory");
+
+        //这里的 openejb.client.moduleId 设置的并不是本 app client 的 id ，
+        //而是直接取巧的使用了 global 作为 moduleId 来使用 server 端 jndi 树上的 openejb/global 子树，其包含了所有 global 域中的资源
         properties.setProperty("openejb.client.moduleId", "openejb/global");
 
         //这里的信息来源于下面的类方法
