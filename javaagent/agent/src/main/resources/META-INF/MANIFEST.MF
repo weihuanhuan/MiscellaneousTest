@@ -1,0 +1,5 @@
+Boot-Class-Path: agentlib.jar
+Premain-Class: agent.AgentMain
+Agent-Class: agent.AgentMain
+Can-Redefine-Classes: true
+Can-Retransform-Classes: true
