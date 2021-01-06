@@ -14,6 +14,29 @@
 
     <display-name>springmvc</display-name>
 
+    <filter>
+        <filter-name>UrlRewriteFilter</filter-name>
+        <filter-class>org.tuckey.web.filters.urlrewrite.UrlRewriteFilter</filter-class>
+        
+        <init-param>
+            <param-name>logLevel</param-name>
+            <param-value>TRACE</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>UrlRewriteFilter</filter-name>
+        <!-- 参考 servlet spec 4.0 章节 12.2 Specification of Mappings -->
+        <!-- A string beginning with a ‘/’ character and ending with a ‘/*’ suffix is used for path mapping -->
+        <!--
+            注意对于 UrlRewriteFilter 来说必需要配置为 /* 才行，
+            具体原因猜测可能是 UrlRewriteFilter 在重定向或者转发后仍然需要对先前拦截的 originalUrl 或者新产生的 rewrittenUrl 进行处理
+        -->
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
     <servlet>
         <servlet-name>request</servlet-name>
         <servlet-class>Servlet.RequestTest</servlet-class>

@@ -78,6 +78,9 @@
         <!--gmssl placeholder-->
         <bouncycastle.version>1.60</bouncycastle.version>
 
+        <!-- urlrewritefilter -->
+        <urlrewritefilter.version>3.2.0</urlrewritefilter.version>
+
     </properties>
 
     <dependencies>
