@@ -28,11 +28,23 @@
         <filter-name>UrlRewriteFilter</filter-name>
         <!-- 参考 servlet spec 4.0 章节 12.2 Specification of Mappings -->
         <!-- A string beginning with a ‘/’ character and ending with a ‘/*’ suffix is used for path mapping -->
+        <url-pattern>/test/status/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>UrlRewriteFilter</filter-name>
         <!--
-            注意对于 UrlRewriteFilter 来说必需要配置为 /* 才行，
-            具体原因猜测可能是 UrlRewriteFilter 在重定向或者转发后仍然需要对先前拦截的 originalUrl 或者新产生的 rewrittenUrl 进行处理
+            注意对于 UrlRewriteFilter 的状态页 /rewrite-status 来说其 url-pattern 必需要配置为包含 /rewrite-status 的模式才行，
+            比如按照其默认配置 urlrewrite.xml 来说， UrlRewriteFilter 会依照其 rule 将 /test/status/ 重定向到 /rewrite-status 来处理,
+            此时 tomcat 返回的 response code 为 302，因此浏览器重新发起对 /rewrite-status 的请求，
+            假若配置的 UrlRewriteFilter 的 url-pattern 不能匹配 /rewrite-status，那么其将不会被加入请求的 ApplicationFilterChain 中。
+            但是这个 /rewrite-status 页面是 UrlRewriteFilter 本身在其 doFilter 方法中处理的，
+            在加之 tomcat 本身也没有对这个路径的处理，因此 tomcat 返回了 404 页面，
+            如果直接访问 /rewrite-status 也是同理的 404，只是少了 redirect 这个过程。
         -->
-        <url-pattern>/*</url-pattern>
+        <url-pattern>/rewrite-status</url-pattern>
         <dispatcher>REQUEST</dispatcher>
         <dispatcher>FORWARD</dispatcher>
     </filter-mapping>
