@@ -81,6 +81,10 @@
         <!-- urlrewritefilter -->
         <urlrewritefilter.version>3.2.0</urlrewritefilter.version>
 
+        <!-- json-p -->
+        <javax.json-api.version>1.1</javax.json-api.version>
+        <org.glassfish-javax.json.version>1.1</org.glassfish-javax.json.version>
+
     </properties>
 
     <dependencies>

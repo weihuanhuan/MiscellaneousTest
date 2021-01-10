@@ -192,6 +192,20 @@
             <version>${org.mozilla-rhino.version}</version>
         </dependency>
 
+        <!-- java json-p 规范的 api 接口类，这些类在 org.glassfish-javax.json 中有一份相同的打包 -->
+        <!--<dependency>-->
+            <!--<groupId>javax.json</groupId>-->
+            <!--<artifactId>javax.json-api</artifactId>-->
+            <!--<version>${javax.json-api.version}</version>-->
+        <!--</dependency>-->
+
+        <!-- java json-p 规范的 glassfish 实现类 -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>${org.glassfish-javax.json.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>
