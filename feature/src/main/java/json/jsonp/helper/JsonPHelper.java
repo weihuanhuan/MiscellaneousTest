@@ -1,13 +1,5 @@
 package json.jsonp.helper;
 
-import javax.json.JsonNumber;
-import javax.json.JsonObject;
-import javax.json.JsonObjectBuilder;
-import javax.json.JsonReader;
-import javax.json.JsonString;
-import javax.json.JsonValue;
-import javax.json.JsonWriter;
-import javax.json.spi.JsonProvider;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
@@ -21,6 +13,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.json.JsonNumber;
+import javax.json.JsonObject;
+import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
+import javax.json.JsonString;
+import javax.json.JsonValue;
+import javax.json.JsonWriter;
+import javax.json.spi.JsonProvider;
 
 public class JsonPHelper {
 
@@ -63,16 +63,37 @@ public class JsonPHelper {
         return provider;
     }
 
-    public static String generateJsonString(JsonValue jsonValue) {
+    public static String generateJsonString(JsonValue jsonValue) throws IOException {
         JsonProvider provider = getProvider();
 
-        StringWriter stringWriter = new StringWriter();
-        JsonWriter writer = provider.createWriter(stringWriter);
-        writer.write(jsonValue);
-        writer.close();
+        //interface Closeable extends AutoCloseable ，
+        //某些 json-p 的实现中在 JsonWriter.write(javax.json.JsonValue) 后并不会调用 flush 或者 close 方法
+        //由于缺少上面的方法调用，使得 JsonWriter 写入的数据不会被 StringWriter 感知到，导致 StringWriter.toString() 为空字符串。
+        try (StringWriter stringWriter = new StringWriter(); JsonWriter jsonWriter = provider.createWriter(stringWriter)) {
+            jsonWriter.write(jsonValue);
+            jsonWriter.close();
+            String string = stringWriter.toString();
+            return string;
+        }
+    }
 
-        String string = stringWriter.toString();
-        return string;
+    public static <V> JsonValue buildMapJsonValue(Map<String, V> instance) throws IllegalAccessException, IntrospectionException, InvocationTargetException {
+        if (instance == null) {
+            return JsonValue.NULL;
+        }
+        JsonObjectBuilder objectBuilder = getProvider().createObjectBuilder();
+
+        Set<Map.Entry<String, V>> entries = instance.entrySet();
+        for (Map.Entry<String, V> entry : entries) {
+            String key = entry.getKey();
+            if (key == null) {
+                continue;
+            }
+            V value = entry.getValue();
+            objectBuilder.add(key, buildJsonValue(value));
+        }
+        JsonObject build = objectBuilder.build();
+        return build;
     }
 
     public static JsonValue buildJsonValue(Object instance) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
@@ -178,10 +199,34 @@ public class JsonPHelper {
         }
         JsonProvider provider = getProvider();
 
-        StringReader stringReader = new StringReader(string);
-        JsonReader jsonReader = provider.createReader(stringReader);
-        JsonValue jsonValue = jsonReader.readValue();
-        return jsonValue;
+        try (StringReader stringReader = new StringReader(string); JsonReader jsonReader = provider.createReader(stringReader)) {
+            JsonValue jsonValue = jsonReader.readValue();
+            return jsonValue;
+        }
+    }
+
+    public static <V> Map<String, V> buildInstanceMap(JsonValue jsonValue, Class<?> valueClass) throws IllegalAccessException, IntrospectionException, IOException, InstantiationException, InvocationTargetException, ClassNotFoundException {
+        if (jsonValue == null) {
+            return null;
+        }
+
+        if (jsonValue.getValueType() != JsonValue.ValueType.OBJECT) {
+            System.out.println(String.format("Skip unsupported valueType for JsonValue:%s.", jsonValue));
+            return null;
+        }
+
+        Map<String, V> result = new HashMap<>();
+
+        JsonObject jsonObject = jsonValue.asJsonObject();
+        for (Map.Entry<String, JsonValue> jsonValueEntry : jsonObject.entrySet()) {
+            String key = jsonValueEntry.getKey();
+            if (key == null) {
+                continue;
+            }
+            JsonValue value = jsonValueEntry.getValue();
+            result.put(key, (V) buildInstance(value, valueClass));
+        }
+        return result;
     }
 
     public static Object buildInstance(JsonValue jsonValue, Class<?> instanceClass) throws IntrospectionException, IOException, ClassNotFoundException, InvocationTargetException, IllegalAccessException, InstantiationException {
@@ -197,7 +242,7 @@ public class JsonPHelper {
                 Object instance = parseJsonObject(jsonObject, instanceClass);
                 return instance;
             default:
-                System.out.println(String.format("Skip unsupported JsonStructure for JsonValue:%s.", jsonValue));
+                System.out.println(String.format("Skip unsupported valueType for JsonValue:%s.", jsonValue));
                 return null;
         }
     }
@@ -299,5 +344,6 @@ public class JsonPHelper {
                 return null;
         }
     }
+
 
 }
