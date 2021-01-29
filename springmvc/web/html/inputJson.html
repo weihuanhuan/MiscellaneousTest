@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <script src="../js/jquery-3.2.1.js"></script>
+        <script>
+            function buttonClickFunc() {
+                //ECMAScript 2015 - ES6 新增加的 Map 对象。
+                var weightMap = new Map();
+                weightMap.set("key1", "value1");
+                weightMap.set("key2", "value2");
+                weightMap.set("keyNull", null);
+                weightMap.set("keyEmpty", "");
+
+                var weightCallback = function () {};
+
+                //map 对象使用 size 属性来表示其大小, 其没有 length 属性。
+                if (weightMap.size > 0) {
+                    weightCallback = function () {
+
+                        //转换为 json object
+                        var jsonObject = {};
+                        weightMap.forEach((value, key) => {
+                            jsonObject[key] = value;
+                        });
+
+                        //转换为 json string
+                        var requestData = JSON.stringify(jsonObject);
+                        $("#div_output_requestData").text(requestData);
+
+                        $.ajax({
+                            type: "POST",
+                            url: "../ajaxjson",
+                            data: requestData,
+                            contentType: "application/json; charset=UTF-8",
+                            dataType: "json",
+                            success: function (responseData) {
+                                if(responseData ===null || Object.keys(responseData).length <= 0) {
+                                    return;
+                                }
+
+                                //遍历 json object 的属性
+                                var resultString = "#";
+                                Object.keys(responseData).forEach((key) => {
+                                    var value =  responseData[key];
+                                    resultString = resultString.concat(key,"=");
+                                    resultString = resultString.concat(value,"#");
+                                });
+                                $("#div_output_responseData").text(resultString);
+                            }
+                        });
+                    };
+                }
+
+                //通过 js 的形式操作 dom ，
+                //其中的 innerHtml 和 onclick 是 dom 元素本身的原生属性，不需要额外的库。
+                //由于他们是属性，所以我们可以直接通过赋值来设置他们的值，从而给这些属性绑定需要的值。
+                var button_js = document.getElementById("button_js");
+                button_js.innerHTML="button_js_bind";
+                button_js.onclick =function () {
+                    button_js.onclick = null;
+                    button_js.innerHTML="button_js_unbind";
+                    weightCallback();
+                };
+
+                //通过 jquery 的形式操作 dom,
+                //在 jquery 的选择器 $()，使用 # 指示通过元素 id 选择，则选择之后返回的 dom对象 被 jquery 包装过了。
+                //所以这里的 text() click() unbind() 这些函数是 jquery 提供的，而 dom 对象没有这些函数的，如果调用就会出现问题。
+                var button_jquery = $("#button_jquery");
+                button_jquery.text("button_jquery_bind");
+                button_jquery.click (function () {
+                    button_jquery.unbind("click");
+                    button_jquery.text("button_jquery_unbind");
+                    weightCallback();
+                });
+            }
+
+            //input 标签的属性 value 用来保存其文本框内的值，
+            //但是这个 value 的值，在输入时是不会即时变化的，需要绑定一个 change 事件来主动更新，
+            //这里的 change 事件的触发时机就是当 input 标签本身 loses focus 时，然后就会执行 onchange 属性绑定的函数。
+            function updateInputValue(inputBox) {
+                inputBox.setAttribute("value",inputBox.value);
+            }
+
+        </script>
+    </head>
+        <button id="button_click" onclick="buttonClickFunc()">please click to bind!</button>
+        <br/>
+        <button id="button_js" >button_js_unbind</button>
+        <br/>
+        <button id="button_jquery" >button_jquery_unbind</button>
+        <br/>
+
+        <div id="div_output_requestData">output_requestData</div>
+        <div id="div_output_responseData">output_responseData</div>
+
+        <input type="text" value="100" onchange="updateInputValue(this)">
+        <br/>
+    </body>
+</html>

@@ -136,6 +136,13 @@
             <version>${urlrewritefilter.version}</version>
         </dependency>
 
+        <!--用于 spring 的实现类 org.springframework.http.converter.json.GsonHttpMessageConverter -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>${gson.version}</version>
+        </dependency>
+
     </dependencies>
 
 
