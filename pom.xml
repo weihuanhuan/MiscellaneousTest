@@ -85,6 +85,9 @@
         <javax.json-api.version>1.1</javax.json-api.version>
         <org.glassfish-javax.json.version>1.1</org.glassfish-javax.json.version>
 
+        <!-- serialize -->
+        <caucho.hessian.version>4.0.65</caucho.hessian.version>
+
     </properties>
 
     <dependencies>

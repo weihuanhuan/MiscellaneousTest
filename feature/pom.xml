@@ -206,6 +206,14 @@
             <version>${org.glassfish-javax.json.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.caucho/hessian -->
+        <dependency>
+            <groupId>com.caucho</groupId>
+            <artifactId>hessian</artifactId>
+            <version>${caucho.hessian.version}</version>
+        </dependency>
+
+
     </dependencies>
 
 </project>
