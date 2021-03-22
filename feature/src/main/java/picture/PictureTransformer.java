@@ -12,8 +12,6 @@ import com.drew.metadata.MetadataException;
 import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.jpeg.JpegDirectory;
-import com.sun.imageio.plugins.bmp.BMPCompressionTypes;
-import com.sun.imageio.plugins.bmp.BMPConstants;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -91,7 +89,8 @@ public class PictureTransformer {
                 imageWriteParam = new BMPImageWriteParam(null);
                 imageWriteParam.setCompressionMode(imageWriteParam.MODE_EXPLICIT);
                 //BMP 压缩后无法查看, 压缩类型 BI_PNG
-                imageWriteParam.setCompressionType(BMPCompressionTypes.getCompressionTypes()[5]);
+                //"BI_PNG" --> BMPCompressionTypes.getCompressionTypes()[5]
+                imageWriteParam.setCompressionType("BI_PNG");
             } else {
                 imageWriteParam = new JPEGImageWriteParam(null);
                 imageWriteParam.setCompressionMode(imageWriteParam.MODE_EXPLICIT);
