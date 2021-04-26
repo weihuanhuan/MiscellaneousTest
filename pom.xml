@@ -88,7 +88,22 @@
         <!-- serialize -->
         <caucho.hessian.version>4.0.65</caucho.hessian.version>
 
+        <!-- junit -->
+        <org.junit.junit-bom.version>5.7.1</org.junit.junit-bom.version>
+
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${org.junit.junit-bom.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
 
