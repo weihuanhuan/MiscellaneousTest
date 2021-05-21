@@ -32,19 +32,27 @@ public class HttpURLConnectionMethodTest {
             //发送数据
             sendData(httpConn);
 
-            //POST - jdk 实际使用的请求方法
+            //POST - jdk 实际使用的请求方法 - 发送数据后
             requestMethod = httpConn.getRequestMethod();
             System.out.println(String.format("httpConn.getRequestMethod() is %s after httpConn.getOutputStream()", requestMethod));
 
             //检查响应
             checkResponse(httpConn);
 
-            //POST - jdk 实际使用的请求方法
+            //POST - jdk 实际使用的请求方法 - 返回响应后
             requestMethod = httpConn.getRequestMethod();
             System.out.println(String.format("httpConn.getRequestMethod() is %s after httpConn.getResponseCode()", requestMethod));
 
             //读取响应
-            readResponse(httpConn);
+//            readResponse(httpConn);
+
+            //关闭连接
+            closeConnection(httpConn);
+
+            //POST - jdk 实际使用的请求方法 - 关闭连接后
+            requestMethod = httpConn.getRequestMethod();
+            System.out.println(String.format("httpConn.getRequestMethod() is %s after httpConn.disconnect()", requestMethod));
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -96,6 +104,8 @@ public class HttpURLConnectionMethodTest {
     }
 
     private static void readResponse(HttpURLConnection httpConn) throws IOException {
+        // jdk 的实现中，如果连接成功了，但是服务没有返回任何数据时， getResponseCode 是不会导致异常的。
+        //但是如果我们对响应进行 read 就会触发 jdk 对 http 响应报文的解析，此时如果响应不和 http 规范，就会导致异常了。
         InputStream is = httpConn.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
@@ -105,5 +115,10 @@ public class HttpURLConnectionMethodTest {
         }
 
         br.close();
+    }
+
+    private static void closeConnection(HttpURLConnection httpConn) {
+        // jdk 的实现中，disconnect 不会重置 HttpURLConnection 对象的域值，因此我们还可以获取到最近 jdk 真正执行 http 请求的 method 。
+        httpConn.disconnect();
     }
 }
