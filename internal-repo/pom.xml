@@ -86,7 +86,7 @@
                             <excludeTransitive>true</excludeTransitive>
                             <stripVersion>false</stripVersion>
                             <overWriteIfNewer>true</overWriteIfNewer>
-                            <excludeGroupIds>ant</excludeGroupIds>
+                            <excludeGroupIds>ant-contrib</excludeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
