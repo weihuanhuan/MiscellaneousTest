@@ -1,0 +1,107 @@
+<project name="internal" default="default" basedir=".">
+
+    <target name="taskdef">
+        <taskdef resource="net/sf/antcontrib/antlib.xml">
+            <classpath>
+                <pathelement path="${plugin.classpath}"/>
+            </classpath>
+        </taskdef>
+    </target>
+
+    <target name="default">
+        <antcall target="install"/>
+    </target>
+
+    <target name="init" depends="taskdef">
+        <condition property="isWindows">
+            <os family="windows"/>
+        </condition>
+
+        <condition property="isUnix">
+            <os family="unix"/>
+        </condition>
+
+        <property file="${basedir}/build.properties"/>
+    </target>
+
+    <target name="install" depends="init">
+        <echo level="info">install file.</echo>
+
+        <!--  并行处理增加 install 的速度，并限制 并发数，以控制对系统资源的使用       -->
+        <for param="file" parallel="${parallel.enabled}" threadCount="${parallel.thread.count}">
+            <path>
+                <fileset dir="${mvn.directory}">
+                    <include name="**/*.${mvn.packaging}"/>
+                </fileset>
+            </path>
+
+            <!--  sequential 内部则按照顺序来执行   -->
+            <sequential>
+                <var name="fileName" unset="true"/>
+                <basename property="fileName" file="@{file}" suffix=".${mvn.packaging}"/>
+
+                <var name="relativeDir" unset="true"/>
+
+                <pathconvert property="relativeDir">
+                    <path location="@{file}"/>
+                    <chainedmapper>
+                        <!--  兼容处理 unix 与 windows 风格的路径分隔符   -->
+                        <globmapper from="${mvn.directory}/*" to="./*" handledirsep="yes"/>
+                    </chainedmapper>
+                </pathconvert>
+
+                <echo message=""></echo>
+                <echo message="######################################"></echo>
+                <echo message="@{file}"></echo>
+                <echo message="${mvn.directory}"></echo>
+                <echo message="${relativeDir}"></echo>
+                <echo message="######################################"></echo>
+                <echo message=""></echo>
+
+                <antcall target="mvn_install">
+                    <param name="mvn.file" value="@{file}"/>
+                    <param name="mvn.groupId" value="${mvn.group.prefix}"/>
+                    <param name="mvn.artifactId" value="${fileName}"/>
+                    <param name="mvn.packaging" value="${mvn.packaging}"/>
+                </antcall>
+            </sequential>
+        </for>
+    </target>
+
+    <target name="mvn_windows_setup" if="isWindows">
+        <property name="shell.executable" value="cmd"/>
+        <property name="shell.args" value="/c"/>
+    </target>
+
+    <target name="mvn_unix_setup" if="isUnix">
+        <property name="shell.executable" value="sh"/>
+        <property name="shell.args" value="-c"/>
+    </target>
+
+    <target name="mvn_install" depends="mvn_windows_setup,mvn_unix_setup">
+        <echo message=""></echo>
+        <echo message="######################################"></echo>
+        <echo message="${shell.executable}"></echo>
+        <echo message="${shell.args}"></echo>
+        <echo message="${mvn.goal}"></echo>
+        <echo message="${mvn.file}"></echo>
+        <echo message="${mvn.groupId}"></echo>
+        <echo message="${mvn.artifactId}"></echo>
+        <echo message="${mvn.version}"></echo>
+        <echo message="${mvn.packaging}"></echo>
+        <echo message="######################################"></echo>
+        <echo message=""></echo>
+
+        <exec dir="${basedir}" executable="${shell.executable}">
+            <arg value="${shell.args}"/>
+            <arg value="${mvn.executable}"/>
+            <arg value="${mvn.goal}"/>
+            <arg value="-Dfile=${mvn.file}"/>
+            <arg value="-DgroupId=${mvn.groupId}"/>
+            <arg value="-DartifactId=${mvn.artifactId}"/>
+            <arg value="-Dversion=${mvn.version}"/>
+            <arg value="-Dpackaging=${mvn.packaging}"/>
+        </exec>
+    </target>
+
+</project>
