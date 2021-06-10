@@ -30,8 +30,10 @@
         <!--  并行处理增加 install 的速度，并限制 并发数，以控制对系统资源的使用       -->
         <for param="file" parallel="${parallel.enabled}" threadCount="${parallel.thread.count}">
             <path>
-                <fileset dir="${mvn.directory}">
-                    <include name="**/*.${mvn.packaging}"/>
+                <!-- name of a file; each line of this file is taken to be an include pattern. -->
+                <fileset dir="${mvn.directory}" includesfile="${includes.file}">
+                    <!-- includesfile 和 include 是 or 的处理关系，最终的 fileset 结果是他们各自的并集 -->
+                    <!--                    <include name="**/*.${mvn.packaging}"/>-->
                 </fileset>
             </path>
 
@@ -68,11 +70,20 @@
         </for>
     </target>
 
+    <!-- 在 windows 下，直接使用 【mvn】来执行会提示找不见【mvn】命令   -->
+    <!-- 虽然 windows 下的【cmd /c】方式不会有 linux 下的递归启动进程问题，
+         但是如果直接指定【mvn】命令的话就找不见需要使用【mvn.bat】或者【mvn.cmd】这样的全文件名格式
+    -->
+    <!-- 这里是由于 cmd 在查找命令时，会自动考虑不携带 cmd，或者 bat 扩展后缀的形式。   -->
+    <!-- 这里要注意 maven 在 3.3.9 版本使用【mvn.bat】，而在 3.5.4 版本使用【mvn.cmd】   -->
     <target name="mvn_windows_setup" if="isWindows">
         <property name="shell.executable" value="cmd"/>
         <property name="shell.args" value="/c"/>
     </target>
 
+    <!-- 在 linux 下，使用这里的 【sh -c】方式执行会导致该 install 任务被无休止的递归调用   -->
+    <!-- 这个问题的原因暂时不明，如果我们将 shell.executable 直接切换为 【mvn】来直接调用就没有问题  -->
+    <!-- 初步猜测可能是因为 【sh -c】会开启新的 shell 会话来执行 install 任务，但是这个会话没有结束导致的 -->
     <target name="mvn_unix_setup" if="isUnix">
         <property name="shell.executable" value="sh"/>
         <property name="shell.args" value="-c"/>
@@ -89,9 +100,15 @@
         <echo message="${mvn.artifactId}"></echo>
         <echo message="${mvn.version}"></echo>
         <echo message="${mvn.packaging}"></echo>
+        <echo message="${mvn.repo.local}"></echo>
         <echo message="######################################"></echo>
         <echo message=""></echo>
 
+        <!-- 当启动 主maven 额外的设置了 repo 时，我们需要对被 ant 调用的 mvn 传递启动 maven 的 local repository 信息，
+             否则被调 mvn 操纵的 repository 和调用 ant 的 maven 仓库不一致，会导致安装后的依赖被安装到系统的 maven repo 中了，
+             进而使得 主maven 中无法在其自身的仓库中找见我们这里 install 的依赖，产生依赖解析的问题。
+        -->
+        <!-- 这是由于我们在 ant 中使用 exec 任务调用了 mvn，而后者是独立启动的 maven 进程  -->
         <exec dir="${basedir}" executable="${shell.executable}">
             <arg value="${shell.args}"/>
             <arg value="${mvn.executable}"/>
@@ -101,6 +118,7 @@
             <arg value="-DartifactId=${mvn.artifactId}"/>
             <arg value="-Dversion=${mvn.version}"/>
             <arg value="-Dpackaging=${mvn.packaging}"/>
+            <arg value="-Dmvn.repo.local=${mvn.repo.local}"/>
         </exec>
     </target>
 

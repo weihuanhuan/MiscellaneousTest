@@ -17,9 +17,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.jasonfitch.test</groupId>
-            <artifactId>feature</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.ant</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.9.7</version>
         </dependency>
 
         <!--  system scope 的依赖可以被 runtime 以及 compile 所包含，并被 system 所过滤      -->
@@ -35,8 +35,8 @@
         <!--  使用内部仓库依赖的示例 -->
 <!--        <dependency>-->
 <!--            <groupId>com.jasonfitch.test.internal</groupId>-->
-<!--            <artifactId>feature-1.0-SNAPSHOT</artifactId>-->
-<!--            <version>1.0-SNAPSHOT</version>-->
+<!--            <artifactId>ant-contrib-1.0b3</artifactId>-->
+<!--            <version>${project.version}</version>-->
 <!--        </dependency>-->
     </dependencies>
 
@@ -131,6 +131,7 @@
                                 <property name="plugin.classpath" refid="maven.plugin.classpath"/>
                                 <property name="mvn.directory" value="${project.build.directory}/lib"/>
                                 <property name="mvn.version" value="${project.version}"/>
+                                <property name="mvn.repo.local" value="${settings.localRepository}"/>
                                 <ant antfile="${basedir}/build.xml"/>
                             </target>
                         </configuration>
