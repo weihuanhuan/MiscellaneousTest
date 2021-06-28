@@ -219,6 +219,14 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- 目前 mvnrepository 中只有依赖坐标，并没有相关的 jar 可以使用，这里只是做一个记录      -->
+        <!-- https://mvnrepository.com/artifact/com.alipay.oceanbase/oceanbase-client -->
+<!--        <dependency>-->
+<!--            <groupId>com.alipay.oceanbase</groupId>-->
+<!--            <artifactId>oceanbase-client</artifactId>-->
+<!--            <version>${oceanbase-client.version}</version>-->
+<!--        </dependency>-->
+
     </dependencies>
 
 </project>
