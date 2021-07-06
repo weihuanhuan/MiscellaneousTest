@@ -16,7 +16,8 @@ echo ####
 
 REM 我们可以通过连接一个 LF 来将多行结果的内容输出拼接到一个变量中，再供之后使用这个变量。
 
-setlocal EnableDelayedExpansion
+REM 如果一个 外围脚本 需要调用 本脚本 并使用这里创建的 output 变量，那么这里的 EnableDelayedExpansion 需要移到注释 外围脚本 中才行，具体原因不清楚。
+REM setlocal EnableDelayedExpansion
 set LF=^
 
 
@@ -33,4 +34,7 @@ echo !output!
 echo #### output end ####
 echo ####
 
-pause
+set %1=!output!
+
+set DIRECT_VAR=direct_value
+
