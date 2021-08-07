@@ -1,0 +1,51 @@
+# Most of the configuration items below are ignored when remote management is enabled.
+# Please refer to the following document for details:
+# https://rasp.baidu.com/doc/setup/others.html#java-standalone
+
+# <general settings>
+#
+# plugin.timeout.millis: 100
+# body.maxbytes: 12288
+# plugin.filter: true
+# plugin.maxstack: 100
+# response.sampler_burst: 5
+# response.sampler_interval: 60
+#security.weak_passwords:
+#  - "111111"
+#  - "weblogic1"
+#  - "weblogic123"
+#  - "welcome1"
+#hooks.ignore: http_output
+debug.level: 1
+#hook.white:
+#  "localhost:8080/vulns/011-ssrf-commons-httpclient.jsp":
+#    - "sql"
+#    - "ssrf"
+#  "www.test.com/test2":
+#    - "sql"
+#    - "ssrf"
+inject.custom_headers:
+  X-Protected-By: OpenRASP
+#   X-Content-Type-Options: nosniff
+#   X-Frame-Options: deny
+#   X-XSS-Protection: 1; mode=block
+#   X-Download-Options: noopen
+
+# <response to malicious requests>
+# 
+block.redirect_url: "https://rasp.baidu.com/blocked/?request_id=%request_id%"
+# block.content_json: "{\"error\":true, \"reason\": \"Request blocked by OpenRASP\", \"request_id\": \"%request_id%\"}"
+# block.content_xml: "<?xml version=\"1.0\"?><doc><error>true</error><reason>Request blocked by OpenRASP</reason><request_id>%request_id%</request_id></doc>"
+block.content_html: "</script><script>location.href=\"https://rasp.baidu.com/blocked2/?request_id=%request_id%\"</script>"
+
+
+# <syslog tcp configuration>
+#
+# syslog.enable: false
+# syslog.url: tcp://1.1.1.1:514
+# syslog.tag: OpenRASP
+# syslog.reconnect_interval: 300000
+# syslog.facility: 1
+
+instance.name: ins1 # inline comment
+

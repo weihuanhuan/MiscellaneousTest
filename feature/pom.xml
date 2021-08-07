@@ -227,6 +227,23 @@
 <!--            <version>${oceanbase-client.version}</version>-->
 <!--        </dependency>-->
 
+        <!--
+            提供 snakeyaml v1.25, commons-lang v2.6, guava v21.0 等相关的依赖。以进行 bukkit 的 yaml 注释解析测试。
+        -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
+
+    <!--  spigotmc 的仓库      -->
+    <repositories>
+        <repository>
+            <id>spigot</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
 
 </project>
