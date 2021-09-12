@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>ear-demo-app-descriptor</artifactId>
+        <groupId>com.jasonfitch.test</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>stateful_remove_descriptor</artifactId>
+    <packaging>ear</packaging>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <configuration>
+                    <artifactTypeMappings>
+                        <artifactTypeMapping type="jar" mapping="app-client"/>
+                    </artifactTypeMappings>
+
+                    <modules>
+                        <ejbModule>
+                            <groupId>com.jasonfitch.test</groupId>
+                            <artifactId>stateful_remove_descriptor_ejb</artifactId>
+                            <bundleFileName>stateful_remove_descriptor_ejb.jar</bundleFileName>
+                        </ejbModule>
+
+                        <webModule>
+                            <groupId>com.jasonfitch.test</groupId>
+                            <artifactId>stateful_remove_descriptor_web</artifactId>
+                            <bundleFileName>stateful_remove_descriptor_web.war</bundleFileName>
+                        </webModule>
+
+                        <appClientModule>
+                            <groupId>com.jasonfitch.test</groupId>
+                            <artifactId>stateful_remove_descriptor_client</artifactId>
+                            <bundleFileName>stateful_remove_descriptor_client.jar</bundleFileName>
+                        </appClientModule>
+                    </modules>
+
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>com.jasonfitch.test</groupId>
+            <artifactId>stateful_remove_descriptor_ejb</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>ejb</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jasonfitch.test</groupId>
+            <artifactId>stateful_remove_descriptor_client</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jasonfitch.test</groupId>
+            <artifactId>stateful_remove_descriptor_web</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>war</type>
+        </dependency>
+
+    </dependencies>
+
+</project>
