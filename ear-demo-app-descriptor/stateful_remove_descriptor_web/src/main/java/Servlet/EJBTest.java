@@ -44,26 +44,68 @@ public class EJBTest extends HttpServlet {
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        Field[] declaredFields = this.getClass().getDeclaredFields();
+        System.out.println("##################### @EJB #####################");
 
+        Field[] declaredFields = this.getClass().getDeclaredFields();
         for (Field declaredField : declaredFields) {
             try {
                 declaredField.setAccessible(true);
                 Object fieldValue = declaredField.get(this);
-                System.out.println(String.format("field name [%s] with value [%s]", declaredField.getName(), fieldValue));
+                System.out.println(String.format("inject field name [%s] with value [%s]", declaredField.getName(), fieldValue));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
 
-        String jndiName = "local-jndi-name-for-StatelessTestBean";
+        String existEJBAnnotatedJndiName = "java:comp/env/" + "removeBean";
         try {
             InitialContext initialContext = new InitialContext();
-            Object lookup = initialContext.lookup(jndiName);
-            System.out.println(lookup);
+            Object lookup = initialContext.lookup(existEJBAnnotatedJndiName);
+            System.out.println(String.format("lookup jndi name [%s] with value [%s]", existEJBAnnotatedJndiName, lookup));
         } catch (NamingException e) {
             e.printStackTrace();
         }
+
+        System.out.println("##################### local-jndi-name #####################");
+
+        String localJndiName = "local-jndi-name-for-removeBean";
+        try {
+            InitialContext initialContext = new InitialContext();
+            Object lookup = initialContext.lookup(localJndiName);
+            System.out.println(String.format("lookup jndi name [%s] with value [%s]", localJndiName, lookup));
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+
+        String compLocalJndiName = "java:comp/env/" + "local-jndi-name-for-removeBean";
+        try {
+            InitialContext initialContext = new InitialContext();
+            Object lookup = initialContext.lookup(compLocalJndiName);
+            System.out.println(String.format("lookup jndi name [%s] with value [%s]", compLocalJndiName, lookup));
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("##################### ejb-local-ref #####################");
+
+        String existEJBLocalRefLocalJndiName = "java:comp/env/" + "ejb-local-ref-for-removeBean-local";
+        try {
+            InitialContext initialContext = new InitialContext();
+            Object lookup = initialContext.lookup(existEJBLocalRefLocalJndiName);
+            System.out.println(String.format("lookup jndi name [%s] with value [%s]", existEJBLocalRefLocalJndiName, lookup));
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+
+        String existEJBLocalRefLocalHomeJndiName = "java:comp/env/" + "ejb-local-ref-for-removeBean-local-home";
+        try {
+            InitialContext initialContext = new InitialContext();
+            Object lookup = initialContext.lookup(existEJBLocalRefLocalHomeJndiName);
+            System.out.println(String.format("lookup jndi name [%s] with value [%s]", existEJBLocalRefLocalHomeJndiName, lookup));
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+
     }
 
 

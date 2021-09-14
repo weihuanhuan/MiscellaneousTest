@@ -23,8 +23,8 @@
         "http://www.bea.com/servers/wls700/dtd/weblogic-ejb-jar.dtd">
 <weblogic-ejb-jar>
     <weblogic-enterprise-bean>
-        <ejb-name>StatelessTestBean</ejb-name>
-        <local-jndi-name>local-jndi-name-for-StatelessTestBean</local-jndi-name>
+        <ejb-name>RemoveBean</ejb-name>
+        <local-jndi-name>local-jndi-name-for-removeBean</local-jndi-name>
     </weblogic-enterprise-bean>
 </weblogic-ejb-jar>
 
