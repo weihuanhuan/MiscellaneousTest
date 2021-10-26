@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The contents of this file will be loaded for each web application -->
+<Context>
+
+    <!-- Default set of monitored resources. If one of these changes, the    -->
+    <!-- web application will be reloaded.                                   -->
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+    <WatchedResource>${catalina.base}/conf/web.xml</WatchedResource>
+
+    <!-- 定义一个 default context 级别的 context jndi 名为 jdbc/Context 的 jdbc 资源  -->
+    <Resource name="jdbc/Context"
+              auth="Container"
+              type="javax.sql.DataSource"
+              initialSize="0"
+              maxTotal="100" maxIdle="30" maxWaitMillis="10000"
+              username="root" password="123456"
+              driverClassName="com.mysql.jdbc.Driver"
+              url="jdbc:mysql://localhost:3306/javatest"
+    />
+
+    <!-- 链接一个 server 级别的 global jndi 名为 jdbc/Server 的 jdbc 资源作为 default context 级别的 context jndi 名为 jdbc/Reference 的 jdbc资源 -->
+    <ResourceLink type="javax.sql.DataSource"
+                  name="jdbc/Reference"
+                  global="jdbc/Server"
+    />
+
+    <!-- 定义一个 default context 级别的 context jndi 名为 jdbc/Hikari 的拥有 自定义 factory 的 jdbc 资源  -->
+    <Resource name="jdbc/Hikari" auth="Container"
+              factory="com.zaxxer.hikari.HikariJNDIFactory"
+              type="javax.sql.DataSource"
+              minimumIdle="5"
+              maximumPoolSize="10"
+              connectionTimeout="300000"
+              jdbcUrl="jdbc:mysql://localhost:3306/javatest"
+              driverClassName="com.mysql.jdbc.Driver"
+              dataSource.implicitCachingEnabled="true"
+              dataSource.user="root"
+              dataSource.password="123456"
+    />
+
+</Context>

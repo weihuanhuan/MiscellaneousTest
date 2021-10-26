@@ -44,20 +44,6 @@
               factory="org.apache.catalina.users.MemoryUserDatabaseFactory"
               pathname="conf/tomcat-users.xml" />
 
-<!--
-
-     -->
- <Resource name="jdbc/Server" 
-            auth="Container" 
-            type="javax.sql.DataSource"
-            initialSize="0"
-            maxTotal="100" maxIdle="30" maxWaitMillis="10000"
-            username="root" password="123456" 
-            driverClassName="com.mysql.jdbc.Driver"
-
-            url="jdbc:mysql://localhost:3306/javatest"
-    />
- 
   </GlobalNamingResources>
     
   <!-- A "Service" is a collection of one or more "Connectors" that share

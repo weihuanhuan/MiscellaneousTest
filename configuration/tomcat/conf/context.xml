@@ -47,38 +47,6 @@
 
     <!-- url: The JDBC connection url for connecting to your MySQL database.
          -->
-     
-<!--
-  <ResourceLink type="javax.sql.DataSource"
-                name="jdbc/Reference"
-                global="jdbc/Server"
-  />
-
-  <Resource name="jdbc/Context" 
-            auth="Container" 
-            type="javax.sql.DataSource"
-            initialSize="0"
-            maxTotal="100" maxIdle="30" maxWaitMillis="10000"
-            username="root" password="123456" 
-            driverClassName="com.mysql.jdbc.Driver"  
-            url="jdbc:mysql://localhost:3306/javatest"
-            />
-
-
-  -->
-  <Resource name="jdbc/Hikari" auth="Container"
-      factory="com.zaxxer.hikari.HikariJNDIFactory"
-      type="javax.sql.DataSource"
-      minimumIdle="5" 
-      maximumPoolSize="10"
-      connectionTimeout="300000"
-      jdbcUrl="jdbc:mysql://localhost:3306/javatest"
-      driverClassName="com.mysql.jdbc.Driver"
-      dataSource.implicitCachingEnabled="true" 
-      dataSource.user="root"
-      dataSource.password="123456" 
-      />
-
     <!-- Uncomment this to disable session persistence across Tomcat restarts -->
     <!--
     <Manager pathname="" />
