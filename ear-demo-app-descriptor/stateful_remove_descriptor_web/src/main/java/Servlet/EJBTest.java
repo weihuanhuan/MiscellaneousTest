@@ -62,6 +62,13 @@ public class EJBTest extends HttpServlet {
             InitialContext initialContext = new InitialContext();
             Object lookup = initialContext.lookup(existEJBAnnotatedJndiName);
             System.out.println(String.format("lookup jndi name [%s] with value [%s]", existEJBAnnotatedJndiName, lookup));
+
+            if (lookup instanceof RemoveLocalIF) {
+                RemoveLocalIF removeLocalIF = (RemoveLocalIF) lookup;
+                removeLocalIF.hi();
+            } else {
+                System.out.println(String.format("value [%s] is not instanceof [%s]", lookup, RemoveLocalIF.class.getName()));
+            }
         } catch (NamingException e) {
             e.printStackTrace();
         }

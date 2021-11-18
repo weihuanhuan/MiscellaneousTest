@@ -50,16 +50,18 @@ public class RemoveBean implements RemoveIF, Remove2IF, RemoveLocal2IF, RemoveLo
     private SessionContext sessionContext;
 
     public RemoveBean() {
+        System.out.println("about to RemoveBean " + this);
     }
 
     public void ejbCreate() throws CreateException {
-
+        System.out.println("about to ejbCreate " + this);
     }
 
     @Init
     public void create() {
         // do nothing since our stateful beans do not need
         // any specific initialization.
+        System.out.println("about to create " + this);
     }
 
     @PreDestroy()
@@ -69,16 +71,20 @@ public class RemoveBean implements RemoveIF, Remove2IF, RemoveLocal2IF, RemoveLo
 
     //@Remove(retainIfException = false)
     public void remove() {
+        System.out.println("about to remove " + this);
     }
 
     public void remove(String s) {
         // this is not a remove-method
+        System.out.println("about to remove(String s) " + this);
     }
 
     //@Remove
     public void remove2() {
+        System.out.println("about to remove2 " + this);
     }
 
     public void hi() {
+        System.out.println("about to hi " + this);
     }
 }
