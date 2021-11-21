@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>1.9.7</version>
+            <version>1.10.11</version>
         </dependency>
 
         <!--  system scope 的依赖可以被 runtime 以及 compile 所包含，并被 system 所过滤      -->
@@ -101,7 +101,7 @@
                     <dependency>
                         <groupId>org.apache.ant</groupId>
                         <artifactId>ant</artifactId>
-                        <version>1.9.7</version>
+                        <version>1.10.11</version>
                     </dependency>
                     <dependency>
                         <groupId>ant-contrib</groupId>
