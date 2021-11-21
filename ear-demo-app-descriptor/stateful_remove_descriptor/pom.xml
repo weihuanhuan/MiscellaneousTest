@@ -23,6 +23,8 @@
                         <artifactTypeMapping type="jar" mapping="app-client"/>
                     </artifactTypeMappings>
 
+                    <defaultLibBundleDir>APP-INF/lib</defaultLibBundleDir>
+
                     <modules>
                         <ejbModule>
                             <groupId>com.jasonfitch.test</groupId>
@@ -41,6 +43,19 @@
                             <artifactId>stateful_remove_descriptor_client</artifactId>
                             <bundleFileName>stateful_remove_descriptor_client.jar</bundleFileName>
                         </appClientModule>
+
+                        <jarModule>
+                            <groupId>com.jasonfitch.test</groupId>
+                            <artifactId>listener-one</artifactId>
+                            <bundleFileName>listener-one.jar</bundleFileName>
+                        </jarModule>
+
+                        <jarModule>
+                            <groupId>com.jasonfitch.test</groupId>
+                            <artifactId>listener-two</artifactId>
+                            <bundleDir>/listener</bundleDir>
+                            <bundleFileName>listener-two.jar</bundleFileName>
+                        </jarModule>
                     </modules>
 
                 </configuration>
@@ -72,6 +87,19 @@
             <type>war</type>
         </dependency>
 
+        <dependency>
+            <groupId>com.jasonfitch.test</groupId>
+            <artifactId>listener-one</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jasonfitch.test</groupId>
+            <artifactId>listener-two</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
 </project>

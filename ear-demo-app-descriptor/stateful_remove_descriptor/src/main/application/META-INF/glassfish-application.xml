@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE glassfish-application PUBLIC
+        "-//GlassFish.org//DTD GlassFish Application Server 3.1 Java EE Application 6.0//EN"
+        "http://glassfish.org/dtds/glassfish-application_6_0-1.dtd">
+<glassfish-application>
+    <!-- weblogic-application.xml lifecycle listener test -->
+    <listener>
+        <listener-class>com.sun.ts.tests.weblogic.lifecycle.ListenerOne</listener-class>
+    </listener>
+    <listener>
+        <listener-class>com.sun.ts.tests.weblogic.lifecycle.ListenerTwo</listener-class>
+        <listener-uri>listener/listener-two.jar</listener-uri>
+        <run-as-principal-name>user-two</run-as-principal-name>
+    </listener>
+</glassfish-application>
+
