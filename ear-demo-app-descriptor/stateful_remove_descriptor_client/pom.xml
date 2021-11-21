@@ -36,6 +36,7 @@
         <dependency>
             <groupId>javax.ejb</groupId>
             <artifactId>javax.ejb-api</artifactId>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
