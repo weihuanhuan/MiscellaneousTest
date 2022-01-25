@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>MiscellaneousTest</artifactId>
+        <groupId>com.jasonfitch.test</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>webejb-demo-app-local-descriptor</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>ejblite_nointerface_descriptor_ejbliteservlet_vehicle</module>
+        <module>ejblite_nointerface_descriptor_ejbliteservlet_vehicle_web</module>
+        <module>ejblite_nointerface_descriptor_ejbliteservlet_vehicle_client</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!--  提供接口 ejb api 接口 javax.ejb.embeddable.EJBContainer ，具体见 javadoc  -->
+            <dependency>
+                <groupId>jakarta.ejb</groupId>
+                <artifactId>jakarta.ejb-api</artifactId>
+                <version>3.2.6</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>

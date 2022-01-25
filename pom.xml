@@ -16,6 +16,7 @@
         <module>ear-demo-package</module>
         <module>ear-demo-app</module>
         <module>ear-demo-app-descriptor</module>
+        <module>webejb-demo-app-local-descriptor</module>
         <module>javaagent</module>
         <module>internal-repo</module>
         <!--gmssl 工程需要特殊JDK编译，这里暂且不编译-->
