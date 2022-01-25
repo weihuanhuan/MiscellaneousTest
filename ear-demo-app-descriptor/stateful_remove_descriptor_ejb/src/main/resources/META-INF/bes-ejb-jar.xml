@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE bes-ejb-jar PUBLIC "-//Baolande Software Corporation//DTD BES Application Server EJB 3.1//EN"
+        "http://www.bessystem.com/appserver/dtds/bes-ejb-jar_3_1-1.dtd">
+<bes-ejb-jar xmlns="http://java.sun.com/xml/ns/j2ee">
+    <enterprise-beans>
+        <ejb>
+            <ejb-name>RemoveBean</ejb-name>
+            <local-jndi-name>local-jndi-name-for-removeBean</local-jndi-name>
+        </ejb>
+        <ejb>
+            <ejb-name>StatelessTestBean</ejb-name>
+            <ejb-local-ref>
+                <ejb-ref-name>removeBean</ejb-ref-name>
+                <local-jndi-name>local-jndi-name-for-ref-removeBean</local-jndi-name>
+            </ejb-local-ref>
+            <ejb-local-ref>
+                <ejb-ref-name>removeBean2</ejb-ref-name>
+                <local-jndi-name>local-jndi-name-for-ref-removeBean2</local-jndi-name>
+            </ejb-local-ref>
+        </ejb>
+    </enterprise-beans>
+</bes-ejb-jar>

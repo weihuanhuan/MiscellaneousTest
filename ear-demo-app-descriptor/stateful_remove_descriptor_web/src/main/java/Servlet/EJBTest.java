@@ -46,6 +46,7 @@ public class EJBTest extends HttpServlet {
 
         System.out.println("##################### @EJB #####################");
 
+        //should success
         Field[] declaredFields = this.getClass().getDeclaredFields();
         for (Field declaredField : declaredFields) {
             try {
@@ -57,6 +58,7 @@ public class EJBTest extends HttpServlet {
             }
         }
 
+        //should success
         String existEJBAnnotatedJndiName = "java:comp/env/" + "removeBean";
         try {
             InitialContext initialContext = new InitialContext();
@@ -75,6 +77,7 @@ public class EJBTest extends HttpServlet {
 
         System.out.println("##################### local-jndi-name #####################");
 
+        //should failed
         String localJndiName = "local-jndi-name-for-removeBean";
         try {
             InitialContext initialContext = new InitialContext();
@@ -84,6 +87,7 @@ public class EJBTest extends HttpServlet {
             e.printStackTrace();
         }
 
+        //should success
         String compLocalJndiName = "java:comp/env/" + "local-jndi-name-for-removeBean";
         try {
             InitialContext initialContext = new InitialContext();
@@ -95,6 +99,7 @@ public class EJBTest extends HttpServlet {
 
         System.out.println("##################### ejb-local-ref #####################");
 
+        //should success
         String existEJBLocalRefLocalJndiName = "java:comp/env/" + "ejb-local-ref-for-removeBean-local";
         try {
             InitialContext initialContext = new InitialContext();
@@ -104,6 +109,7 @@ public class EJBTest extends HttpServlet {
             e.printStackTrace();
         }
 
+        //should success
         String existEJBLocalRefLocalHomeJndiName = "java:comp/env/" + "ejb-local-ref-for-removeBean-local-home";
         try {
             InitialContext initialContext = new InitialContext();
@@ -114,6 +120,4 @@ public class EJBTest extends HttpServlet {
         }
 
     }
-
-
 }

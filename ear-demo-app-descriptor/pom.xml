@@ -17,6 +17,7 @@
         <module>stateful_remove_descriptor_client</module>
         <module>stateful_remove_descriptor_ejb</module>
         <module>stateful_remove_descriptor_web</module>
+        <module>stateful_remove_descriptor_webejb</module>
         <module>listener-one</module>
         <module>listener-two</module>
     </modules>

@@ -1,0 +1,73 @@
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
+
+    <!-- https://maven.apache.org/plugins/maven-assembly-plugin/assembly.html -->
+    <id>stateful_remove_descriptor_webejb</id>
+    <formats>
+        <format>war</format>
+    </formats>
+
+    <!--
+        Includes a base directory in the final archive. For example, if you are creating an assembly named "your-app",
+        setting includeBaseDirectory to true will create an archive that includes this base directory.
+        If this option is set to false the archive created will unzip its content to the current directory.
+    -->
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>com.jasonfitch.test:stateful_remove_descriptor_web</include>
+            </includes>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <excludes>
+                    <exclude>/WEB-INF/web.xml</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+
+        <dependencySet>
+            <outputDirectory>/WEB-INF/classes</outputDirectory>
+            <includes>
+                <include>com.jasonfitch.test:stateful_remove_descriptor_ejb</include>
+            </includes>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <excludes>
+                    <exclude>/META-INF/**</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
+    </dependencySets>
+
+    <fileSets>
+        <fileSet>
+            <!--
+                Sets the absolute or relative location from the module's directory. For example,
+                "src/main/bin" would select this subdirectory of the project in which this dependency is defined.
+            -->
+            <directory>target/dependency/stateful_remove_descriptor_ejb-ejb/META-INF</directory>
+            <outputDirectory>/WEB-INF</outputDirectory>
+            <includes>
+                <include>*.xml</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+    <!-- 将 web + ejb 转为 webejb 应用时的 web.xml 会有不同所以我们需要单独的打包这个文件  -->
+    <files>
+        <!--
+            A file allows individual file inclusion with the option to change the destination filename not supported by fileSets.
+            Note: either source or sources is required
+        -->
+        <file>
+            <source>web/WEB-INF/webejb-web.xml</source>
+            <destName>web.xml</destName>
+            <outputDirectory>/WEB-INF</outputDirectory>
+        </file>
+    </files>
+
+</assembly>
