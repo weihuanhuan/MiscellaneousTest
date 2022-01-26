@@ -15,8 +15,15 @@
     -->
     <includeBaseDirectory>false</includeBaseDirectory>
 
+    <!--
+        处理每个 dependencySet 的 useProjectArtifact，否则会提示下面的 warning 日志,由于存在俩个 dependencySet，所以日志出现了两次
+        [WARNING] Cannot include project artifact: com.jasonfitch.test:stateful_remove_descriptor_webejb:pom:1.0-SNAPSHOT; it doesn't have an associated file or directory.
+        [WARNING] Cannot include project artifact: com.jasonfitch.test:stateful_remove_descriptor_webejb:pom:1.0-SNAPSHOT; it doesn't have an associated file or directory.
+    -->
     <dependencySets>
         <dependencySet>
+            <!-- Determines whether the artifact produced during the current project's build should be included in this dependency set. -->
+            <useProjectArtifact>false</useProjectArtifact>
             <outputDirectory>/</outputDirectory>
             <includes>
                 <include>com.jasonfitch.test:stateful_remove_descriptor_web</include>
@@ -30,6 +37,7 @@
         </dependencySet>
 
         <dependencySet>
+            <useProjectArtifact>false</useProjectArtifact>
             <outputDirectory>/WEB-INF/classes</outputDirectory>
             <includes>
                 <include>com.jasonfitch.test:stateful_remove_descriptor_ejb</include>
@@ -43,6 +51,13 @@
         </dependencySet>
     </dependencySets>
 
+    <!--
+        处理 fileSet 和 file 的 outputDirectory 元素时，如果路径包含 / 会有如下的 error 日志，
+        而 dependencySet 同样有该元素，但却不会出现这里的 error 日志，原因未知，
+        由于默认就是相对 root 的，所以我们可以在所有含有该元素的场景下都不加 / 即可了。无需区别对待。
+        [ERROR] OS=Windows and the assembly descriptor contains a *nix-specific root-relative-reference (starting with slash) /WEB-INF
+        [ERROR] OS=Windows and the assembly descriptor contains a *nix-specific root-relative-reference (starting with slash) /WEB-INF
+    -->
     <fileSets>
         <fileSet>
             <!--
@@ -50,7 +65,11 @@
                 "src/main/bin" would select this subdirectory of the project in which this dependency is defined.
             -->
             <directory>target/dependency/stateful_remove_descriptor_ejb-ejb/META-INF</directory>
-            <outputDirectory>/WEB-INF</outputDirectory>
+            <!--
+                Sets the output directory relative to the root of the root directory of the assembly.
+                For example, "log" will put the specified files in the log directory.
+            -->
+            <outputDirectory>WEB-INF</outputDirectory>
             <includes>
                 <include>*.xml</include>
             </includes>
@@ -66,7 +85,7 @@
         <file>
             <source>web/WEB-INF/webejb-web.xml</source>
             <destName>web.xml</destName>
-            <outputDirectory>/WEB-INF</outputDirectory>
+            <outputDirectory>WEB-INF</outputDirectory>
         </file>
     </files>
 
