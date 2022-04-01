@@ -28,7 +28,8 @@
         <!-- checkstyle -->
         <plugin.checkstyle.version>3.1.1</plugin.checkstyle.version>
         <plugin.checkstyle.impl>9.3</plugin.checkstyle.impl>
-        <plugin.checkstyle.config>${project.basedir}/google_checks_9.3.xml</plugin.checkstyle.config>
+<!--        <plugin.checkstyle.config>${project.root.basedir}/checkstyle/sun_checks_9.3.xml</plugin.checkstyle.config>-->
+        <plugin.checkstyle.config>${project.root.basedir}/checkstyle/google_checks_9.3.xml</plugin.checkstyle.config>
 
         <!-- default skip, enable with -DskipCheckstyleReport=false -->
         <!-- default skip, enable with -DskipCheckstyleBuild=false -->
@@ -196,6 +197,28 @@
                         <version>${plugin.checkstyle.impl}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.commonjava.maven.plugins</groupId>
+                <artifactId>directory-maven-plugin</artifactId>
+                <version>0.1</version>
+                <executions>
+                    <execution>
+                        <id>directories</id>
+                        <goals>
+                            <goal>directory-of</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <property>project.root.basedir</property>
+                            <project>
+                                <groupId>com.jasonfitch.test</groupId>
+                                <artifactId>MiscellaneousTest</artifactId>
+                            </project>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
 
