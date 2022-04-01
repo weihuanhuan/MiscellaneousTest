@@ -25,6 +25,17 @@
 
     <properties>
 
+        <!-- checkstyle -->
+        <plugin.checkstyle.version>3.1.1</plugin.checkstyle.version>
+        <plugin.checkstyle.impl>9.3</plugin.checkstyle.impl>
+        <plugin.checkstyle.config>${project.basedir}/google_checks_9.3.xml</plugin.checkstyle.config>
+
+        <!-- default skip, enable with -DskipCheckstyleReport=false -->
+        <!-- default skip, enable with -DskipCheckstyleBuild=false -->
+        <!-- mvn clean install site -DskipCheckstyleReport=false -DskipCheckstyleBuild=false -->
+        <skipCheckstyleReport>true</skipCheckstyleReport>
+        <skipCheckstyleBuild>true</skipCheckstyleBuild>
+
         <!-- 而对于这个变量maven是会使用的，用来处理源码的字符编码问题 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
@@ -161,6 +172,31 @@
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.7.1</version>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${plugin.checkstyle.version}</version>
+                <configuration>
+                    <skip>${skipCheckstyleBuild}</skip>
+                    <!--  这个配置是针对工程的相对目录的，所以相对路径是不生效的，我们可以使用 Inline Configuration 或者 内置配置 或者 插件依赖 来解决  -->
+                    <configLocation>${plugin.checkstyle.config}</configLocation>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>com.puppycrawl.tools</groupId>
+                        <artifactId>checkstyle</artifactId>
+                        <version>${plugin.checkstyle.impl}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
         </plugins>
 
 
@@ -188,6 +224,23 @@
                         </reports>
                     </reportSet>
                 </reportSets>
+            </plugin>
+
+            <!--
+                You have to specify a plugin dependency on in the <build> element of your pom.xml.
+                It will not work inside the <reporting> element, because <reporting> does not support plugin dependencies.
+
+                但是这里自定义的 configLocation 的属性依旧是有意义的，因为他可以读取在 <build> 中的  maven-checkstyle-plugin 插件所引入的依赖
+                而其内置的 checkstyle 版本可以在 maven-checkstyle-plugin 的 pom 中看见
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${plugin.checkstyle.version}</version>
+                <configuration>
+                    <skip>${skipCheckstyleReport}</skip>
+                    <configLocation>${plugin.checkstyle.config}</configLocation>
+                </configuration>
             </plugin>
 
         </plugins>
