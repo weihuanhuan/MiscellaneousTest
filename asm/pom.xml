@@ -55,6 +55,19 @@
                 </executions>
             </plugin>
 
+            <!--
+               bugfix
+               maven-site-plugin:3.3:site failed: A required class was missing while executing
+               org.apache.maven.plugins:maven-site-plugin:3.3:site: org/apache/maven/doxia/siterenderer/DocumentContent
+
+               虽然该工程被 MiscellaneousTest 的 modules 中所有引用，导致其会随着 MiscellaneousTest 的编译而进行编译。
+               但该工程的 parent 并不是 MiscellaneousTest ，所以其无法继承到我们在 MiscellaneousTest 中的版本配置，故需要单独进行设置
+           -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
+            </plugin>
         </plugins>
 
 
