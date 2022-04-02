@@ -10,7 +10,7 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>asm</module>
+        <module>MiscellaneousTest-asm</module>
         <module>feature</module>
         <module>springmvc</module>
         <module>ear-demo-package</module>
