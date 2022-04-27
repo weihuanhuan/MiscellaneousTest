@@ -143,6 +143,14 @@
             <version>${gson.version}</version>
         </dependency>
 
+        <!--用于 spring 的实现类 org.springframework.http.converter.json.MappingJackson2HttpMessageConverter -->
+        <!-- 这是 spring 优先默认使用的 json HttpMessageConverter -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.databind.version}</version>
+        </dependency>
+
     </dependencies>
 
 
