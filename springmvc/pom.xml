@@ -151,6 +151,22 @@
             <version>${jackson.databind.version}</version>
         </dependency>
 
+
+<!--        避免类加载冲突，仅需引入一个版本的实现即可 -->
+<!--        https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+<!--        <dependency>-->
+<!--            <groupId>org.hibernate.validator</groupId>-->
+<!--            <artifactId>hibernate-validator</artifactId>-->
+<!--            <version>${hibernate.validator.jakarta.version}</version>-->
+<!--        </dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-validator -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate.validator.version}</version>
+        </dependency>
+
     </dependencies>
 
 
