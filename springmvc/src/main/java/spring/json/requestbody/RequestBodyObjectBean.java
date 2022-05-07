@@ -9,9 +9,9 @@ import com.fasterxml.jackson.annotation.Nulls;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class RequestBodyObjectBean {
 
-    private String fieldJsonPropertyWithNull;
+    private String fieldWithNull;
 
-    private String fieldJsonPropertyWithBlank = "";
+    private String fieldWithBlank = "";
 
     // defaultValue 当前只是元数据，并不会设置为默认值。
     // 需要反序列化的默认值时可以简单的设置为域的初始化值就可以了。
@@ -29,20 +29,20 @@ public class RequestBodyObjectBean {
     @JsonSetter(nulls = Nulls.SKIP)
     private String fieldJsonSetterWithDefault = "default-value-from-field";
 
-    public String getFieldJsonPropertyWithNull() {
-        return fieldJsonPropertyWithNull;
+    public String getFieldWithNull() {
+        return fieldWithNull;
     }
 
-    public void setFieldJsonPropertyWithNull(String fieldJsonPropertyWithNull) {
-        this.fieldJsonPropertyWithNull = fieldJsonPropertyWithNull;
+    public void setFieldWithNull(String fieldWithNull) {
+        this.fieldWithNull = fieldWithNull;
     }
 
-    public String getFieldJsonPropertyWithBlank() {
-        return fieldJsonPropertyWithBlank;
+    public String getFieldWithBlank() {
+        return fieldWithBlank;
     }
 
-    public void setFieldJsonPropertyWithBlank(String fieldJsonPropertyWithBlank) {
-        this.fieldJsonPropertyWithBlank = fieldJsonPropertyWithBlank;
+    public void setFieldWithBlank(String fieldWithBlank) {
+        this.fieldWithBlank = fieldWithBlank;
     }
 
     public String getFieldJsonPropertyWithDefault() {
@@ -80,8 +80,8 @@ public class RequestBodyObjectBean {
     @Override
     public String toString() {
         return "RequestBodyObjectBean{" +
-                "fieldJsonPropertyWithNull='" + fieldJsonPropertyWithNull + '\'' +
-                ", fieldJsonPropertyWithBlank='" + fieldJsonPropertyWithBlank + '\'' +
+                "fieldWithNull='" + fieldWithNull + '\'' +
+                ", fieldWithBlank='" + fieldWithBlank + '\'' +
                 ", fieldJsonPropertyWithDefault='" + fieldJsonPropertyWithDefault + '\'' +
                 ", fieldJsonIncludeWithNull='" + fieldJsonIncludeWithNull + '\'' +
                 ", fieldJsonIncludeWithDefault='" + fieldJsonIncludeWithDefault + '\'' +
