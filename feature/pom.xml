@@ -213,10 +213,12 @@
             <version>${caucho.hessian.version}</version>
         </dependency>
 
+        <!-- junit5 被 test 目录的 FileTest.watch.FileWatcherTest.test 类使用 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <scope>compile</scope>
+            <version>${org.junit.junit-bom.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- 目前 mvnrepository 中只有依赖坐标，并没有相关的 jar 可以使用，这里只是做一个记录      -->

@@ -16,7 +16,7 @@ public class FileWatcherTest {
     public void test() throws IOException, InterruptedException {
         final Map<String, String> map = new HashMap<>();
 
-        File folder = new File("src/main/resources");
+        File folder = new File("src/test/resources");
         FileWatcher watcher = new FileWatcher(folder);
 
         watcher.addListener(new FileAdapter() {
