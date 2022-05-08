@@ -1,5 +1,8 @@
 package com.sun.ts.tests.weblogic.lifecycle;
 
+//这些 import 的类是在官方的 glassfish/nucleus/common/glassfish-api 工程中自行添加的
+//所以为了正确的编译本类，我们需要先行 mvn clean install 修改后的 glassfish-api 工程
+//其相关的依赖 pom 坐标可以看本工程的 pom 文件
 import org.glassfish.api.deployment.lifecycle.ApplicationContext;
 import org.glassfish.api.deployment.lifecycle.ApplicationLifecycleListener;
 import org.glassfish.api.deployment.lifecycle.ApplicationLifecycleEvent;
