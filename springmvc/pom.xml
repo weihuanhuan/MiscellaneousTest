@@ -16,6 +16,21 @@
 
     <dependencies>
 
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${org.junit.junit-bom.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
         <!--测试扫描路径是*时，为什么cache会加载-->
         <dependency>
             <groupId>org.springframework</groupId>
