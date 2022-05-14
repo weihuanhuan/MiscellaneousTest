@@ -27,7 +27,8 @@
     <!--在spring中一般采用@RequestMapping注解来完成映射关系，
     要想使@RequestMapping注解生效必须向上下文中注册DefaultAnnotationHandlerMapping和一个AnnotationMethodHandlerAdapter
     实例，这两个实例分别在类级别和方法级别处理。而annotation-driven配置帮助我们自动完成上述两个实例的注入。-->
-    <mvc:annotation-driven/>
+    <!-- The bean name of the Validator that is to be used to validate Controller model objects. -->
+    <mvc:annotation-driven validator="spring.json.validator.config.WebMvcValidatorConfig.parameterMessageInterpolatorValidator"/>
 
     <!-- 视图解析器 -->
     <bean

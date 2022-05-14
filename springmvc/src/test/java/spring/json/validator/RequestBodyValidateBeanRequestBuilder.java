@@ -18,10 +18,11 @@ public class RequestBodyValidateBeanRequestBuilder {
     public ResultActions executeRequest(String api, Object input, ResultMatcher resultMatcher) throws Exception {
         String objectToString = WebTestConfig.objectToString(input);
 
-        return mockMvc.perform(post(api)
+        return mockMvc.perform(
+                post(api)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
-                .content(objectToString))
-                .andExpect(resultMatcher);
+                .content(objectToString)
+        ).andExpect(resultMatcher);
     }
 
 }
