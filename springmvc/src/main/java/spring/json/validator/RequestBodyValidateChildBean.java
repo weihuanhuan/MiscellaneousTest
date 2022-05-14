@@ -1,12 +1,14 @@
 package spring.json.validator;
 
+import spring.json.validator.group.CreateGroup;
+
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 public class RequestBodyValidateChildBean {
 
-    @NotNull
+    @NotNull(groups = {CreateGroup.class})
     private String fieldChildString;
 
     @Max(10)

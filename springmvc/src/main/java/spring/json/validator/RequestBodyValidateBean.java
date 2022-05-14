@@ -1,6 +1,8 @@
 package spring.json.validator;
 
 import spring.json.validator.custom.IpAddress;
+import spring.json.validator.group.CreateGroup;
+import spring.json.validator.group.UpdateGroup;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -9,7 +11,8 @@ import javax.validation.constraints.NotNull;
 
 public class RequestBodyValidateBean {
 
-    @NotNull
+    //创建时进行校验
+    @NotNull(groups = {CreateGroup.class})
     private String fieldString;
 
     //这里的 @Size 不是指验证 Integer 数据的大小范围，而是用来验证集合类数据的元素数量是否符合 size 的约定的
@@ -20,7 +23,8 @@ public class RequestBodyValidateBean {
     @Min(10)
     private Integer fieldInteger;
 
-    @IpAddress
+    //创建和更新时均校验
+    @IpAddress(groups = {CreateGroup.class, UpdateGroup.class})
     private String ipAddress;
 
     //为了验证 child bean 中所定义的 bean validation 注解，我们需要在非基本类型属性上面增加 @Valid 来进行级联的校验
