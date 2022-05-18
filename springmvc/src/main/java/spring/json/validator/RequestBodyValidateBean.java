@@ -1,6 +1,6 @@
 package spring.json.validator;
 
-import spring.json.validator.custom.IpAddress;
+import spring.json.validator.custom.IpAddressAnnotation;
 import spring.json.validator.group.CreateGroup;
 import spring.json.validator.group.UpdateGroup;
 
@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 public class RequestBodyValidateBean {
 
@@ -24,7 +25,7 @@ public class RequestBodyValidateBean {
     private Integer fieldInteger;
 
     //创建和更新时均校验
-    @IpAddress(groups = {CreateGroup.class, UpdateGroup.class})
+    @IpAddressAnnotation(groups = {CreateGroup.class, UpdateGroup.class})
     private String ipAddress;
 
     //为了验证 child bean 中所定义的 bean validation 注解，我们需要在非基本类型属性上面增加 @Valid 来进行级联的校验
@@ -32,6 +33,11 @@ public class RequestBodyValidateBean {
     @Valid
     @NotNull
     private RequestBodyValidateChildBean fieldChildObject;
+
+    //测试验证 list 中的 RequestBodyValidateChildBean 对象，而不是 list 本身, list 本身属于 RequestBodyValidateBean 对象
+    //对于 list 中的元素的校验，我们也必须指定 @Valid 来执行级联检验，否则即使 list 中元素本身被校验注解标记了也不会执行校验
+    @Valid
+    private List<RequestBodyValidateChildBean> fieldChildObjectList;
 
     public String getFieldString() {
         return fieldString;
@@ -65,6 +71,14 @@ public class RequestBodyValidateBean {
         this.fieldChildObject = fieldChildObject;
     }
 
+    public List<RequestBodyValidateChildBean> getFieldChildObjectList() {
+        return fieldChildObjectList;
+    }
+
+    public void setFieldChildObjectList(List<RequestBodyValidateChildBean> fieldChildObjectList) {
+        this.fieldChildObjectList = fieldChildObjectList;
+    }
+
     @Override
     public String toString() {
         return "RequestBodyValidateBean{" +
@@ -72,6 +86,7 @@ public class RequestBodyValidateBean {
                 ", fieldInteger=" + fieldInteger +
                 ", ipAddress='" + ipAddress + '\'' +
                 ", fieldChildObject=" + fieldChildObject +
+                ", fieldChildObjectList=" + fieldChildObjectList +
                 '}';
     }
 

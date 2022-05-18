@@ -21,6 +21,9 @@ import spring.json.validator.config.WebMvcValidatorConfig;
 import spring.json.validator.exception.MethodArgumentNotValidResponseEntityExHandler;
 import spring.json.validator.response.ValidationErrorResponse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,17 +54,7 @@ class RequestBodyValidateBeanIntegrationTest {
     }
 
     private RequestBodyValidateBean createRequestBean() {
-        RequestBodyValidateBean bean = new RequestBodyValidateBean();
-        bean.setFieldString("StringValue");
-        bean.setFieldInteger(10);
-        bean.setIpAddress("IpAddressValue");
-
-        RequestBodyValidateChildBean childBean = new RequestBodyValidateChildBean();
-        childBean.setFieldChildString(null);
-        childBean.setFieldChildInteger(100);
-
-        bean.setFieldChildObject(childBean);
-        return bean;
+        return WebTestBean.createRequestBean();
     }
 
     private ResultMatcher createResultMatcher() {

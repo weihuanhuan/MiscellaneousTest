@@ -6,12 +6,12 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class IpAddressValidator implements ConstraintValidator<IpAddress, String> {
+public class IpAddressValidator implements ConstraintValidator<IpAddressAnnotation, String> {
 
     private Pattern pattern;
 
     @Override
-    public void initialize(IpAddress constraintAnnotation) {
+    public void initialize(IpAddressAnnotation constraintAnnotation) {
         //init with config regex value from @IpAddress
         String regex = constraintAnnotation.regex();
         pattern = Pattern.compile(regex);

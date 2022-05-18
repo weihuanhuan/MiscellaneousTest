@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -16,17 +15,15 @@ import spring.json.validator.exception.ConstraintValidationExceptionExceptionHan
 import spring.json.validator.exception.MethodArgumentNotValidResponseEntityExHandler;
 import spring.json.validator.response.ValidationErrorResponse;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //该类的全名是 org.springframework.boot.test.autoconfigure.web.servlet ,
 //他是 spring boot 体系里面的，纯粹的 spring mvc 是没有该类的
 //@WebMvcTest(controllers = RequestBodyValidateBeanController.class)
-
-//集成测试 - 基于 xml 的配置
-//@ContextConfiguration(locations = "classpath:spring-mvc.xml")
-//集成测试 - 基于 annotation 的配置
-//@ContextConfiguration(classes = RequestBodyValidateBeanController.class)
 
 //这里只要添加了他 spring 就会使用集成测试并加载 ApplicationContext，
 //此时如果没有配置正确的 @ContextConfiguration 就会产生失败 load an ApplicationContext 的问题
@@ -50,17 +47,7 @@ public class RequestBodyValidateBeanTest {
     }
 
     private RequestBodyValidateBean createRequestBean() {
-        RequestBodyValidateBean bean = new RequestBodyValidateBean();
-        bean.setFieldString("StringValue");
-        bean.setFieldInteger(10);
-        bean.setIpAddress("IpAddressValue");
-
-        RequestBodyValidateChildBean childBean = new RequestBodyValidateChildBean();
-        childBean.setFieldChildString(null);
-        childBean.setFieldChildInteger(100);
-
-        bean.setFieldChildObject(childBean);
-        return bean;
+        return WebTestBean.createRequestBean();
     }
 
     private ResultMatcher createResultMatcher() {
