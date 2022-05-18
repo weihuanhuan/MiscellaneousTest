@@ -16,6 +16,8 @@ public class FileWatcherTest {
     public void test() throws IOException, InterruptedException {
         final Map<String, String> map = new HashMap<>();
 
+        //测试时需要目录存在才能生成相应的测试文件
+        //git 默认不控制空目录，所以使用 .gitkeep 文件 来保持空目录的版本控制
         File folder = new File("src/test/resources");
         FileWatcher watcher = new FileWatcher(folder);
 
