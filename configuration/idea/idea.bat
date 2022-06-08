@@ -7,94 +7,146 @@
 :: ---------------------------------------------------------------------
 :: Ensure IDE_HOME points to the directory where the IDE is installed.
 :: ---------------------------------------------------------------------
-SET IDE_BIN_DIR=%~dp0
-SET IDE_HOME=%IDE_BIN_DIR%\..
+SET "IDE_BIN_DIR=%~dp0"
+FOR /F "delims=" %%i in ("%IDE_BIN_DIR%\..") DO SET "IDE_HOME=%%~fi"
 
 :: ---------------------------------------------------------------------
-:: Locate a JDK installation directory which will be used to run the IDE.
-:: Try (in order): IDEA_JDK, idea%BITS%.exe.jdk, ..\jre, JDK_HOME, JAVA_HOME.
+:: Locate a JRE installation directory which will be used to run the IDE.
+:: Try (in order): IDEA_JDK, idea64.exe.jdk, ..\jbr, JDK_HOME, JAVA_HOME.
 :: ---------------------------------------------------------------------
-SET JDK=
+SET JRE=
 
-IF EXIST "%IDEA_JDK%" SET JDK=%IDEA_JDK%
-IF EXIST "%JDK%" GOTO check
-
-SET BITS=64
-SET USER_JDK64_FILE=%USERPROFILE%\.IntelliJIdea2017.1\config\idea%BITS%.exe.jdk
-SET BITS=
-SET USER_JDK_FILE=%USERPROFILE%\.IntelliJIdea2017.1\config\idea%BITS%.exe.jdk
-IF EXIST "%USER_JDK64_FILE%" (
-  SET /P JDK=<%USER_JDK64_FILE%
-) ELSE (
-  IF EXIST "%USER_JDK_FILE%" SET /P JDK=<%USER_JDK_FILE%
-)
-IF NOT "%JDK%" == "" (
-  IF NOT EXIST "%JDK%" SET JDK="%IDE_HOME%\%JDK%"
-  IF EXIST "%JDK%" GOTO check
+IF NOT "%IDEA_JDK%" == "" (
+  IF EXIST "%IDEA_JDK%" SET "JRE=%IDEA_JDK%"
 )
 
-IF EXIST "%IDE_HOME%\jre64" SET JDK=%IDE_HOME%\jre64
-IF EXIST "%JDK%" GOTO check
+SET _JRE_CANDIDATE=
+IF "%JRE%" == "" IF EXIST "%APPDATA%\JetBrains\IdeaIC2022.1\idea64.exe.jdk" (
+  SET /P _JRE_CANDIDATE=<"%APPDATA%\JetBrains\IdeaIC2022.1\idea64.exe.jdk"
+)
+IF "%JRE%" == "" (
+  IF NOT "%_JRE_CANDIDATE%" == "" IF EXIST "%_JRE_CANDIDATE%" SET "JRE=%_JRE_CANDIDATE%"
+)
 
-IF EXIST "%IDE_HOME%\jre32" SET JDK=%IDE_HOME%\jre32
-IF EXIST "%JDK%" GOTO check
+IF "%JRE%" == "" (
+  IF "%PROCESSOR_ARCHITECTURE%" == "AMD64" IF EXIST "%IDE_HOME%\jbr" SET "JRE=%IDE_HOME%\jbr"
+)
 
-IF EXIST "%JDK_HOME%" SET JDK=%JDK_HOME%
-IF EXIST "%JDK%" GOTO check
+IF "%JRE%" == "" (
+  IF EXIST "%JDK_HOME%" (
+    SET "JRE=%JDK_HOME%"
+  ) ELSE IF EXIST "%JAVA_HOME%" (
+    SET "JRE=%JAVA_HOME%"
+  )
+)
 
-IF EXIST "%JAVA_HOME%" SET JDK=%JAVA_HOME%
-
-:check
-SET JAVA_EXE=%JDK%\bin\java.exe
-IF NOT EXIST "%JAVA_EXE%" SET JAVA_EXE=%JDK%\jre\bin\java.exe
+SET "JAVA_EXE=%JRE%\bin\java.exe"
 IF NOT EXIST "%JAVA_EXE%" (
   ECHO ERROR: cannot start IntelliJ IDEA.
-  ECHO No JDK found. Please validate either IDEA_JDK, JDK_HOME or JAVA_HOME points to valid JDK installation.
-  ECHO
+  ECHO No JRE found. Please make sure IDEA_JDK, JDK_HOME, or JAVA_HOME point to a valid JRE installation.
   EXIT /B
 )
-
-SET JRE=%JDK%
-IF EXIST "%JRE%\jre" SET JRE=%JDK%\jre
-IF EXIST "%JRE%\lib\amd64" SET BITS=64
 
 :: ---------------------------------------------------------------------
 :: Collect JVM options and properties.
 :: ---------------------------------------------------------------------
 IF NOT "%IDEA_PROPERTIES%" == "" SET IDE_PROPERTIES_PROPERTY="-Didea.properties.file=%IDEA_PROPERTIES%"
 
-SET USER_VM_OPTIONS_FILE=%USERPROFILE%\.IntelliJIdea2017.1\idea%BITS%.exe.vmoptions
-SET VM_OPTIONS_FILE=%IDE_BIN_DIR%\idea%BITS%.exe.vmoptions
-IF EXIST "%IDE_BIN_DIR%\win\idea%BITS%.exe.vmoptions" SET VM_OPTIONS_FILE=%IDE_BIN_DIR%\win\idea%BITS%.exe.vmoptions
-IF EXIST %USER_VM_OPTIONS_FILE% SET VM_OPTIONS_FILE=%USER_VM_OPTIONS_FILE%
-IF NOT "%IDEA_VM_OPTIONS%" == "" SET VM_OPTIONS_FILE=%IDEA_VM_OPTIONS%
+SET VM_OPTIONS_FILE=
+SET USER_VM_OPTIONS_FILE=
+IF NOT "%IDEA_VM_OPTIONS%" == "" (
+  :: 1. %<IDE_NAME>_VM_OPTIONS%
+  IF EXIST "%IDEA_VM_OPTIONS%" SET "VM_OPTIONS_FILE=%IDEA_VM_OPTIONS%"
+)
+IF "%VM_OPTIONS_FILE%" == "" (
+  :: 2. <IDE_HOME>\bin\[win\]<exe_name>.vmoptions ...
+  IF EXIST "%IDE_BIN_DIR%\idea64.exe.vmoptions" (
+    SET "VM_OPTIONS_FILE=%IDE_BIN_DIR%\idea64.exe.vmoptions"
+  ) ELSE IF EXIST "%IDE_BIN_DIR%\win\idea64.exe.vmoptions" (
+    SET "VM_OPTIONS_FILE=%IDE_BIN_DIR%\win\idea64.exe.vmoptions"
+  )
+  :: ... [+ <IDE_HOME>.vmoptions (Toolbox) || <config_directory>\<exe_name>.vmoptions]
+  IF EXIST "%IDE_HOME%.vmoptions" (
+    SET "USER_VM_OPTIONS_FILE=%IDE_HOME%.vmoptions"
+  ) ELSE IF EXIST "%APPDATA%\JetBrains\IdeaIC2022.1\idea64.exe.vmoptions" (
+    SET "USER_VM_OPTIONS_FILE=%APPDATA%\JetBrains\IdeaIC2022.1\idea64.exe.vmoptions"
+  )
+)
 
 SET ACC=
-FOR /F "usebackq delims=" %%i IN ("%VM_OPTIONS_FILE%") DO CALL "%IDE_BIN_DIR%\append.bat" "%%i"
-IF EXIST "%VM_OPTIONS_FILE%" SET ACC=%ACC% -Djb.vmOptionsFile="%VM_OPTIONS_FILE%"
+SET USER_GC=
+IF NOT "%USER_VM_OPTIONS_FILE%" == "" (
+  SET ACC="-Djb.vmOptionsFile=%USER_VM_OPTIONS_FILE%"
+  FINDSTR /R /C:"-XX:\+.*GC" "%USER_VM_OPTIONS_FILE%" > NUL
+  IF NOT ERRORLEVEL 1 SET USER_GC=yes
+) ELSE IF NOT "%VM_OPTIONS_FILE%" == "" (
+  SET ACC="-Djb.vmOptionsFile=%VM_OPTIONS_FILE%"
+)
+IF NOT "%VM_OPTIONS_FILE%" == "" (
+  IF "%USER_GC%" == "" (
+    FOR /F "eol=# usebackq delims=" %%i IN ("%VM_OPTIONS_FILE%") DO CALL SET "ACC=%%ACC%% %%i"
+  ) ELSE (
+    FOR /F "eol=# usebackq delims=" %%i IN (`FINDSTR /R /V /C:"-XX:\+Use.*GC" "%VM_OPTIONS_FILE%"`) DO CALL SET "ACC=%%ACC%% %%i"
+  )
+)
+IF NOT "%USER_VM_OPTIONS_FILE%" == "" (
+  FOR /F "eol=# usebackq delims=" %%i IN ("%USER_VM_OPTIONS_FILE%") DO CALL SET "ACC=%%ACC%% %%i"
+)
+IF "%VM_OPTIONS_FILE%%USER_VM_OPTIONS_FILE%" == "" (
+  ECHO ERROR: cannot find a VM options file
+)
 
-SET COMMON_JVM_ARGS="-XX:ErrorFile=%USERPROFILE%\java_error_in_IDEA_%%p.log" "-XX:HeapDumpPath=%USERPROFILE%\java_error_in_IDEA.hprof" "-Xbootclasspath/a:%IDE_HOME%/lib/boot.jar" -Didea.paths.selector=IntelliJIdea2017.1 %IDE_PROPERTIES_PROPERTY%
-SET IDE_JVM_ARGS=-Didea.jre.check=true
-SET ALL_JVM_ARGS=%ACC% %COMMON_JVM_ARGS% %IDE_JVM_ARGS%
-
-SET CLASS_PATH=%IDE_HOME%\lib\bootstrap.jar
-SET CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\extensions.jar
-SET CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\util.jar
-SET CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\jdom.jar
-SET CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\log4j.jar
-SET CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\trove4j.jar
-SET CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\jna.jar
-SET CLASS_PATH=%CLASS_PATH%;%JDK%\lib\tools.jar
-IF NOT "%IDEA_CLASS_PATH%" == "" SET CLASS_PATH=%CLASS_PATH%;%IDEA_CLASS_PATH%
+SET "CLASS_PATH=%IDE_HOME%\lib\util.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\app.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\3rd-party-rt.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\jna.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\platform-statistics-devkit.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\jps-model.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\rd-core.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\rd-framework.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\stats.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\protobuf.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\external-system-rt.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\jsp-base-openapi.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\forms_rt.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\intellij-test-discovery.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\rd-swing.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\annotations.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\groovy.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\annotations-java5.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\byte-buddy-agent.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\dom-impl.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\dom-openapi.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\duplicates-analysis.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\error-prone-annotations.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\externalProcess-rt.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\grpc-netty-shaded.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\idea_rt.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\intellij-coverage-agent-1.0.656.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\jsch-agent.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\junit.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\junit4.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\junixsocket-core.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\lz4-java.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\platform-objectSerializer-annotations.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\pty4j.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\rd-text.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\structuralsearch.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\tests_bootstrap.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\uast-tests.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\util_rt.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\winp.jar"
+SET "CLASS_PATH=%CLASS_PATH%;%IDE_HOME%\lib\ant/lib/ant.jar"
 
 :: ---------------------------------------------------------------------
 :: Run the IDE.
 :: ---------------------------------------------------------------------
-SET OLD_PATH=%PATH%
-SET PATH=%IDE_BIN_DIR%;%PATH%
-
-echo %JAVA_EXE%
-echo %ALL_JVM_ARGS%
-"%JAVA_EXE%" %ALL_JVM_ARGS% -cp "%CLASS_PATH%" com.intellij.idea.Main %*
-
-SET PATH=%OLD_PATH%
+"%JAVA_EXE%" ^
+  -cp "%CLASS_PATH%" ^
+  %ACC% ^
+  "-XX:ErrorFile=%USERPROFILE%\java_error_in_idea_%%p.log" ^
+  "-XX:HeapDumpPath=%USERPROFILE%\java_error_in_idea.hprof" ^
+  %IDE_PROPERTIES_PROPERTY% ^
+  -Djava.system.class.loader=com.intellij.util.lang.PathClassLoader -Didea.strict.classpath=true -Didea.vendor.name=JetBrains -Didea.paths.selector=IdeaIC2022.1 -Didea.platform.prefix=Idea -Didea.jre.check=true -Dsplash=true ^
+  com.intellij.idea.Main ^
+  %*

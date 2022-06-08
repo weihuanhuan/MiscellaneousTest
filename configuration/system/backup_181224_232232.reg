@@ -19,4 +19,6 @@ REGEDIT4
 
 "SSLKEYLOGFILE"="C:\\Users\\JasonFitch\\Desktop\\sslpremaster"
 
+"IDEA_JDK"="C:\\jdk-11.0.7"
+
 Path=%JMETER_HOME%\bin;%GRADLE_HOME%\bin;%ANT_HOME%\bin;%M2_HOME%\bin;%JAVA_HOME%\bin;C:\Go\bin
