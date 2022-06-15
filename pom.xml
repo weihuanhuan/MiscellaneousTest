@@ -82,6 +82,8 @@
         <hibernate.validator.jakarta.version>6.2.3.Final</hibernate.validator.jakarta.version>
         <hibernate.validator.version>5.3.6.Final</hibernate.validator.version>
 
+        <quartz.version>2.3.0</quartz.version>
+
         <commons-el.version>1.0</commons-el.version>
         <jstl-api.version>1.2</jstl-api.version>
 
