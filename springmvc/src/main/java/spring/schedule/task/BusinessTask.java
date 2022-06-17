@@ -5,17 +5,20 @@ import spring.schedule.entity.BusinessBean;
 import spring.schedule.scheduling.ScheduleTask;
 import spring.schedule.service.BusinessService;
 
-public class BusinessScheduleTask extends ScheduleTask<BusinessBean> {
+public class BusinessTask extends ScheduleTask {
 
     @Autowired
     private BusinessService businessService;
 
-    public BusinessScheduleTask(String name, BusinessBean target) {
-        super(name, target);
+    private final BusinessBean businessBean;
+
+    public BusinessTask(String name, BusinessBean businessBean) {
+        super(name);
+        this.businessBean = businessBean;
     }
 
     @Override
-    public void doSchedule(BusinessBean businessBean) {
+    public void doTask() {
         businessService.doBusiness(businessBean);
     }
 

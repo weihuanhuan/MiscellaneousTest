@@ -2,33 +2,26 @@ package spring.schedule.scheduling;
 
 import java.util.Objects;
 
-abstract public class ScheduleTask<T> implements Runnable {
+abstract public class ScheduleTask implements Runnable {
 
     private final String name;
 
-    private final T target;
-
-    public ScheduleTask(String name, T target) {
-        Objects.requireNonNull(name, "schedule task's name cannot be null!");
-        Objects.requireNonNull(target, "schedule task's target cannot be null!");
-
-        this.name = name;
-        this.target = target;
+    public ScheduleTask(String name) {
+        this.name = Objects.requireNonNull(name, "schedule task's name cannot be null!");
     }
 
     @Override
     public void run() {
-        doSchedule(target);
+        doTask();
     }
 
-    abstract protected void doSchedule(T target);
+    abstract protected void doTask();
 
     public String getName() {
         return name;
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -36,7 +29,7 @@ abstract public class ScheduleTask<T> implements Runnable {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        ScheduleTask<T> that = (ScheduleTask<T>) o;
+        ScheduleTask that = (ScheduleTask) o;
         return Objects.equals(name, that.name);
     }
 

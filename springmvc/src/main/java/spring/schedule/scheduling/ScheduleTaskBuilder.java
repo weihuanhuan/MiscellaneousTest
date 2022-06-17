@@ -8,12 +8,12 @@ abstract public class ScheduleTaskBuilder<T> {
     @Autowired
     private AutowireCapableBeanFactory beanFactory;
 
-    public ScheduleTask<T> build(T bean) {
-        ScheduleTask<T> scheduleTask = doBuild(bean);
+    public ScheduleTask build(T bean) {
+        ScheduleTask scheduleTask = doBuild(bean);
         beanFactory.autowireBean(scheduleTask);
         return scheduleTask;
     }
 
-    abstract protected ScheduleTask<T> doBuild(T bean);
+    abstract protected ScheduleTask doBuild(T bean);
 
 }

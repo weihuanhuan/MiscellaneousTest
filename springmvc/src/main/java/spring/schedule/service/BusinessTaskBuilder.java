@@ -4,18 +4,18 @@ import org.springframework.stereotype.Service;
 import spring.schedule.entity.BusinessBean;
 import spring.schedule.scheduling.ScheduleTask;
 import spring.schedule.scheduling.ScheduleTaskBuilder;
-import spring.schedule.task.BusinessScheduleTask;
+import spring.schedule.task.BusinessTask;
 
 @Service
-public class BusinessScheduleTaskBuilder extends ScheduleTaskBuilder<BusinessBean> {
+public class BusinessTaskBuilder extends ScheduleTaskBuilder<BusinessBean> {
 
     @Override
-    public ScheduleTask<BusinessBean> doBuild(BusinessBean bean) {
+    public ScheduleTask doBuild(BusinessBean bean) {
         String group = bean.getGroup();
         String name = bean.getName();
 
         String taskName = group + "-" + name;
-        return new BusinessScheduleTask(taskName, bean);
+        return new BusinessTask(taskName, bean);
     }
 
 }

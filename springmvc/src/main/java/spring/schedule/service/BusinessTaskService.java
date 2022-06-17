@@ -4,23 +4,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import spring.schedule.entity.BusinessBean;
 import spring.schedule.scheduling.ScheduleTask;
-import spring.schedule.scheduling.ScheduleTaskService;
+import spring.schedule.scheduling.TaskManagementService;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class BusinessScheduleTaskService extends ScheduleTaskService<BusinessBean> {
+public class BusinessTaskService extends TaskManagementService {
 
     @Autowired
     private BusinessService businessService;
 
     @Autowired
-    private BusinessScheduleTaskBuilder builder;
+    private BusinessTaskBuilder businessTaskBuilder;
 
     @Override
-    protected List<ScheduleTask<BusinessBean>> findScheduleTask() {
+    protected List<ScheduleTask> findScheduleTasks() {
         List<BusinessBean> businessBeans = businessService.getBusinessBeans();
 
         //avoid ConcurrentModificationException
@@ -29,7 +29,7 @@ public class BusinessScheduleTaskService extends ScheduleTaskService<BusinessBea
         //filter
         return (copy).stream()
                 .filter(businessBean -> businessService.isValid(businessBean))
-                .map(builder::build)
+                .map(businessTaskBuilder::build)
                 .collect(Collectors.toList());
     }
 

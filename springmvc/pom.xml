@@ -211,6 +211,7 @@
                 <filtering>true</filtering>
                 <includes>
                     <include>**/spring-*.xml</include>
+                    <include>**/spring-*.properties</include>
                 </includes>
             </resource>
 
