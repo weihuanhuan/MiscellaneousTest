@@ -9,13 +9,17 @@ import spring.schedule.task.BusinessTask;
 @Service
 public class BusinessTaskBuilder extends ScheduleTaskBuilder<BusinessBean> {
 
+    public BusinessTaskBuilder(BusinessTaskManager manager) {
+        super(manager);
+    }
+
     @Override
     public ScheduleTask doBuild(BusinessBean bean) {
         String group = bean.getGroup();
         String name = bean.getName();
 
         String taskName = group + "-" + name;
-        return new BusinessTask(taskName, bean);
+        return new BusinessTask(taskName, manager, bean);
     }
 
 }

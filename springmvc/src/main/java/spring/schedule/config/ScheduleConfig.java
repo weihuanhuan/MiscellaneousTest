@@ -10,7 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import spring.schedule.scheduling.TaskManagementService;
+import spring.schedule.scheduling.ScheduleTaskAutoManager;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +24,7 @@ public class ScheduleConfig implements SchedulingConfigurer {
 
     @Value("${schedule.scheduler.max.pool.size:32}")
     private int maxPoolSize;
-    @Value("${schedule.scheduler.thread.prefix:task-scheduler-}")
+    @Value("${schedule.scheduler.thread.prefix:default-task-scheduler-}")
     private String scheduleThreadPrefix;
 
     @Value("${schedule.scheduler.auto.update.task}")
@@ -33,7 +33,7 @@ public class ScheduleConfig implements SchedulingConfigurer {
     private boolean autoScheduleTask;
 
     @Autowired(required = false)
-    private List<TaskManagementService> serviceList;
+    private List<ScheduleTaskAutoManager> autoManagers;
 
     @Bean(destroyMethod = "shutdown")
     public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
@@ -50,16 +50,25 @@ public class ScheduleConfig implements SchedulingConfigurer {
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.setScheduler(threadPoolTaskScheduler());
 
-        Optional.ofNullable(serviceList).orElse(Collections.emptyList()).forEach(service -> {
+        Optional.ofNullable(autoManagers).orElse(Collections.emptyList()).forEach(service -> {
             if (autoUpdateTask) {
-                taskRegistrar.addFixedDelayTask(service.createUpdateTask());
+                taskRegistrar.addFixedDelayTask(service.getAutoUpdateTask());
             }
             if (autoScheduleTask) {
-                taskRegistrar.addFixedDelayTask(service.createScheduleTask());
+                taskRegistrar.addFixedDelayTask(service.getAutoScheduleTask());
             }
         });
 
         taskRegistrar.afterPropertiesSet();
+    }
+
+    @Override
+    public String toString() {
+        return "ScheduleConfig{"
+                + "maxPoolSize=" + maxPoolSize
+                + ", scheduleThreadPrefix='" + scheduleThreadPrefix
+                + '\'' + ", autoUpdateTask=" + autoUpdateTask
+                + ", autoScheduleTask=" + autoScheduleTask + '}';
     }
 
 }

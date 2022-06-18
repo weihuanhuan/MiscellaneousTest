@@ -1,18 +1,21 @@
 package spring.schedule.service;
 
-import org.jboss.netty.util.internal.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 import spring.schedule.entity.BusinessBean;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class BusinessService {
 
     private final AtomicLong counter = new AtomicLong(0);
+
+    private final Random random = new Random(0);
 
     private final Map<String, BusinessBean> businessBeans = new ConcurrentHashMap<>();
 
@@ -44,25 +47,27 @@ public class BusinessService {
     }
 
     public boolean isValid(BusinessBean businessBean) {
-        boolean valid = true;
-        long get = counter.get();
-        if (get % 100 == 0) {
-            String format = String.format("[%s] is [%s].", businessBean, valid);
-            System.out.println(format);
+        int i = random.nextInt(3);
+        if (i == 0) {
+            return true;
+        } else if (i == 1) {
+            return false;
+        } else {
+            String group = businessBean.getGroup();
+            String name = businessBean.getName();
+            String format = String.format("cannot judge valid for [%s]-[%s]!", group, name);
+            throw new RuntimeException(format);
         }
-        return valid;
     }
 
     public void doBusiness(BusinessBean businessBean) {
-        long get = counter.get();
-        if (get % 100 != 0) {
-            return;
+        int i = random.nextInt(3);
+        if (i == 2) {
+            String group = businessBean.getGroup();
+            String name = businessBean.getName();
+            String format = String.format("cannot do business for [%s]-[%s]!", group, name);
+            throw new RuntimeException(format);
         }
-
-        String host = businessBean.getHost();
-        int port = businessBean.getPort();
-        String format = String.format("[%s]:[%s] connect to [%s]:[%s].", get, businessBean, host, port);
-        System.out.println(format);
     }
 
 }

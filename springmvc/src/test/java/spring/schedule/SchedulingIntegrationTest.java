@@ -8,7 +8,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.web.WebAppConfiguration;
 import spring.schedule.config.ScheduleConfig;
 import spring.schedule.service.BusinessService;
-import spring.schedule.service.BusinessTaskService;
+import spring.schedule.service.BusinessTaskManager;
 
 import java.util.concurrent.TimeUnit;
 
@@ -18,13 +18,17 @@ import java.util.concurrent.TimeUnit;
 class SchedulingIntegrationTest {
 
     @Autowired
-    BusinessTaskService businessTaskService;
+    ScheduleConfig scheduleConfig;
+
+    @Autowired
+    BusinessTaskManager businessTaskService;
 
     @Autowired
     BusinessService businessService;
 
     @Test
     void Run() throws InterruptedException {
+        System.out.println(scheduleConfig);
         System.out.println(businessTaskService);
 
         businessService.addBusinessBean();

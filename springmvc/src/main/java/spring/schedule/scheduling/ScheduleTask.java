@@ -6,13 +6,24 @@ abstract public class ScheduleTask implements Runnable {
 
     private final String name;
 
-    public ScheduleTask(String name) {
-        this.name = Objects.requireNonNull(name, "schedule task's name cannot be null!");
+    private final ScheduleTaskManager manager;
+
+    public ScheduleTask(String name, ScheduleTaskManager manager) {
+        this.name = Objects.requireNonNull(name, "name cannot be null!");
+        this.manager = Objects.requireNonNull(manager, "manager cannot be null!");
     }
 
     @Override
     public void run() {
-        doTask();
+        try {
+            doTask();
+            String format = String.format("finish task named [%s]", name);
+            System.out.println(format);
+        } catch (Throwable throwable) {
+            boolean addSuspendTask = manager.addSuspendTask(this);
+            String format = String.format("suspend task [%s] with status [%s] due to [%s]", name, addSuspendTask, throwable.getMessage());
+            System.out.println(format);
+        }
     }
 
     abstract protected void doTask();

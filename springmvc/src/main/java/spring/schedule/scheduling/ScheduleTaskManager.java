@@ -1,8 +1,6 @@
 package spring.schedule.scheduling;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.config.FixedDelayTask;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,25 +10,17 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-abstract public class TaskManagementService {
+abstract public class ScheduleTaskManager {
 
     @Autowired
-    private TaskScheduleService taskScheduleService;
+    protected TaskScheduleService taskScheduleService;
 
-    private final Set<ScheduleTask> workScheduleTasks = new HashSet<>();
-    private final Set<ScheduleTask> suspendScheduleTasks = new HashSet<>();
+    protected final Set<ScheduleTask> workScheduleTasks = new HashSet<>();
+    protected final Set<ScheduleTask> suspendScheduleTasks = new HashSet<>();
 
-    @Value("${schedule.default.initial.update.delay:15000}")
-    protected long initialUpdateDelay;
-    @Value("${schedule.default.fixed.update.delay:15000}")
-    protected long fixedUpdateDelay;
+    abstract protected List<ScheduleTask> findScheduleTasks();
 
-    @Value("${schedule.default.initial.schedule.delay:15000}")
-    protected long initialScheduleDelay;
-    @Value("${schedule.default.fixed.schedule.delay:15000}")
-    protected long fixedScheduleDelay;
-
-    protected void updateTask() {
+    public void updateTask() {
         List<ScheduleTask> scheduleTask = findScheduleTasks();
 
         //null safety for list itself and its element
@@ -62,39 +52,25 @@ abstract public class TaskManagementService {
         }
     }
 
-    protected void scheduleTask() {
+    public void scheduleTask() {
         synchronized (this) {
             workScheduleTasks.forEach(taskScheduleService::schedule);
             suspendScheduleTasks.forEach(taskScheduleService::cancel);
         }
     }
 
-    abstract protected List<ScheduleTask> findScheduleTasks();
-
-    public FixedDelayTask createUpdateTask() {
-        return new FixedDelayTask(this::updateTask, initialUpdateDelay, fixedUpdateDelay);
-    }
-
-    public FixedDelayTask createScheduleTask() {
-        return new FixedDelayTask(this::scheduleTask, initialScheduleDelay, fixedScheduleDelay);
-    }
-
-    public boolean suspendTask(ScheduleTask scheduleTask) {
+    public boolean addSuspendTask(ScheduleTask scheduleTask) {
         synchronized (this) {
             workScheduleTasks.remove(scheduleTask);
             return suspendScheduleTasks.add(scheduleTask);
         }
     }
 
-    public boolean addTask(ScheduleTask scheduleTask) {
+    public boolean addScheduleTask(ScheduleTask scheduleTask) {
         synchronized (this) {
             workScheduleTasks.add(scheduleTask);
             return suspendScheduleTasks.remove(scheduleTask);
         }
-    }
-
-    public boolean cancelTask(ScheduleTask scheduleTask) {
-        return taskScheduleService.cancel(scheduleTask);
     }
 
 }
