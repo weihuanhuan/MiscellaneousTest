@@ -87,12 +87,12 @@ abstract public class ScheduleTask implements Runnable {
             return false;
         }
         ScheduleTask that = (ScheduleTask) o;
-        return Objects.equals(name, that.name);
+        return Objects.equals(name, that.name) && Objects.equals(manager, that.manager);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name, manager);
     }
 
     @Override
