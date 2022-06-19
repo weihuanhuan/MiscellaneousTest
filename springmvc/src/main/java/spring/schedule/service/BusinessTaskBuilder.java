@@ -17,9 +17,14 @@ public class BusinessTaskBuilder extends ScheduleTaskBuilder<BusinessBean> {
     public ScheduleTask doBuild(BusinessBean bean) {
         String group = bean.getGroup();
         String name = bean.getName();
-
         String taskName = group + "-" + name;
-        return new BusinessTask(taskName, manager, bean);
+
+        BusinessTask businessTask = new BusinessTask(taskName, manager, bean);
+        businessTask.setPeriod(1000);
+        businessTask.setMayInterruptIfRunning(true);
+        businessTask.setSuspendOnError(true);
+        businessTask.setSuspendImmediate(true);
+        return businessTask;
     }
 
 }

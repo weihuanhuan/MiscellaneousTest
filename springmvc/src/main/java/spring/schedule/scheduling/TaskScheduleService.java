@@ -16,17 +16,30 @@ public class TaskScheduleService {
 
     private final Map<ScheduleTask, ScheduledFuture<?>> taskScheduledFutureMap = new ConcurrentHashMap<>();
 
-    public ScheduledFuture<?> schedule(ScheduleTask scheduleTask) {
-        ScheduledFuture<?> scheduledFuture = taskScheduler.scheduleAtFixedRate(scheduleTask, 1000);
-        return taskScheduledFutureMap.put(scheduleTask, scheduledFuture);
+    public boolean schedule(ScheduleTask scheduleTask) {
+        Scheduler scheduler = new Scheduler();
+        taskScheduledFutureMap.computeIfAbsent(scheduleTask, scheduler::scheduleAtFixedRate);
+        return scheduler.scheduled;
     }
 
     public boolean cancel(ScheduleTask scheduleTask) {
-        ScheduledFuture<?> scheduledFuture = taskScheduledFutureMap.get(scheduleTask);
+        ScheduledFuture<?> scheduledFuture = taskScheduledFutureMap.remove(scheduleTask);
         if (scheduledFuture == null) {
             return false;
         }
-        return scheduledFuture.cancel(true);
+        return scheduledFuture.cancel(scheduleTask.isMayInterruptIfRunning());
+    }
+
+    private class Scheduler {
+
+        private boolean scheduled = false;
+
+        private ScheduledFuture<?> scheduleAtFixedRate(ScheduleTask scheduleTask) {
+            long period = scheduleTask.getPeriod();
+            ScheduledFuture<?> scheduledFuture = taskScheduler.scheduleAtFixedRate(scheduleTask, period);
+            scheduled = true;
+            return scheduledFuture;
+        }
     }
 
 }

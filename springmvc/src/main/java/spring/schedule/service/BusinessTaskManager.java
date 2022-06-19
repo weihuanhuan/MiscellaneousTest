@@ -9,10 +9,14 @@ import spring.schedule.scheduling.ScheduleTaskAutoManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
 public class BusinessTaskManager extends ScheduleTaskAutoManager {
+
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     @Autowired
     private BusinessService businessService;
@@ -32,6 +36,10 @@ public class BusinessTaskManager extends ScheduleTaskAutoManager {
             try {
                 return businessService.isValid(businessBean);
             } catch (Throwable throwable) {
+                String name = businessBean.getName();
+                String group = businessBean.getGroup();
+                String format = String.format("business bean named [%s] within group [%s] is invalid.", name, group);
+                logger.log(Level.FINE, format, throwable);
                 return false;
             }
         }).map(builder::build).collect(Collectors.toList());

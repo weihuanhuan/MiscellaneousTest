@@ -31,9 +31,10 @@ class SchedulingIntegrationTest {
         System.out.println(scheduleConfig);
         System.out.println(businessTaskService);
 
-        businessService.addBusinessBean();
-
-        businessService.addBusinessBean();
+        int count = 100;
+        while (count-- > 0) {
+            businessService.addBusinessBean();
+        }
 
         TimeUnit.SECONDS.sleep(3600);
     }
