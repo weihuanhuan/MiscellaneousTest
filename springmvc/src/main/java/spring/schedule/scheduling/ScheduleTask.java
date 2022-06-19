@@ -24,6 +24,11 @@ abstract public class ScheduleTask implements Runnable {
     @Override
     public void run() {
         try {
+            //support thread interrupt signal
+            if (mayInterruptIfRunning && Thread.currentThread().isInterrupted()) {
+                return;
+            }
+
             doTask();
             String format = String.format("finished task named [%s].", name);
             logger.log(Level.FINE, format);

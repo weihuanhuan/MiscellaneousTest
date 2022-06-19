@@ -1,5 +1,6 @@
 package spring.schedule.service;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import spring.schedule.entity.BusinessBean;
 import spring.schedule.scheduling.ScheduleTask;
@@ -19,12 +20,31 @@ public class BusinessTaskBuilder extends ScheduleTaskBuilder<BusinessBean> {
         String name = bean.getName();
         String taskName = group + "-" + name;
 
-        BusinessTask businessTask = new BusinessTask(taskName, manager, bean);
-        businessTask.setPeriod(1000);
-        businessTask.setMayInterruptIfRunning(true);
-        businessTask.setSuspendOnError(true);
-        businessTask.setSuspendImmediate(true);
-        return businessTask;
+        return new BusinessTask(taskName, manager, bean);
+    }
+
+    @Override
+    @Value("${schedule.business.task.period}")
+    public void setPeriod(long period) {
+        super.setPeriod(period);
+    }
+
+    @Override
+    @Value("${schedule.business.task.may-interrupt-if-running}")
+    public void setMayInterruptIfRunning(boolean mayInterruptIfRunning) {
+        super.setMayInterruptIfRunning(mayInterruptIfRunning);
+    }
+
+    @Override
+    @Value("${schedule.business.task.suspend.on-error}")
+    public void setSuspendOnError(boolean suspendOnError) {
+        super.setSuspendOnError(suspendOnError);
+    }
+
+    @Override
+    @Value("${schedule.business.task.suspend.immediate}")
+    public void setSuspendImmediate(boolean suspendImmediate) {
+        super.setSuspendImmediate(suspendImmediate);
     }
 
 }
