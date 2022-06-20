@@ -31,21 +31,30 @@ abstract public class ScheduleTask implements Runnable {
 
             doTask();
             String format = String.format("finished task named [%s].", name);
-            logger.log(Level.FINE, format);
+            logger.log(Level.INFO, format);
         } catch (Throwable throwable) {
             if (suspendOnError) {
                 boolean suspend = manager.addSuspendTask(this, suspendImmediate);
                 String format = String.format("error on named task [%s] is [%s] to immediately suspend task with result [%s]!",
                         name, suspendImmediate, suspend);
                 logger.log(Level.WARNING, format, throwable);
+            }
+
+            //propagate to
+            // org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler.setErrorHandler
+            // org.springframework.scheduling.support.DelegatingErrorHandlingRunnable
+            if (throwable instanceof RuntimeException) {
+                throw (RuntimeException) throwable;
+            } else if (throwable instanceof Error) {
+                throw (Error) throwable;
             } else {
-                String format = String.format("error on named task [%s] but we just ignore it.", name);
+                String format = String.format("error on named task on named task [%s] but not RuntimeException so we just ignore it.", name);
                 logger.log(Level.WARNING, format, throwable);
             }
         }
     }
 
-    abstract protected void doTask();
+    abstract protected void doTask() throws Exception;
 
     public String getName() {
         return name;

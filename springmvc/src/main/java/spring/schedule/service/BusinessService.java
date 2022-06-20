@@ -3,6 +3,7 @@ package spring.schedule.service;
 import org.springframework.stereotype.Service;
 import spring.schedule.entity.BusinessBean;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,26 +47,41 @@ public class BusinessService {
         return new ArrayList<>(businessBeans.values());
     }
 
-    public boolean isValid(BusinessBean businessBean) {
-        int i = random.nextInt(3);
-        if (i == 0) {
-            return true;
-        } else if (i == 1) {
+    public boolean isValid(BusinessBean businessBean) throws Exception {
+        int i = random.nextInt(4);
+        if (i == 1) {
             return false;
-        } else {
-            String group = businessBean.getGroup();
-            String name = businessBean.getName();
-            String format = String.format("cannot judge valid for [%s]-[%s]!", group, name);
+        }
+
+        String group = businessBean.getGroup();
+        String name = businessBean.getName();
+
+        if (i == 2) {
+            String format = String.format("IOException judge valid for [%s]-[%s]!", group, name);
+            throw new IOException(format);
+        }
+
+        if (i == 3) {
+            String format = String.format("RuntimeException judge valid for [%s]-[%s]!", group, name);
             throw new RuntimeException(format);
         }
+
+        return true;
     }
 
-    public void doBusiness(BusinessBean businessBean) {
+    public void doBusiness(BusinessBean businessBean) throws Exception {
         int i = random.nextInt(3);
+
+        String group = businessBean.getGroup();
+        String name = businessBean.getName();
+
+        if (i == 1) {
+            String format = String.format("IOException do business for [%s]-[%s]!", group, name);
+            throw new IOException(format);
+        }
+
         if (i == 2) {
-            String group = businessBean.getGroup();
-            String name = businessBean.getName();
-            String format = String.format("cannot do business for [%s]-[%s]!", group, name);
+            String format = String.format("RuntimeException do business for [%s]-[%s]!", group, name);
             throw new RuntimeException(format);
         }
     }

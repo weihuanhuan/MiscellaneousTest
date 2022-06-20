@@ -19,7 +19,7 @@ public class BusinessTask extends ScheduleTask {
     }
 
     @Override
-    public void doTask() {
+    public void doTask() throws Exception {
         businessService.doBusiness(businessBean);
     }
 

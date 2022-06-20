@@ -10,11 +10,14 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
+import org.springframework.scheduling.support.TaskUtils;
+import org.springframework.util.ErrorHandler;
 import spring.schedule.scheduling.ScheduleTaskAutoManager;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
 @PropertySource(value = "classpath:spring-schedule.properties", ignoreResourceNotFound = true)
@@ -43,6 +46,11 @@ public class ScheduleConfig implements SchedulingConfigurer {
         scheduler.setPoolSize(Math.min(poolSize, maxPoolSize));
         scheduler.setThreadNamePrefix(scheduleThreadPrefix);
         scheduler.setRemoveOnCancelPolicy(true);
+
+        ErrorHandler defaultErrorHandler = TaskUtils.getDefaultErrorHandler(true);
+        scheduler.setErrorHandler(defaultErrorHandler);
+        ThreadPoolExecutor.DiscardPolicy discardPolicy = new ThreadPoolExecutor.DiscardPolicy();
+        scheduler.setRejectedExecutionHandler(discardPolicy);
         return scheduler;
     }
 
