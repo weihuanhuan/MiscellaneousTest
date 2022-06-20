@@ -38,8 +38,9 @@ public class ScheduleConfig implements SchedulingConfigurer {
     @Autowired(required = false)
     private List<ScheduleTaskAutoManager> autoManagers;
 
-    @Bean(destroyMethod = "shutdown")
-    public ThreadPoolTaskScheduler threadPoolTaskScheduler() {
+    //specify the bean name in order to inject with @Qualifier to prevent conflicts between beans of the same type
+    @Bean(name = "scheduleTaskThreadPoolTaskScheduler", destroyMethod = "shutdown")
+    public ThreadPoolTaskScheduler scheduleTaskThreadPoolTaskScheduler() {
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
 
         int poolSize = Runtime.getRuntime().availableProcessors() * 4;
@@ -56,7 +57,7 @@ public class ScheduleConfig implements SchedulingConfigurer {
 
     @Override
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-        taskRegistrar.setScheduler(threadPoolTaskScheduler());
+        taskRegistrar.setScheduler(scheduleTaskThreadPoolTaskScheduler());
 
         Optional.ofNullable(autoManagers).orElse(Collections.emptyList()).forEach(service -> {
             if (autoUpdateTask) {

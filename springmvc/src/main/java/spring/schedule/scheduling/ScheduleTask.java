@@ -48,7 +48,7 @@ abstract public class ScheduleTask implements Runnable {
             } else if (throwable instanceof Error) {
                 throw (Error) throwable;
             } else {
-                String format = String.format("error on named task on named task [%s] but not RuntimeException so we just ignore it.", name);
+                String format = String.format("error on named task [%s] but not RuntimeException so we just ignore it.", name);
                 logger.log(Level.WARNING, format, throwable);
             }
         }

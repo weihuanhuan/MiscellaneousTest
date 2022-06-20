@@ -1,6 +1,7 @@
 package spring.schedule.scheduling;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,7 @@ import java.util.concurrent.ScheduledFuture;
 public class TaskScheduleService {
 
     @Autowired
+    @Qualifier("scheduleTaskThreadPoolTaskScheduler")
     private TaskScheduler taskScheduler;
 
     private final Map<ScheduleTask, ScheduledFuture<?>> taskScheduledFutureMap = new ConcurrentHashMap<>();
