@@ -80,7 +80,8 @@ public class SecurityConfig {
                     .and()
                     .authorizeRequests()
                     .antMatchers("/spring-security/basic/**")
-                    .authenticated()
+                    // equal to direct call ExpressionInterceptUrlRegistry.access("hasAuthority('" + authority + "')")
+                    .hasAuthority(SecurityConfigGlobal.SPRING_SECURITY_TEST_ROLE)
                     //异常处理
                     .and()
                     .exceptionHandling()

@@ -12,12 +12,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @EnableGlobalAuthentication
 public class SecurityConfigGlobal {
 
+    public static final String SPRING_SECURITY_TEST_USER = "spring-security-test-user";
+    public static final String SPRING_SECURITY_TEST_PASSWD = "spring-security-test-passwd";
+    public static final String SPRING_SECURITY_TEST_ROLE = "spring-security-test-role";
+
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser("spring-security-test-user")
-                .password(passwordEncoder().encode("spring-security-test-passwd"))
-                .authorities("spring-security-test-role");
+                .withUser(SPRING_SECURITY_TEST_USER)
+                .password(passwordEncoder().encode(SPRING_SECURITY_TEST_PASSWD))
+                .authorities(SPRING_SECURITY_TEST_ROLE);
     }
 
     @Bean
