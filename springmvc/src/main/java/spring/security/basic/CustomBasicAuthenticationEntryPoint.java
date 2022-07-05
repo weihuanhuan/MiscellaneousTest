@@ -13,7 +13,7 @@ import java.io.PrintWriter;
 @Component
 public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntryPoint {
 
-    public static final String DEFAULT_REALM_NAME = "spring-security-test-basic-realm";
+    public static final String DEFAULT_BASIC_REALM = "spring-security-test-basic-realm";
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authEx) throws IOException, ServletException {
@@ -22,12 +22,12 @@ public class CustomBasicAuthenticationEntryPoint extends BasicAuthenticationEntr
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
         PrintWriter writer = response.getWriter();
-        writer.println("HTTP Status 401 - " + authEx.getMessage());
+        writer.println("CustomBasicAuthenticationEntryPoint: HTTP Status 401 - " + authEx.getMessage());
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        setRealmName(DEFAULT_REALM_NAME);
+        setRealmName(DEFAULT_BASIC_REALM);
         super.afterPropertiesSet();
     }
 
