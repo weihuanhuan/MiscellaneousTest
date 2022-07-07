@@ -1,8 +1,10 @@
 package spring.jackson.bean;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import spring.jackson.deserializer.RedisBaseDeserializer;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonDeserialize(using = RedisBaseDeserializer.class)
 public class RedisBase extends Redis {
 

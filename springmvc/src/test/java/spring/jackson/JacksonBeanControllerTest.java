@@ -117,4 +117,20 @@ public class JacksonBeanControllerTest {
         perform.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
     }
 
+    @Test
+    void redisMissingFieldTest() throws Exception {
+        RedisCluster redisCluster = new RedisCluster();
+//        redisCluster.setMode("cluster");
+        redisCluster.setRole("master");
+
+        String writeValueAsString = objectMapper.writeValueAsString(redisCluster);
+
+        ResultActions perform = mockMvc.perform(MockMvcRequestBuilders.post("/jackson-redis-base")
+                .contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(writeValueAsString));
+
+        perform.andExpect(MockMvcResultMatchers.status().is2xxSuccessful());
+    }
+
+
 }
