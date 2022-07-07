@@ -45,24 +45,23 @@ public class RuntimeProcessRedirect {
          * @return the input stream connected to the normal output of the
          *         subprocess
          */
-       
-        String[] option = new String[]{"netstat", "-ano", ">", "tset.redirect.file"};
-        String cmdLine = "netstat -ano > tset.redirect.file";
+
+        String[] option = new String[]{"netstat", "-ano", ">", "test.redirect.file"};
+        String cmdLine = "netstat -ano > test.redirect.file";
 
         Process p = runtime.exec(option);
 
         BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
         String line;
-        while ((line = br.readLine()) != null)
+        while ((line = br.readLine()) != null) {
             System.out.println(line);
+        }
 
         int waitFor = p.waitFor();
         System.out.println(waitFor);
 
         int exitValue = p.exitValue();
         System.out.println(exitValue);
-
-
     }
 
 }

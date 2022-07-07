@@ -9,18 +9,17 @@ public class ProcessBuilderTest {
     public static void main(String[] args) throws InterruptedException {
         try {
             String subOutputFileStr = "subOutput.log";
-            File   subOutputFile    = new File(subOutputFileStr);
+            File subOutputFile = new File(subOutputFileStr);
             if (!subOutputFile.exists()) {
                 subOutputFile.createNewFile();
             }
 
-            String         cmdExecute     = "\"cmd\", \"/C\", \"tree C:/ /f\"";
-            String         execute        = "F:/JetBrains/IntelliJ IDEA/BEStest/maven/executor/start.bat";
+            String cmdExecute = "\"cmd\", \"/C\", \"tree C:/ /f\"";
+            String execute = "F:/JetBrains/IntelliJ IDEA/MiscellaneousTest/script/maven/executor/start.bat";
             ProcessBuilder processBuilder = new ProcessBuilder(execute);
 
-            Map<String,String> envs= processBuilder.environment();
-            envs.put("ENVKEY","ENVVALUE");
-
+            Map<String, String> envs = processBuilder.environment();
+            envs.put("ENVKEY", "ENVVALUE");
 
             processBuilder.redirectErrorStream(true);
             processBuilder.redirectOutput(ProcessBuilder.Redirect.to(subOutputFile));
