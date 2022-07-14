@@ -16,9 +16,21 @@ import java.util.concurrent.TimeUnit;
 
 public class ProcessStdoutStderrTest {
 
+    private static boolean autoExit = false;
+
+    private static int seconds = 3;
+
+    private static boolean shutdownExecutor = false;
+
     public static void main(String[] args) throws InterruptedException {
         try {
             List<String> cmds = new ArrayList<>();
+            cmds.add("autoExit");
+            cmds.add(String.valueOf(autoExit));
+            cmds.add("seconds");
+            cmds.add(String.valueOf(seconds));
+            cmds.add("shutdownExecutor");
+            cmds.add(String.valueOf(shutdownExecutor));
             cmds.add("java");
 //            cmds.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=28031");
             cmds.add("-cp");
@@ -31,7 +43,25 @@ public class ProcessStdoutStderrTest {
                 cmds = Arrays.asList(args);
             }
 
-            ProcessBuilder processBuilder = new ProcessBuilder(cmds);
+            //just test, rough handle parent process auto exit config
+            int offset = 0;
+            List<String> finalCMD = cmds;
+            if (cmds.size() > 4 && "autoExit".equals(cmds.get(0))) {
+                String autoExitStr = cmds.get(1);
+                autoExit = Boolean.parseBoolean(autoExitStr);
+                String secondsStr = cmds.get(3);
+                seconds = Integer.parseInt(secondsStr);
+                offset = offset + 4;
+
+                if ("shutdownExecutor".equals(cmds.get(4))) {
+                    String shutdownThreadPoolStr = cmds.get(5);
+                    shutdownExecutor = Boolean.parseBoolean(shutdownThreadPoolStr);
+                    offset = offset + 2;
+                }
+            }
+            finalCMD = cmds.subList(offset, cmds.size());
+
+            ProcessBuilder processBuilder = new ProcessBuilder(finalCMD);
 
             List<String> command = processBuilder.command();
             System.out.println("processBuilder.command()=" + command);
@@ -75,6 +105,11 @@ public class ProcessStdoutStderrTest {
                 executorService.submit(processMonitor);
             } catch (ExecutionException e) {
                 e.printStackTrace();
+            }
+
+            if (autoExit) {
+                ParentProcessExit parentProcessExit = new ParentProcessExit(executorService, seconds);
+                executorService.submit(parentProcessExit);
             }
 
             //控制主进程的退出与否
@@ -147,6 +182,34 @@ public class ProcessStdoutStderrTest {
             }
         }
     }
+
+    private static class ParentProcessExit implements Runnable {
+
+        private final ExecutorService executorService;
+
+        private final int seconds;
+
+        public ParentProcessExit(ExecutorService executorService, int seconds) {
+            this.executorService = executorService;
+            this.seconds = seconds;
+        }
+
+        @Override
+        public void run() {
+            try {
+                TimeUnit.SECONDS.sleep(seconds);
+
+                if (shutdownExecutor) {
+                    executorService.shutdown();
+                }
+
+                System.exit(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
 
 
