@@ -22,6 +22,8 @@ public class ProcessStdoutStderrTest {
 
     private static boolean shutdownExecutor = false;
 
+    private static boolean redirect = true;
+
     public static void main(String[] args) throws InterruptedException {
         try {
             List<String> cmds = new ArrayList<>();
@@ -31,6 +33,8 @@ public class ProcessStdoutStderrTest {
             cmds.add(String.valueOf(seconds));
             cmds.add("shutdownExecutor");
             cmds.add(String.valueOf(shutdownExecutor));
+            cmds.add("redirect");
+            cmds.add(String.valueOf(redirect));
             cmds.add("java");
 //            cmds.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=28031");
             cmds.add("-cp");
@@ -58,6 +62,12 @@ public class ProcessStdoutStderrTest {
                     shutdownExecutor = Boolean.parseBoolean(shutdownThreadPoolStr);
                     offset = offset + 2;
                 }
+
+                if ("redirect".equals(cmds.get(6))) {
+                    String redirectStr = cmds.get(7);
+                    redirect = Boolean.parseBoolean(redirectStr);
+                    offset = offset + 2;
+                }
             }
             finalCMD = cmds.subList(offset, cmds.size());
 
@@ -70,23 +80,25 @@ public class ProcessStdoutStderrTest {
             String property = System.getProperty("java.io.tmpdir");
             System.out.println("System.getProperty(\"java.io.tmpdir\")=" + property);
 
-            //directory 是 null 安全的，其为 null 时，内部使用 java.io.File.TempDirectory.location 来获取 "java.io.tmpdir" 的值
-            File tempStdoutFile = File.createTempFile("process-", "-stdout.log", directory);
-            System.out.println(tempStdoutFile);
-            System.out.println(tempStdoutFile.canWrite());
-            //和下面的方法是等价的，本方法内部会构造 Redirect 对象。
-            //processBuilder.redirectOutput(tempStdoutFile);
-            processBuilder.redirectOutput(ProcessBuilder.Redirect.to(tempStdoutFile));
+            if (redirect) {
+                //directory 是 null 安全的，其为 null 时，内部使用 java.io.File.TempDirectory.location 来获取 "java.io.tmpdir" 的值
+                File tempStdoutFile = File.createTempFile("process-", "-stdout.log", directory);
+                System.out.println(tempStdoutFile);
+                System.out.println(tempStdoutFile.canWrite());
+                //和下面的方法是等价的，本方法内部会构造 Redirect 对象。
+                //processBuilder.redirectOutput(tempStdoutFile);
+                processBuilder.redirectOutput(ProcessBuilder.Redirect.to(tempStdoutFile));
 
-            File tempStderrFile = File.createTempFile("process-", "-stderr.log", directory);
-            System.out.println(tempStderrFile);
-            System.out.println(tempStderrFile.canWrite());
-            processBuilder.redirectError(ProcessBuilder.Redirect.to(tempStderrFile));
+                File tempStderrFile = File.createTempFile("process-", "-stderr.log", directory);
+                System.out.println(tempStderrFile);
+                System.out.println(tempStderrFile.canWrite());
+                processBuilder.redirectError(ProcessBuilder.Redirect.to(tempStderrFile));
 
-            File tempStdinFile = File.createTempFile("process-", "-stdin.log", directory);
-            System.out.println(tempStdinFile);
-            System.out.println(tempStdinFile.canRead());
-            processBuilder.redirectInput(ProcessBuilder.Redirect.from(tempStdinFile));
+                File tempStdinFile = File.createTempFile("process-", "-stdin.log", directory);
+                System.out.println(tempStdinFile);
+                System.out.println(tempStdinFile.canRead());
+                processBuilder.redirectInput(ProcessBuilder.Redirect.from(tempStdinFile));
+            }
 
             //使用当前进程的 stdout 和 stderr 作为子进程的 stdout 和 stderr
             //但是这样子我们不好区分 stdout 和 stderr 中哪些内容是父进程的，哪些是子进程的，所以这种场景下我们需要考虑别的方案
