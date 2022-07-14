@@ -1,17 +1,26 @@
 package SystemTest.Runtime;
 
 
+import java.io.File;
 import java.io.IOException;
 
 public class ProcessTest {
 
+    public static String WORK_DIR = System.getProperty("user.dir");
+
     public static void main(String[] args) {
+        File workDirFile = new File(WORK_DIR);
+
+        File startBat = new File(workDirFile, "script/maven/executor/start.bat");
+        String startBatAbsolutePath = startBat.getAbsolutePath();
+        System.out.println("startBat.getAbsolutePath()=" + startBatAbsolutePath);
+
         try {
-            String execute = "F:/JetBrains/IntelliJ IDEA/MiscellaneousTest/script/maven/executor/start.bat";
+            String executable = startBatAbsolutePath;
 
             if (args.length == 0 || args[0].equals("")) {
                 System.out.println("startFile from internal");
-                ExecUtils.exec(execute, null, false);
+                ExecUtils.exec(executable, null, false);
 
             } else {
                 System.out.println("startFile from external");

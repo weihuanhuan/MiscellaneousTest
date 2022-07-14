@@ -16,6 +16,8 @@ import java.util.concurrent.TimeUnit;
 
 public class ProcessStdoutStderrTest {
 
+    public static String WORK_DIR = System.getProperty("user.dir");
+
     private static boolean autoExit = false;
 
     private static int seconds = 3;
@@ -25,6 +27,14 @@ public class ProcessStdoutStderrTest {
     private static boolean redirect = true;
 
     public static void main(String[] args) throws InterruptedException {
+        File workDirFile = new File(WORK_DIR);
+        String workDirFileAbsolutePath = workDirFile.getAbsolutePath();
+        System.out.println("workDirFile.getAbsolutePath()=" + workDirFileAbsolutePath);
+
+        File featureJar = new File(workDirFile, "feature/target/feature.jar");
+        String featureJarAbsolutePath = featureJar.getAbsolutePath();
+        System.out.println("featureJar.getAbsolutePath()=" + featureJarAbsolutePath);
+
         try {
             List<String> cmds = new ArrayList<>();
             cmds.add("autoExit");
@@ -38,7 +48,7 @@ public class ProcessStdoutStderrTest {
             cmds.add("java");
 //            cmds.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=28031");
             cmds.add("-cp");
-            cmds.add("F:/JetBrains/IntelliJ IDEA/MiscellaneousTest/feature/target/feature.jar");
+            cmds.add(featureJarAbsolutePath);
             cmds.add("SystemTest.process.LongTermProcess");
             cmds.add(String.valueOf(128));
             cmds.add(String.valueOf(8 * 1024 * 8));//mb
