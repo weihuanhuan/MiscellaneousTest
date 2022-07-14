@@ -1,4 +1,4 @@
-package spring.json.validator.response;
+package spring.validator.response;
 
 import java.util.List;
 import java.util.ArrayList;

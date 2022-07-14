@@ -1,7 +1,7 @@
-package spring.json.validator;
+package spring.validator;
 
-import spring.json.validator.custom.clazz.RequestBodyValidateChildBeanAnnotation;
-import spring.json.validator.group.CreateGroup;
+import spring.validator.custom.clazz.RequestBodyValidateChildBeanAnnotation;
+import spring.validator.group.CreateGroup;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;

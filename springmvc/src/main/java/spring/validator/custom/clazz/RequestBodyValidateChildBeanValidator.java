@@ -1,6 +1,6 @@
-package spring.json.validator.custom.clazz;
+package spring.validator.custom.clazz;
 
-import spring.json.validator.RequestBodyValidateChildBean;
+import spring.validator.RequestBodyValidateChildBean;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;

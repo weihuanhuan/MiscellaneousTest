@@ -17,12 +17,11 @@ import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import spring.json.validator.config.WebMvcValidatorConfig;
-import spring.json.validator.exception.MethodArgumentNotValidResponseEntityExHandler;
-import spring.json.validator.response.ValidationErrorResponse;
-
-import java.util.ArrayList;
-import java.util.List;
+import spring.validator.RequestBodyValidateBean;
+import spring.validator.RequestBodyValidateBeanController;
+import spring.validator.config.WebMvcValidatorConfig;
+import spring.validator.exception.MethodArgumentNotValidResponseEntityExHandler;
+import spring.validator.response.ValidationErrorResponse;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

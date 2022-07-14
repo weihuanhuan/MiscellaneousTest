@@ -1,4 +1,4 @@
-package spring.json.validator;
+package spring.validator;
 
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +9,10 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import spring.json.validator.group.CreateGroup;
-import spring.json.validator.group.UpdateGroup;
-import spring.json.validator.response.ValidationErrorResponse;
-import spring.json.validator.response.Violation;
+import spring.validator.group.CreateGroup;
+import spring.validator.group.UpdateGroup;
+import spring.validator.response.ValidationErrorResponse;
+import spring.validator.response.Violation;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;

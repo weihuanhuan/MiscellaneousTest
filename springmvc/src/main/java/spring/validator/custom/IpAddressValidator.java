@@ -1,4 +1,4 @@
-package spring.json.validator.custom;
+package spring.validator.custom;
 
 
 import javax.validation.ConstraintValidator;

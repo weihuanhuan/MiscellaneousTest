@@ -1,4 +1,4 @@
-package spring.json.validator.exception;
+package spring.validator.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import spring.json.validator.response.ValidationErrorResponse;
-import spring.json.validator.response.Violation;
+import spring.validator.response.ValidationErrorResponse;
+import spring.validator.response.Violation;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;

@@ -2,21 +2,18 @@ package spring.json.validator;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import spring.json.validator.exception.ConstraintValidationExceptionExceptionHandler;
-import spring.json.validator.exception.MethodArgumentNotValidResponseEntityExHandler;
-import spring.json.validator.response.ValidationErrorResponse;
-
-import java.util.ArrayList;
-import java.util.List;
+import spring.validator.RequestBodyValidateBean;
+import spring.validator.RequestBodyValidateBeanController;
+import spring.validator.exception.ConstraintValidationExceptionExceptionHandler;
+import spring.validator.exception.MethodArgumentNotValidResponseEntityExHandler;
+import spring.validator.response.ValidationErrorResponse;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

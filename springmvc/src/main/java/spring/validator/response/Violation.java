@@ -1,4 +1,4 @@
-package spring.json.validator.response;
+package spring.validator.response;
 
 public class Violation {
 

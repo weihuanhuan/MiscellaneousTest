@@ -1,4 +1,4 @@
-package spring.json.validator.custom.clazz;
+package spring.validator.custom.clazz;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;

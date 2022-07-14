@@ -1,8 +1,8 @@
-package spring.json.validator;
+package spring.validator;
 
-import spring.json.validator.custom.IpAddressAnnotation;
-import spring.json.validator.group.CreateGroup;
-import spring.json.validator.group.UpdateGroup;
+import spring.validator.custom.IpAddressAnnotation;
+import spring.validator.group.CreateGroup;
+import spring.validator.group.UpdateGroup;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;

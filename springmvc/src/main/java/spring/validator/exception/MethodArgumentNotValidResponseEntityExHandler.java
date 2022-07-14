@@ -1,4 +1,4 @@
-package spring.json.validator.exception;
+package spring.validator.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -8,8 +8,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
-import spring.json.validator.response.ValidationErrorResponse;
-import spring.json.validator.response.Violation;
+import spring.validator.response.ValidationErrorResponse;
+import spring.validator.response.Violation;
 
 //Spring 3.2 brings support for a global @ExceptionHandler with the @ControllerAdvice annotation.
 @ControllerAdvice

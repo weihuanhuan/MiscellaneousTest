@@ -1,4 +1,4 @@
-package spring.json.validator.config;
+package spring.validator.config;
 
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.springframework.context.annotation.Bean;
