@@ -2,9 +2,10 @@ package SystemTest.process.stream;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-public class ProcessBuilderExecutor {
+public class ProcessBuilderExecutor implements Callable<Process> {
 
     private final String processName;
     private final ProcessBuilder processBuilder;
@@ -23,60 +24,77 @@ public class ProcessBuilderExecutor {
     public ProcessBuilderExecutor(String processName, ProcessBuilder processBuilder) {
         Objects.requireNonNull(processBuilder, "process builder cannot be null!");
 
-        this.processName = processName;
+        this.processName = processName == null ? "" : processName;
         this.processBuilder = processBuilder;
+    }
+
+    @Override
+    public Process call() throws Exception {
+        return start();
     }
 
     public Process start() throws IOException, InterruptedException {
         if (redirectStream) {
-            processStreamRedirect = new ProcessStreamRedirect(processName, processBuilder);
-            processStreamRedirect.redirect();
+            redirectStream();
         }
 
         process = processBuilder.start();
+
+        if (captureStream) {
+            startCapture();
+        }
+
+        if (waitFor) {
+            waitFor();
+        }
         return process;
     }
 
-    public void startCaptureStream() throws IOException {
-        if (!captureStream) {
-            return;
-        }
-        processStreamCapture = new ProcessStreamCapture(process);
-        processStreamCapture.capture(processStreamRedirect);
-    }
-
-    public void waitFor() throws InterruptedException {
-        if (!waitFor) {
-            return;
-        }
-
-        if (timeout > -1) {
+    private void waitFor() throws InterruptedException {
+        if (timeout > 0) {
             boolean waitBoolean = process.waitFor(timeout, TimeUnit.MILLISECONDS);
         } else {
             int waitInt = process.waitFor();
         }
     }
 
-    public void stopCaptureStream() {
-        if (!captureStream) {
+    private void redirectStream() throws IOException {
+        processStreamRedirect = new ProcessStreamRedirect(this);
+        processStreamRedirect.redirect();
+    }
+
+    public void cleanRedirect() {
+        if (processStreamRedirect == null) {
+            return;
+        }
+        processStreamRedirect.clean();
+    }
+
+    private void startCapture() throws IOException {
+        processStreamCapture = new ProcessStreamCapture(this);
+        processStreamCapture.capture();
+        processStreamCapture.start();
+    }
+
+    public void stopCapture() {
+        if (processStreamCapture == null) {
             return;
         }
         processStreamCapture.stop();
     }
 
-    public String readStdout() {
+    public String getStdoutMessage() {
+        if (processStreamCapture == null) {
+            return null;
+        }
         return processStreamCapture.readStdout();
     }
 
-    public String readStderr() {
-        return processStreamCapture.readStderr();
-    }
-
-    public void cleanRedirectFile() {
-        if (!redirectStream) {
-            return;
+    public String getStderrMessage() {
+        if (processStreamCapture == null) {
+            return null;
         }
-        processStreamRedirect.clean();
+        return processStreamCapture.readStderr();
     }
 
     public boolean isRedirectStream() {
@@ -109,6 +127,22 @@ public class ProcessBuilderExecutor {
 
     public void setTimeout(long timeout) {
         this.timeout = timeout;
+    }
+
+    public String getProcessName() {
+        return processName;
+    }
+
+    public ProcessBuilder getProcessBuilder() {
+        return processBuilder;
+    }
+
+    public ProcessStreamRedirect getProcessStreamRedirect() {
+        return processStreamRedirect;
+    }
+
+    public Process getProcess() {
+        return process;
     }
 
 }

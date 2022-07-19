@@ -15,8 +15,7 @@ public class ProcessStreamRedirect {
     private static final String STDOUT_LOG = "stdout.log";
     private static final String STDERR_LOG = "stderr.log";
 
-    private final String processName;
-    private final ProcessBuilder processBuilder;
+    private final ProcessBuilderExecutor processBuilderExecutor;
 
     private boolean redirectIn = false;
     private boolean redirectOut = true;
@@ -27,12 +26,14 @@ public class ProcessStreamRedirect {
     private File stdoutFile;
     private File stderrFile;
 
-    public ProcessStreamRedirect(String processName, ProcessBuilder processBuilder) {
-        this.processName = processName == null ? "" : processName;
-        this.processBuilder = processBuilder;
+    public ProcessStreamRedirect(ProcessBuilderExecutor processBuilderExecutor) {
+        this.processBuilderExecutor = processBuilderExecutor;
     }
 
     public void redirect() throws IOException {
+        String processName = processBuilderExecutor.getProcessName();
+        ProcessBuilder processBuilder = processBuilderExecutor.getProcessBuilder();
+
         File directory = processBuilder.directory();
         if (directory == null) {
             directory = new File(tempDir);
@@ -41,17 +42,21 @@ public class ProcessStreamRedirect {
         processBuilder.redirectErrorStream(mergeStderrAndStdout);
 
         if (redirectIn) {
-            stdinFile = createFile(directory, ProcessStreamRedirect.STDIN_LOG);
+            stdinFile = createFile(processName, STDIN_LOG, directory);
             processBuilder.redirectInput(ProcessBuilder.Redirect.from(stdinFile));
         }
         if (redirectOut) {
-            stdoutFile = createFile(directory, ProcessStreamRedirect.STDOUT_LOG);
+            stdoutFile = createFile(processName, STDOUT_LOG, directory);
             processBuilder.redirectOutput(ProcessBuilder.Redirect.to(stdoutFile));
         }
         if (redirectErr && !mergeStderrAndStdout) {
-            stderrFile = createFile(directory, ProcessStreamRedirect.STDERR_LOG);
+            stderrFile = createFile(processName, STDERR_LOG, directory);
             processBuilder.redirectError(ProcessBuilder.Redirect.to(stderrFile));
         }
+    }
+
+    private File createFile(String processName, String logfile, File directory) throws IOException {
+        return File.createTempFile(processName, logfile, directory);
     }
 
     public void clean() {
@@ -64,10 +69,6 @@ public class ProcessStreamRedirect {
         if (redirectErr && !mergeStderrAndStdout) {
             deleteFile(stderrFile);
         }
-    }
-
-    private File createFile(File directory, String fileName) throws IOException {
-        return File.createTempFile(processName, fileName, directory);
     }
 
     private void deleteFile(File file) {

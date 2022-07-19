@@ -1,87 +1,29 @@
 package SystemTest.process;
 
+import SystemTest.process.task.ParentProcessExit;
+import SystemTest.process.task.ProcessMonitor;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 public class ProcessStdoutStderrTest {
 
-    public static String WORK_DIR = System.getProperty("user.dir");
-
-    private static boolean autoExit = false;
-
-    private static int seconds = 3;
-
-    private static boolean shutdownExecutor = false;
-
-    private static boolean redirect = true;
-
     public static void main(String[] args) throws InterruptedException {
-        File workDirFile = new File(WORK_DIR);
-        String workDirFileAbsolutePath = workDirFile.getAbsolutePath();
-        System.out.println("workDirFile.getAbsolutePath()=" + workDirFileAbsolutePath);
-
-        File featureJar = new File(workDirFile, "feature/target/feature.jar");
-        String featureJarAbsolutePath = featureJar.getAbsolutePath();
-        System.out.println("featureJar.getAbsolutePath()=" + featureJarAbsolutePath);
+        List<String> finalCMD = ParentProcessCommand.parseCommand(args);
+        File workDirFile = new File(ParentProcessCommand.WORK_DIR);
 
         try {
-            List<String> cmds = new ArrayList<>();
-            cmds.add("autoExit");
-            cmds.add(String.valueOf(autoExit));
-            cmds.add("seconds");
-            cmds.add(String.valueOf(seconds));
-            cmds.add("shutdownExecutor");
-            cmds.add(String.valueOf(shutdownExecutor));
-            cmds.add("redirect");
-            cmds.add(String.valueOf(redirect));
-            cmds.add("java");
-//            cmds.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=28031");
-            cmds.add("-cp");
-            cmds.add(featureJarAbsolutePath);
-            cmds.add("SystemTest.process.LongTermProcess");
-            cmds.add(String.valueOf(128));
-            cmds.add(String.valueOf(8 * 1024 * 8));//mb
-
-            if (args != null && args.length >= 3) {
-                cmds = Arrays.asList(args);
-            }
-
-            //just test, rough handle parent process auto exit config
-            int offset = 0;
-            List<String> finalCMD = cmds;
-            if (cmds.size() > 4 && "autoExit".equals(cmds.get(0))) {
-                String autoExitStr = cmds.get(1);
-                autoExit = Boolean.parseBoolean(autoExitStr);
-                String secondsStr = cmds.get(3);
-                seconds = Integer.parseInt(secondsStr);
-                offset = offset + 4;
-
-                if ("shutdownExecutor".equals(cmds.get(4))) {
-                    String shutdownThreadPoolStr = cmds.get(5);
-                    shutdownExecutor = Boolean.parseBoolean(shutdownThreadPoolStr);
-                    offset = offset + 2;
-                }
-
-                if ("redirect".equals(cmds.get(6))) {
-                    String redirectStr = cmds.get(7);
-                    redirect = Boolean.parseBoolean(redirectStr);
-                    offset = offset + 2;
-                }
-            }
-            finalCMD = cmds.subList(offset, cmds.size());
-
             ProcessBuilder processBuilder = new ProcessBuilder(finalCMD);
+
+            processBuilder.directory(workDirFile);
 
             List<String> command = processBuilder.command();
             System.out.println("processBuilder.command()=" + command);
@@ -90,21 +32,21 @@ public class ProcessStdoutStderrTest {
             String property = System.getProperty("java.io.tmpdir");
             System.out.println("System.getProperty(\"java.io.tmpdir\")=" + property);
 
-            if (redirect) {
+            if (ParentProcessCommand.redirect) {
                 //directory 是 null 安全的，其为 null 时，内部使用 java.io.File.TempDirectory.location 来获取 "java.io.tmpdir" 的值
-                File tempStdoutFile = File.createTempFile("process-", "-stdout.log", directory);
+                File tempStdoutFile = File.createTempFile("process-", "stdout.log", directory);
                 System.out.println(tempStdoutFile);
                 System.out.println(tempStdoutFile.canWrite());
                 //和下面的方法是等价的，本方法内部会构造 Redirect 对象。
                 //processBuilder.redirectOutput(tempStdoutFile);
                 processBuilder.redirectOutput(ProcessBuilder.Redirect.to(tempStdoutFile));
 
-                File tempStderrFile = File.createTempFile("process-", "-stderr.log", directory);
+                File tempStderrFile = File.createTempFile("process-", "stderr.log", directory);
                 System.out.println(tempStderrFile);
                 System.out.println(tempStderrFile.canWrite());
                 processBuilder.redirectError(ProcessBuilder.Redirect.to(tempStderrFile));
 
-                File tempStdinFile = File.createTempFile("process-", "-stdin.log", directory);
+                File tempStdinFile = File.createTempFile("process-", "stdin.log", directory);
                 System.out.println(tempStdinFile);
                 System.out.println(tempStdinFile.canRead());
                 processBuilder.redirectInput(ProcessBuilder.Redirect.from(tempStdinFile));
@@ -114,7 +56,7 @@ public class ProcessStdoutStderrTest {
             //但是这样子我们不好区分 stdout 和 stderr 中哪些内容是父进程的，哪些是子进程的，所以这种场景下我们需要考虑别的方案
 //            processBuilder.inheritIO();
 
-            ExecutorService executorService = Executors.newFixedThreadPool(3);
+            ExecutorService executorService = Executors.newFixedThreadPool(5);
 
             ProcessStarter processStarter = new ProcessStarter(processBuilder);
             Future<Process> submit = executorService.submit(processStarter);
@@ -129,8 +71,8 @@ public class ProcessStdoutStderrTest {
                 e.printStackTrace();
             }
 
-            if (autoExit) {
-                ParentProcessExit parentProcessExit = new ParentProcessExit(executorService, seconds);
+            if (ParentProcessCommand.autoExit) {
+                ParentProcessExit parentProcessExit = new ParentProcessExit(executorService, ParentProcessCommand.seconds, ParentProcessCommand.shutdownExecutor);
                 executorService.submit(parentProcessExit);
             }
 
@@ -139,7 +81,8 @@ public class ProcessStdoutStderrTest {
 
             //关闭现场池以结束进程，否则在 read 后，但是由于线程池中还有线程在运行，导致主线程无法退出
             executorService.shutdown();
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             e.printStackTrace();
         }
     }
@@ -175,60 +118,6 @@ public class ProcessStdoutStderrTest {
             //System.out.println(exitCode);
 
             return process;
-        }
-    }
-
-    private static class ProcessMonitor implements Runnable {
-
-        private final Process process;
-
-        public ProcessMonitor(Process process) {
-            this.process = process;
-        }
-
-        @Override
-        public void run() {
-            while (true) {
-                boolean alive = process.isAlive();
-                long currentTimeMillis = System.currentTimeMillis();
-                System.out.println("process.isAlive()=" + alive + ", System.currentTimeMillis()=" + currentTimeMillis);
-                if (!alive) {
-                    break;
-                }
-
-                try {
-                    TimeUnit.SECONDS.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    private static class ParentProcessExit implements Runnable {
-
-        private final ExecutorService executorService;
-
-        private final int seconds;
-
-        public ParentProcessExit(ExecutorService executorService, int seconds) {
-            this.executorService = executorService;
-            this.seconds = seconds;
-        }
-
-        @Override
-        public void run() {
-            try {
-                TimeUnit.SECONDS.sleep(seconds);
-
-                if (shutdownExecutor) {
-                    executorService.shutdown();
-                }
-
-                System.exit(0);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
         }
     }
 
