@@ -30,6 +30,7 @@ public class ProcessExecutorTest {
             ProcessBuilderExecutor processBuilderExecutor = new ProcessBuilderExecutor("process-", processBuilder);
             //控制 ProcessBuilderExecutor 的行为
             processBuilderExecutor.setRedirectStream(ParentProcessCommand.redirect);
+            processBuilderExecutor.setRedirectStream(ParentProcessCommand.capture);
 
             ExecutorService executorService = Executors.newFixedThreadPool(5);
 
@@ -90,6 +91,9 @@ public class ProcessExecutorTest {
                 //停止收集数据
                 processBuilderExecutor.stopCapture();
 
+                //这里只是为了消耗时间，理论上 stop capture 之后还回存在一个读取等待周期，这里跳过他
+                TimeUnit.SECONDS.sleep(1);
+
                 //第二次查询数据，并比较第二次和第一次的数据，由于此时存在数据收集，他们应该是不相同的数据。
                 String stdoutMessage2 = processBuilderExecutor.getStdoutMessage();
                 System.out.println("Objects.equals(stdoutMessage, stdoutMessage2)=" + Objects.equals(stdoutMessage, stdoutMessage2));
@@ -108,6 +112,7 @@ public class ProcessExecutorTest {
                 System.out.println("Objects.equals(stderrMessage2, stderrMessage3)=" + Objects.equals(stderrMessage2, stderrMessage3));
 
                 //移除重定向文件
+                //当重定向的文件正在被进程使用时是无法进行 clean 的，当前的 clean 实现是删除文件
                 processBuilderExecutor.cleanRedirect();
 
             } catch (InterruptedException e) {

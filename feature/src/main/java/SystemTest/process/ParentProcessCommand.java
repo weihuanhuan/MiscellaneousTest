@@ -17,6 +17,8 @@ public class ParentProcessCommand {
 
     public static boolean redirect = true;
 
+    public static boolean capture = true;
+
     public static List<String> parseCommand(String[] args) {
         File workDirFile = new File(WORK_DIR);
 
@@ -63,6 +65,12 @@ public class ParentProcessCommand {
             if ("redirect".equals(cmds.get(6))) {
                 String redirectStr = cmds.get(7);
                 redirect = Boolean.parseBoolean(redirectStr);
+                offset = offset + 2;
+            }
+
+            if ("capture".equals(cmds.get(8))) {
+                String captureStr = cmds.get(9);
+                capture = Boolean.parseBoolean(captureStr);
                 offset = offset + 2;
             }
         }
