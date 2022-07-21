@@ -65,8 +65,10 @@ public class LongTermProcess {
         public void run() {
             long start = System.currentTimeMillis();
 
-            int countIndex = count;
-            while (countIndex-- > 0) {
+            int countIndex = 0;
+            while (++countIndex <= count) {
+                //打印行号，方便观察当前打印到了第几行，最终计算输出 byte 数时，忽略了行数部分和换行符占用的字节数。
+                printStream.printf("%-10d", countIndex);
                 printStream.println(chars);
                 printStream.flush();
             }

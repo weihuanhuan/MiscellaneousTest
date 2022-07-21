@@ -6,6 +6,7 @@ import SystemTest.process.task.ProcessMonitor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -80,10 +81,12 @@ public class ProcessExecutorTest {
 
                 //第一次查询数据
                 String stdoutMessage = processBuilderExecutor.getStdoutMessage();
-                System.out.println(stdoutMessage);
+                String stdoutMessageLastLinesAsString = ProcessExecutorHelper.getLastLinesAsString(stdoutMessage, 5);
+                System.out.println(stdoutMessageLastLinesAsString);
 
                 String stderrMessage = processBuilderExecutor.getStderrMessage();
-                System.err.println(stderrMessage);
+                String stderrMessageLastLinesAsString = ProcessExecutorHelper.getLastLinesAsString(stderrMessage, 5);
+                System.err.println(stderrMessageLastLinesAsString);
 
                 //再次等待数据收集
                 TimeUnit.SECONDS.sleep(1);
