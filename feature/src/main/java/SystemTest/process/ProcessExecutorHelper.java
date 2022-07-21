@@ -45,16 +45,17 @@ public class ProcessExecutorHelper {
         System.out.println(lastLinesAsString);
     }
 
-    public static String getLastLinesAsString(String string, int numLines) {
-        List<String> lastLines = getLastLines(string, numLines);
-        if (lastLines == null) {
-            return null;
-        }
+    public static String getLastLinesAsString(String input, int numLines) {
+//        List<String> lastLines = getLastLinesWithoutLF(input, numLines);
+//        if (lastLines == null) {
+//            return null;
+//        }
 
-        return String.join(LINE_SEPARATOR, lastLines);
+//        return String.join(LINE_SEPARATOR, lastLines);
+        return getLastLinesWithLF(input, numLines);
     }
 
-    public static List<String> getLastLines(String string, int numLines) {
+    public static List<String> getLastLinesWithoutLF(String string, int numLines) {
         if (string == null) {
             return null;
         }
@@ -88,6 +89,42 @@ public class ProcessExecutorHelper {
         //恢复为正序
         Collections.reverse(lines);
         return lines;
+    }
+
+    public static String getLastLinesWithLF(String string, int numLines) {
+        if (string == null) {
+            return null;
+        }
+
+        int currentStringLength = string.length();
+        int lineSeparatorLength = LINE_SEPARATOR.length();
+
+        for (int i = 0; currentStringLength >= 0 && i < numLines; ++i) {
+            int lineStartIndex = string.lastIndexOf(LINE_SEPARATOR, currentStringLength - 1);
+            if (lineStartIndex < 0) {
+                //lines.add(string.substring(0, currentStringLength));
+                currentStringLength = 0;
+                break;
+            }
+
+            //String lastLine = string.substring(lineStartIndex + lineSeparatorLength, currentStringLength);
+            int lastLineLength = currentStringLength - (lineStartIndex + lineSeparatorLength);
+
+            //简化计算关系后就无需知道当前截取的行长度了，
+            //只需要将 lastIndexOf 查找的 LINE_SEPARATOR 序列的开头 index 所谓下一轮的起始位置就好了
+            //currentStringLength = currentStringLength - lastLine.length() - lineSeparatorLength;
+            //currentStringLength = currentStringLength - lastLineLength - lineSeparatorLength;
+            currentStringLength = lineStartIndex;
+        }
+
+        //截取最终的 last n line string 结果
+        String substring = string.substring(currentStringLength);
+
+        //移除开头多余的 LINE_SEPARATOR
+        if (substring.startsWith(LINE_SEPARATOR)) {
+            return substring.substring(lineSeparatorLength);
+        }
+        return substring;
     }
 
 }
