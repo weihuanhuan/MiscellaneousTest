@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
-import java.util.Objects;
 
 public class ProcessStreamCapture {
 
@@ -16,7 +14,7 @@ public class ProcessStreamCapture {
     private ProcessStreamCollector stdoutStreamCollector;
     private ProcessStreamCollector stderrStreamCollector;
 
-    private Charset charset = StandardCharsets.UTF_8;
+    private Charset charset = Charset.defaultCharset();
 
     public ProcessStreamCapture(ProcessBuilderExecutor processBuilderExecutor) {
         this.processBuilderExecutor = processBuilderExecutor;

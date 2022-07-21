@@ -59,7 +59,7 @@ public class ProcessStreamRedirect {
 
     private File createFile(String processName, String logfile, File directory) {
         String absolutePath = directory.getAbsolutePath();
-        String fileName = processName + logfile;
+        String fileName = processName + "-" + logfile;
         Path path = Paths.get(absolutePath, fileName);
         return path.toFile();
     }

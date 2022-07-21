@@ -1,6 +1,7 @@
 package SystemTest.process;
 
 import SystemTest.process.stream.ProcessBuilderExecutor;
+import SystemTest.process.stream.ProcessStreamRedirect;
 import SystemTest.process.task.ParentProcessExit;
 import SystemTest.process.task.ProcessMonitor;
 
@@ -26,6 +27,11 @@ public class ProcessExecutorTest {
 
             //指定 process 的 work dir 防止生成的 redirect log file 默认占用 temp 目录的空间
             processBuilder.directory(workDirFile);
+
+            List<String> command = processBuilder.command();
+            System.out.println("processBuilder.command()=" + command);
+            File directory = processBuilder.directory();
+            System.out.println("processBuilder.directory()=" + directory);
 
             //使用 ProcessBuilderExecutor 运行
             ProcessBuilderExecutor processBuilderExecutor = new ProcessBuilderExecutor("process-", processBuilder);
@@ -78,6 +84,16 @@ public class ProcessExecutorTest {
             try {
                 //等待数据数据收集
                 TimeUnit.SECONDS.sleep(1);
+
+                ProcessStreamRedirect processStreamRedirect = processBuilderExecutor.getProcessStreamRedirect();
+                if (processStreamRedirect != null) {
+                    File stdinFile = processStreamRedirect.getStdinFile();
+                    System.out.println("processStreamRedirect.getStdinFile()=" + stdinFile);
+                    File stdoutFile = processStreamRedirect.getStdoutFile();
+                    System.out.println("processStreamRedirect.getStdoutFile()=" + stdoutFile);
+                    File stderrFile = processStreamRedirect.getStderrFile();
+                    System.out.println("processStreamRedirect.getStderrFile()=" + stderrFile);
+                }
 
                 //第一次查询数据
                 String stdoutMessage = processBuilderExecutor.getStdoutMessage();
