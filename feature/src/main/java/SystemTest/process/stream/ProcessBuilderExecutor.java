@@ -58,7 +58,7 @@ public class ProcessBuilderExecutor implements Callable<Process> {
         }
     }
 
-    private void redirectStream() throws IOException {
+    private void redirectStream() {
         processStreamRedirect = new ProcessStreamRedirect(this);
         processStreamRedirect.redirect();
     }

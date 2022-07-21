@@ -2,6 +2,8 @@ package SystemTest.process.stream;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,7 +32,7 @@ public class ProcessStreamRedirect {
         this.processBuilderExecutor = processBuilderExecutor;
     }
 
-    public void redirect() throws IOException {
+    public void redirect() {
         String processName = processBuilderExecutor.getProcessName();
         ProcessBuilder processBuilder = processBuilderExecutor.getProcessBuilder();
 
@@ -55,8 +57,11 @@ public class ProcessStreamRedirect {
         }
     }
 
-    private File createFile(String processName, String logfile, File directory) throws IOException {
-        return File.createTempFile(processName, logfile, directory);
+    private File createFile(String processName, String logfile, File directory) {
+        String absolutePath = directory.getAbsolutePath();
+        String fileName = processName + logfile;
+        Path path = Paths.get(absolutePath, fileName);
+        return path.toFile();
     }
 
     public void clean() {

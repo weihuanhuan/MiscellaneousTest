@@ -23,7 +23,8 @@ public class ProcessStreamCollector implements Runnable {
 
     public ProcessStreamCollector(InputStream inputStream) {
         this.inputStream = inputStream;
-        this.outputStream = new ByteArrayOutputStream();
+        //reduce data copy backed by byte[] object when grow byte[] length.
+        this.outputStream = new ByteArrayOutputStream(8192);
     }
 
     @Override
