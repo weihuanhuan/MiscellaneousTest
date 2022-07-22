@@ -1,10 +1,10 @@
-package SystemTest.process;
+package SystemTest.process.helper;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ProcessExecutorHelper {
+public class ReadStringLastLine {
 
     //使用 "\n" 能同时处理 "\r\n" 和 "\n" 俩种情况
     private static final String LINE_SEPARATOR = "\n";
@@ -35,24 +35,29 @@ public class ProcessExecutorHelper {
         printLastLinesAsString("aaa\r\nbbb\r\nccc\r\nddd\r\neee\r\n", numLines);
         printLastLinesAsString("aaa\r\nbbb\r\nccc\r\nddd\r\neee\r\nfff", numLines);
         printLastLinesAsString("aaa\r\nbbb\r\nccc\r\nddd\r\neee\r\nfff\r\n", numLines);
+
+        System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
+        printJoinLinesAsString("aaa\nbbb\nccc\nddd\neee\nfff\n", numLines);
+
+        printJoinLinesAsString("aaa\r\nbbb\r\nccc\r\nddd\r\neee\r\nfff\r\n", numLines);
     }
 
     public static void printLastLinesAsString(String input, int numLines) {
         System.out.println("################################################");
-        String lastLinesAsString = getLastLinesAsString(input, numLines);
+        String lastLinesAsString = getLastLinesWithLF(input, numLines);
         System.out.println(input);
         System.out.println("------------------------------------------------");
         System.out.println(lastLinesAsString);
     }
 
-    public static String getLastLinesAsString(String input, int numLines) {
-//        List<String> lastLines = getLastLinesWithoutLF(input, numLines);
-//        if (lastLines == null) {
-//            return null;
-//        }
-
-//        return String.join(LINE_SEPARATOR, lastLines);
-        return getLastLinesWithLF(input, numLines);
+    public static void printJoinLinesAsString(String input, int numLines) {
+        System.out.println("################################################");
+        List<String> lastLinesWithoutLF = getLastLinesWithoutLF(input, numLines);
+        String joinLinesAsString = ReadLastLineHelper.joinLinesAsString(lastLinesWithoutLF);
+        System.out.println(input);
+        System.out.println("------------------------------------------------");
+        System.out.println(joinLinesAsString);
     }
 
     public static List<String> getLastLinesWithoutLF(String string, int numLines) {
@@ -128,5 +133,3 @@ public class ProcessExecutorHelper {
     }
 
 }
-
-

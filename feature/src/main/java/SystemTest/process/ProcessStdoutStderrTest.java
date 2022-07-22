@@ -34,19 +34,19 @@ public class ProcessStdoutStderrTest {
 
             if (ParentProcessCommand.redirect) {
                 //directory 是 null 安全的，其为 null 时，内部使用 java.io.File.TempDirectory.location 来获取 "java.io.tmpdir" 的值
-                File tempStdoutFile = File.createTempFile("process-", "stdout.log", directory);
+                File tempStdoutFile = File.createTempFile("process-", "-stdout.log", directory);
                 System.out.println(tempStdoutFile);
                 System.out.println(tempStdoutFile.canWrite());
                 //和下面的方法是等价的，本方法内部会构造 Redirect 对象。
                 //processBuilder.redirectOutput(tempStdoutFile);
                 processBuilder.redirectOutput(ProcessBuilder.Redirect.to(tempStdoutFile));
 
-                File tempStderrFile = File.createTempFile("process-", "stderr.log", directory);
+                File tempStderrFile = File.createTempFile("process-", "-stderr.log", directory);
                 System.out.println(tempStderrFile);
                 System.out.println(tempStderrFile.canWrite());
                 processBuilder.redirectError(ProcessBuilder.Redirect.to(tempStderrFile));
 
-                File tempStdinFile = File.createTempFile("process-", "stdin.log", directory);
+                File tempStdinFile = File.createTempFile("process-", "-stdin.log", directory);
                 System.out.println(tempStdinFile);
                 System.out.println(tempStdinFile.canRead());
                 processBuilder.redirectInput(ProcessBuilder.Redirect.from(tempStdinFile));

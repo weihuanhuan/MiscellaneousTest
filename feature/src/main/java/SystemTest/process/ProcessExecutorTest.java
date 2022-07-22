@@ -1,5 +1,7 @@
 package SystemTest.process;
 
+import SystemTest.process.helper.ReadFileLastLine;
+import SystemTest.process.helper.ReadStringLastLine;
 import SystemTest.process.stream.ProcessBuilderExecutor;
 import SystemTest.process.stream.ProcessStreamRedirect;
 import SystemTest.process.task.ParentProcessExit;
@@ -7,7 +9,6 @@ import SystemTest.process.task.ProcessMonitor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -34,7 +35,7 @@ public class ProcessExecutorTest {
             System.out.println("processBuilder.directory()=" + directory);
 
             //使用 ProcessBuilderExecutor 运行
-            ProcessBuilderExecutor processBuilderExecutor = new ProcessBuilderExecutor("process-", processBuilder);
+            ProcessBuilderExecutor processBuilderExecutor = new ProcessBuilderExecutor("process", processBuilder);
             //控制 ProcessBuilderExecutor 的行为
             processBuilderExecutor.setRedirectStream(ParentProcessCommand.redirect);
             processBuilderExecutor.setRedirectStream(ParentProcessCommand.capture);
@@ -86,6 +87,7 @@ public class ProcessExecutorTest {
                 TimeUnit.SECONDS.sleep(1);
 
                 ProcessStreamRedirect processStreamRedirect = processBuilderExecutor.getProcessStreamRedirect();
+                System.out.println("##########################################################");
                 if (processStreamRedirect != null) {
                     File stdinFile = processStreamRedirect.getStdinFile();
                     System.out.println("processStreamRedirect.getStdinFile()=" + stdinFile);
@@ -93,16 +95,31 @@ public class ProcessExecutorTest {
                     System.out.println("processStreamRedirect.getStdoutFile()=" + stdoutFile);
                     File stderrFile = processStreamRedirect.getStderrFile();
                     System.out.println("processStreamRedirect.getStderrFile()=" + stderrFile);
+
+                    if (stdoutFile != null) {
+                        String stdoutFileLastLinesAsString = ReadFileLastLine.getLastLinesAsString(stdoutFile, 5);
+                        System.out.println("stdoutFileLastLinesAsString=" + stdoutFileLastLinesAsString);
+                        System.out.flush();
+                    }
+                    if (stderrFile != null) {
+                        String stderrFileLastLinesAsString = ReadFileLastLine.getLastLinesAsString(stderrFile, 5);
+                        System.err.println("stderrFileLastLinesAsString=" + stderrFileLastLinesAsString);
+                        System.err.flush();
+                    }
                 }
 
+
+                System.out.println("##########################################################");
                 //第一次查询数据
                 String stdoutMessage = processBuilderExecutor.getStdoutMessage();
-                String stdoutMessageLastLinesAsString = ProcessExecutorHelper.getLastLinesAsString(stdoutMessage, 5);
-                System.out.println(stdoutMessageLastLinesAsString);
+                String stdoutMessageLastLinesWithLF = ReadStringLastLine.getLastLinesWithLF(stdoutMessage, 5);
+                System.out.println("stdoutMessageLastLinesWithLF=" + stdoutMessageLastLinesWithLF);
+                System.out.flush();
 
                 String stderrMessage = processBuilderExecutor.getStderrMessage();
-                String stderrMessageLastLinesAsString = ProcessExecutorHelper.getLastLinesAsString(stderrMessage, 5);
-                System.err.println(stderrMessageLastLinesAsString);
+                String stderrMessageLastLinesWithLF = ReadStringLastLine.getLastLinesWithLF(stderrMessage, 5);
+                System.err.println("stderrMessageLastLinesWithLF=" + stderrMessageLastLinesWithLF);
+                System.err.flush();
 
                 //再次等待数据收集
                 TimeUnit.SECONDS.sleep(1);
@@ -136,6 +153,8 @@ public class ProcessExecutorTest {
 
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
         }
     }
