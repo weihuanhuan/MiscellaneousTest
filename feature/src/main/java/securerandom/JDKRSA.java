@@ -1,5 +1,7 @@
 package securerandom;
 
+import org.bouncycastle.util.encoders.Hex;
+
 import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -132,7 +134,7 @@ public class JDKRSA {
     }
 
     private static void dumpByteArrayToHex(byte[] bytes) {
-        System.out.println(javax.xml.bind.DatatypeConverter.printHexBinary(bytes));
+        System.out.println(Hex.toHexString(bytes));
     }
 
 }

@@ -1,5 +1,7 @@
 package securerandom;
 
+import org.bouncycastle.util.encoders.Hex;
+
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.Security;
@@ -24,6 +26,7 @@ public class KeypairTest {
     }
 
     public static void main(String[] args) {
+        //固定 SecureRandom 初始化时的种子，使得随机数的生成是可预测的。
         SecureRandom random = new SecureRandom("GDGMCCd2z5q7d".getBytes());
         System.out.println("class    :" + random.getClass());
         System.out.println("provider :" + random.getProvider());
@@ -39,16 +42,27 @@ public class KeypairTest {
         generator.initialize(KEYSIZE, random);
         keyPair = generator.generateKeyPair();
 
-        byte[] encoded = keyPair.getPrivate().getEncoded();
-        System.out.println(Arrays.toString(encoded));
+        byte[] privateEncoded = keyPair.getPrivate().getEncoded();
+        System.out.println(Hex.toHexString(privateEncoded));
+
+        byte[] publicEncoded = keyPair.getPublic().getEncoded();
+        System.out.println(Hex.toHexString(publicEncoded));
 
         System.out.println();
-        if (Arrays.equals(PRIVATE_KEY_BYTES, encoded)) {
+
+        //在 SecureRandom 随机数的生成是固定的情况下， PRIVATE_KEY_BYTES 也就是可预测的了。
+        if (Arrays.equals(PRIVATE_KEY_BYTES, privateEncoded)) {
             System.out.println("PRIVATE_KEY_BYTES == encoded");
         } else {
             System.out.println("PRIVATE_KEY_BYTES !!!!!= encoded");
         }
+        System.out.println();
 
+        //由于每次生成 RSA pub/pri 时使用的随机字节数量是固定的，
+        //所以我们最后可以再次确认 SecureRandom 生成的随机字节是可预测的，他每次都是一样的
+        byte[] someBytes = new byte[8];
+        random.nextBytes(someBytes);
+        System.out.println("some byte:" + Hex.toHexString(someBytes));
     }
 
 }
