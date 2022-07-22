@@ -1,4 +1,4 @@
-package securerandom;
+package crypto.rsa;
 
 import org.bouncycastle.util.encoders.Hex;
 

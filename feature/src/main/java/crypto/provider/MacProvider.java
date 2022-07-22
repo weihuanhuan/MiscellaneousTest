@@ -1,4 +1,4 @@
-package security.provider;
+package crypto.provider;
 
 import javax.crypto.Mac;
 import java.security.NoSuchAlgorithmException;

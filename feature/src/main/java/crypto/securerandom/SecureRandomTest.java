@@ -1,4 +1,4 @@
-package securerandom;
+package crypto.securerandom;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;

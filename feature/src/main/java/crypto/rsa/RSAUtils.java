@@ -1,4 +1,4 @@
-package securerandom;
+package crypto.rsa;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
