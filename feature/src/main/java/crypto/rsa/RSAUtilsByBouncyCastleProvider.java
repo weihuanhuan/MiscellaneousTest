@@ -28,7 +28,7 @@ import org.bouncycastle.util.encoders.Base64;
 /**
  * Created by JasonFitch on 9/9/2019.
  */
-public class RSAUtils {
+public class RSAUtilsByBouncyCastleProvider {
 
     private static KeyPair keyPair;
     private final static String publicKey;
@@ -152,9 +152,9 @@ public class RSAUtils {
         String text = "您好！";
 
         //使用先前生成的公私钥来进行加解密，这里是私钥加密，公钥解密了
-        String textEn = new RSAUtils.Encoder(privateKey).encode(text);
+        String textEn = new RSAUtilsByBouncyCastleProvider.Encoder(privateKey).encode(text);
         System.out.println(textEn);
-        String textDe = new RSAUtils.Decoder(publicKey).decode(textEn);
+        String textDe = new RSAUtilsByBouncyCastleProvider.Decoder(publicKey).decode(textEn);
         System.out.println(textDe);
 
         //由于公私钥是一对密钥，他们可以互相对对方的加解密操作进行逆处理，所以这里我们可以颠倒其用处
