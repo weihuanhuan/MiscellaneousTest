@@ -8,6 +8,8 @@ import org.bouncycastle.crypto.engines.RSAEngine;
 import org.bouncycastle.crypto.generators.RSAKeyPairGenerator;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
+import org.bouncycastle.crypto.params.RSAKeyParameters;
+import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
 import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
 import org.bouncycastle.crypto.util.SubjectPublicKeyInfoFactory;
 import org.bouncycastle.util.encoders.Base64;
@@ -47,12 +49,29 @@ public class RSAUtilsByBouncyCastleDirect {
         System.out.println("privateKeyString:\n" + privateKeyString);
         System.out.println("publicKeyString:\n" + publicKeyString);
 
-        System.out.println("#########################################################################################");
+        System.out.println("############################ selfEncryptAndDecrypt ###########################");
+        selfEncryptAndDecrypt();
+
+        System.out.println("############################ decryptFromJSEncrypt ###########################");
+        decryptFromJSEncrypt();
+    }
+
+    public static void selfEncryptAndDecrypt() throws InvalidCipherTextException {
         String text = "您好！";
         byte[] bytes = text.getBytes();
 
         byte[] encrypt = encrypt(bytes, publicKey);
         byte[] decrypt = decrypt(encrypt, privateKey);
+
+        String decryptString = new String(decrypt);
+        System.out.println(decryptString);
+    }
+
+    public static void decryptFromJSEncrypt() throws InvalidCipherTextException {
+        String encryptFromJSEncrypt = "TQd08LOJzigZH3kHOnr6XBAla6Y7P0Z5pxCCDTp1UwnXd75VWotrzgvbh5Ed6E8ye5gIzXVKWTx9LWslHF73bGuOuwNNFNfg2tcKlx1Xwkmr/s13PzEgkgcRqIG0EygSx9Ak4g0lCm9RfOSbPEAujMVvum+6QWjz/nNhVwy7C4k=";
+
+        byte[] decode = Base64.decode(encryptFromJSEncrypt);
+        byte[] decrypt = decrypt(decode, privateKey);
 
         String decryptString = new String(decrypt);
         System.out.println(decryptString);
@@ -65,8 +84,13 @@ public class RSAUtilsByBouncyCastleDirect {
 
         ASN1Object asn1Object;
         if (asymmetricKeyParameter.isPrivate()) {
+            RSAPrivateCrtKeyParameters rsaPrivateCrtKeyParameters = (RSAPrivateCrtKeyParameters) asymmetricKeyParameter;
+            System.out.println("rsaPrivateCrtKeyParameters.getExponent()=" + rsaPrivateCrtKeyParameters.getExponent());
+            System.out.println("rsaPrivateCrtKeyParameters.getPublicExponent()=" + rsaPrivateCrtKeyParameters.getPublicExponent());
             asn1Object = PrivateKeyInfoFactory.createPrivateKeyInfo(asymmetricKeyParameter);
         } else {
+            RSAKeyParameters rsaKeyParameters = (RSAKeyParameters) asymmetricKeyParameter;
+            System.out.println("rsaKeyParameters.getExponent()=" + rsaKeyParameters.getExponent());
             asn1Object = SubjectPublicKeyInfoFactory.createSubjectPublicKeyInfo(asymmetricKeyParameter);
         }
 
