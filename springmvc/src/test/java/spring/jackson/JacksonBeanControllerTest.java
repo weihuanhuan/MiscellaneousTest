@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import spring.jackson.advice.LoggingRequestBodyAdvice;
 import spring.jackson.bean.RedisCluster;
 import spring.jackson.bean.RedisMaster;
 import spring.jackson.bean.RedisSentinel;
@@ -24,7 +25,7 @@ import spring.jackson.controller.JacksonBeanController;
 //注意集成测试时， spring test 还是仅仅加载最少的 bean,
 //由于我们的 controller 包并没有在 config class 中使用 ComponentScan 中指定，所以他是不会被加载的。
 //为了在测试中读取我们的 controller 的实现类 ，我们应该将其直接加入到 @ContextConfiguration 中
-@ContextConfiguration(classes = {WebMvcJacksonConfig.class, JacksonBeanController.class})
+@ContextConfiguration(classes = {WebMvcJacksonConfig.class, JacksonBeanController.class, LoggingRequestBodyAdvice.class})
 @WebAppConfiguration("web")
 @ExtendWith(SpringExtension.class)
 public class JacksonBeanControllerTest {
