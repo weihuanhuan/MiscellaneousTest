@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -15,6 +16,25 @@ import javax.validation.MessageInterpolator;
 //@EnableWebMvc
 @Configuration
 public class WebMvcValidatorConfig extends DelegatingWebMvcConfiguration {
+
+    //1. 要开启对 spring 容器所管理组件的方法参数的校验需要想 spring 中注入 MethodValidationPostProcessor
+    //2. 在 MethodValidationPostProcessor 中也需要指定一个 javax.validation.Validator，
+    //3. 这里要指定我们先前创建的 org.springframework.validation.Validator 以保证生成的 javax.validation.Validator 配置是一样的。
+    //Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'methodValidationPostProcessor'
+    // defined in spring.validator.config.WebMvcValidatorConfig: Invocation of init method failed;
+    // nested exception is javax.validation.ValidationException: HV000183: Unable to initialize 'javax.el.ExpressionFactory'.
+    // Check that you have the EL dependencies on the classpath, or use ParameterMessageInterpolator instead
+    @Bean
+    public MethodValidationPostProcessor methodValidationPostProcessor() {
+        MethodValidationPostProcessor methodValidationPostProcessor = new MethodValidationPostProcessor();
+
+        //获取先前配置好的 javax.validation.Validator
+        Validator validator = getValidator();
+        javax.validation.Validator javaxValidator = ((LocalValidatorFactoryBean) validator).getValidator();
+
+        methodValidationPostProcessor.setValidator(javaxValidator);
+        return methodValidationPostProcessor;
+    }
 
     @Override
     public Validator mvcValidator() {
