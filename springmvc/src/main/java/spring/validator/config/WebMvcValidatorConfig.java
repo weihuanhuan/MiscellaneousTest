@@ -41,7 +41,7 @@ public class WebMvcValidatorConfig extends DelegatingWebMvcConfiguration {
         return super.mvcValidator();
     }
 
-    @Bean(name = "spring.json.validator.config.WebMvcValidatorConfig.parameterMessageInterpolatorValidator")
+    @Bean(name = "spring.validator.config.WebMvcValidatorConfig.parameterMessageInterpolatorValidator")
     @Override
     protected Validator getValidator() {
         LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
