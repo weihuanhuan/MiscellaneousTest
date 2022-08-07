@@ -138,4 +138,16 @@ abstract public class ScheduleTaskManager {
         return result;
     }
 
+    public Set<ScheduleTask> getWorkScheduleTasks() {
+        return workScheduleTasks;
+    }
+
+    public Set<ScheduleTask> getNewScheduleTasks() {
+        return newScheduleTasks;
+    }
+
+    public Set<ScheduleTask> getSuspendScheduleTasks() {
+        return suspendScheduleTasks;
+    }
+
 }

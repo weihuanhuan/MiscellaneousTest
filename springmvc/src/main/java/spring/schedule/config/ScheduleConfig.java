@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
-import org.springframework.scheduling.support.TaskUtils;
 import org.springframework.util.ErrorHandler;
 import spring.schedule.scheduling.ScheduleTaskAutoManager;
 
@@ -29,6 +28,8 @@ public class ScheduleConfig implements SchedulingConfigurer {
     private int maxPoolSize;
     @Value("${schedule.scheduler.thread.prefix:default-task-scheduler-}")
     private String scheduleThreadPrefix;
+    @Value("${schedule.scheduler.await.termination.seconds:10}")
+    private int awaitTerminationSeconds;
 
     @Value("${schedule.scheduler.auto.update.task}")
     private boolean autoUpdateTask;
@@ -46,10 +47,12 @@ public class ScheduleConfig implements SchedulingConfigurer {
         int poolSize = Runtime.getRuntime().availableProcessors() * 4;
         scheduler.setPoolSize(Math.min(poolSize, maxPoolSize));
         scheduler.setThreadNamePrefix(scheduleThreadPrefix);
+        scheduler.setAwaitTerminationSeconds(awaitTerminationSeconds);
         scheduler.setRemoveOnCancelPolicy(true);
+        scheduler.setDaemon(true);
 
-        ErrorHandler defaultErrorHandler = TaskUtils.getDefaultErrorHandler(true);
-        scheduler.setErrorHandler(defaultErrorHandler);
+        ErrorHandler scheduleErrorHandler = new ScheduleErrorHandler();
+        scheduler.setErrorHandler(scheduleErrorHandler);
         ThreadPoolExecutor.DiscardPolicy discardPolicy = new ThreadPoolExecutor.DiscardPolicy();
         scheduler.setRejectedExecutionHandler(discardPolicy);
         return scheduler;
@@ -73,11 +76,14 @@ public class ScheduleConfig implements SchedulingConfigurer {
 
     @Override
     public String toString() {
-        return "ScheduleConfig{"
-                + "maxPoolSize=" + maxPoolSize
-                + ", scheduleThreadPrefix='" + scheduleThreadPrefix
-                + '\'' + ", autoUpdateTask=" + autoUpdateTask
-                + ", autoScheduleTask=" + autoScheduleTask + '}';
+        return "ScheduleConfig{" +
+                "maxPoolSize=" + maxPoolSize +
+                ", scheduleThreadPrefix='" + scheduleThreadPrefix + '\'' +
+                ", awaitTerminationSeconds=" + awaitTerminationSeconds +
+                ", autoUpdateTask=" + autoUpdateTask +
+                ", autoScheduleTask=" + autoScheduleTask +
+                ", autoManagers=" + autoManagers +
+                '}';
     }
 
 }

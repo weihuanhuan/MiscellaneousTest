@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -75,6 +76,9 @@ public class BusinessService {
         String group = businessBean.getGroup();
         String name = businessBean.getName();
 
+        //模拟业务的执行时间,注意和调度周期的关系
+        TimeUnit.MILLISECONDS.sleep(800);
+
         if (i == 1) {
             String format = String.format("IOException do business for [%s]-[%s]!", group, name);
             throw new IOException(format);
@@ -84,6 +88,10 @@ public class BusinessService {
             String format = String.format("RuntimeException do business for [%s]-[%s]!", group, name);
             throw new RuntimeException(format);
         }
+    }
+
+    public Map<String, BusinessBean> getBusinessBeansMap() {
+        return businessBeans;
     }
 
 }

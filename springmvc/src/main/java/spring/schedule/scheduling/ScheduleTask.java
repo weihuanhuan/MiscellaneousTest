@@ -25,19 +25,31 @@ abstract public class ScheduleTask implements Runnable {
     public void run() {
         try {
             //support thread interrupt signal
-            if (mayInterruptIfRunning && Thread.currentThread().isInterrupted()) {
+            boolean interrupted = Thread.currentThread().isInterrupted();
+            if (mayInterruptIfRunning && interrupted) {
+                String format = String.format("variable Thread.currentThread().isInterrupted() is [%s] on named task [%s], just return to end run method!", interrupted, name);
+                logger.log(Level.WARNING, format);
                 return;
             }
 
             doTask();
             String format = String.format("finished task named [%s].", name);
-            logger.log(Level.INFO, format);
+            logger.log(Level.FINE, format);
         } catch (Throwable throwable) {
             if (suspendOnError) {
                 boolean suspend = manager.addSuspendTask(this, suspendImmediate);
-                String format = String.format("error on named task [%s] is [%s] to immediately suspend task with result [%s]!",
-                        name, suspendImmediate, suspend);
+                String format = String.format("error [%s]:[%s] occur on named task [%s], it is [%s] to immediately suspend task with result [%s]!",
+                        throwable.getClass(), throwable.getMessage(), name, suspendImmediate, suspend);
+                logger.log(Level.FINE, format);
+            }
+
+            //support thread interrupt signal, and propagate interrupt signal
+            //这里注意我们的 run 方法中没有使用 loop 执行任务的，所以这里不论是否 return， 这个任务的 thread 都是会结束的
+            if (mayInterruptIfRunning && throwable instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+                String format = String.format("catch an InterruptedException on named task [%s], just return to end run method!", name);
                 logger.log(Level.WARNING, format, throwable);
+                return;
             }
 
             //propagate to
@@ -48,8 +60,9 @@ abstract public class ScheduleTask implements Runnable {
             } else if (throwable instanceof Error) {
                 throw (Error) throwable;
             } else {
-                String format = String.format("error on named task [%s] but not RuntimeException so we just ignore it.", name);
-                logger.log(Level.WARNING, format, throwable);
+                String format = String.format("error [%s]:[%s] occur on named task [%s], but there is no need to propagate it, so we just ignore!",
+                        throwable.getClass(), throwable.getMessage(), name);
+                logger.log(Level.FINE, format);
             }
         }
     }
