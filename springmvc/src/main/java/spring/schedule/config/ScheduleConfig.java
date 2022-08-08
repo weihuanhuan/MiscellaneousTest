@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -16,6 +17,7 @@ import spring.schedule.scheduling.ScheduleTaskAutoManager;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Configuration
@@ -72,6 +74,17 @@ public class ScheduleConfig implements SchedulingConfigurer {
         });
 
         taskRegistrar.afterPropertiesSet();
+
+        //config for underlying ScheduledThreadPoolExecutor with after shutdown policy.
+        TaskScheduler scheduler = taskRegistrar.getScheduler();
+        if (scheduler instanceof ThreadPoolTaskScheduler) {
+            ScheduledThreadPoolExecutor scheduledThreadPoolExecutor = ((ThreadPoolTaskScheduler) scheduler).getScheduledThreadPoolExecutor();
+            scheduledThreadPoolExecutor.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
+            scheduledThreadPoolExecutor.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+        } else {
+            //should never happen.
+            throw new IllegalStateException("org.springframework.scheduling.config.ScheduledTaskRegistrar.getScheduler cannot be null!");
+        }
     }
 
     @Override
