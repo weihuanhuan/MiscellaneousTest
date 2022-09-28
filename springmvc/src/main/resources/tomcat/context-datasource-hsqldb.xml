@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+
+    <!-- 定义一个 default context 级别的 jndi 名为 jdbc/context-datasource-hsqldb 的 jdbc 资源  -->
+    <Resource name="jdbc/context-datasource-hsqldb"
+              auth="Container"
+              type="javax.sql.DataSource"
+              initialSize="0"
+              maxTotal="100" maxIdle="30" maxWaitMillis="10000"
+              username="admin" password="password"
+              driverClassName="org.hsqldb.jdbcDriver"
+              url="jdbc:hsqldb:file:hsqldb/db/springmvc-hsqldb;shutdown=true"
+    />
+
+</Context>

@@ -117,6 +117,8 @@
         <!-- junit -->
         <org.junit.junit-bom.version>5.7.1</org.junit.junit-bom.version>
 
+        <hsqldb.version>2.3.6</hsqldb.version>
+
     </properties>
 
     <dependencyManagement>
