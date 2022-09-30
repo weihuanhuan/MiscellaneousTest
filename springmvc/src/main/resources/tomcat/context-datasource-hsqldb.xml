@@ -2,6 +2,23 @@
 <Context>
 
     <!-- 定义一个 default context 级别的 jndi 名为 jdbc/context-datasource-hsqldb 的 jdbc 资源  -->
+    <!--
+              如果需要使用 hsqldb 的 DataSource 驱动需要增加下面的配置，并移除 driverClassName 配置。
+              1. 指定 db 提供的基于数据源的类名，这个是 hsqldb 的实现
+              2. resource factory ，定制 tomcat 用于创建底层使用 dataSourceClassName 类的 javax.sql.DataSource 类型资源的工厂
+                    tomcat 默认的工厂底层只能使用 driverClassName 来创建数据源，他是基于 driver 是实现的，不能使用基于 datasource 实现的
+                    org.apache.tomcat.dbcp.dbcp2.BasicDataSourceFactory
+              3. hikari 使用 jdbcUrl 属性，而不是 tomcat 的 url 属性
+                    com.zaxxer.hikari.AbstractHikariConfig.jdbcUrl
+              4. hsqldb 的 dataSourceClassName 实现类，也需要配置属性，在 hikari 中对于数据库实现类的属性需要增加前缀 dataSource.属性名来进行传递
+                    在创建 hsql 的 JDBCDataSource 时，其内部还需要 url 属性，所以 hikari 需使用 dataSource.url 来传递
+                    com.zaxxer.hikari.util.PropertyBeanSetter.setTargetFromProperties
+                    org.hsqldb.jdbc.JDBCCommonDataSource.url
+              dataSourceClassName="org.hsqldb.jdbc.JDBCDataSource"
+              factory="com.zaxxer.hikari.HikariJNDIFactory"
+              jdbcUrl="jdbc:hsqldb:file:hsqldb/db/springmvc-hsqldb;shutdown=true"
+              dataSource.url="jdbc:hsqldb:file:hsqldb/db/springmvc-hsqldb;shutdown=true"
+    -->
     <Resource name="jdbc/context-datasource-hsqldb"
               auth="Container"
               type="javax.sql.DataSource"
