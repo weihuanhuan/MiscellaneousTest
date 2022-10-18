@@ -208,6 +208,13 @@
             <version>${org.glassfish-javax.json.version}</version>
         </dependency>
 
+        <!-- jsonb implement from glassfish5 -->
+        <dependency>
+            <groupId>org.eclipse</groupId>
+            <artifactId>yasson</artifactId>
+            <version>${org.eclipse-yasson.version}</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.caucho/hessian -->
         <dependency>
             <groupId>com.caucho</groupId>
