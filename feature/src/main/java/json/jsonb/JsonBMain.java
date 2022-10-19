@@ -2,6 +2,7 @@ package json.jsonb;
 
 import json.jsonb.model.SimpleAnnotatedSerializedArrayContainer;
 import json.jsonb.model.SimpleContainer;
+import json.jsonb.serializer.SimpleContainerSerializerUtil;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
@@ -12,6 +13,16 @@ public class JsonBMain {
 
     public static void main(String[] args) throws Exception {
 
+        System.out.println("###################### setUsingJsonbDeserializer(false) ######################");
+        try {
+            SimpleContainerSerializerUtil.setUsingJsonbDeserializer(false);
+            testJsonbTypeDeserializer();
+        } catch (Exception exception) {
+            exception.printStackTrace(System.out);
+        }
+
+        System.out.println("###################### setUsingJsonbDeserializer(true) ######################");
+        SimpleContainerSerializerUtil.setUsingJsonbDeserializer(true);
         testJsonbTypeDeserializer();
 
     }

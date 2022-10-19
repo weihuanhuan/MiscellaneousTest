@@ -194,25 +194,39 @@
             <version>${org.mozilla-rhino.version}</version>
         </dependency>
 
-        <!-- java json-p 规范的 api 接口类，这些类在 org.glassfish-javax.json 中有一份相同的打包 -->
-        <!--<dependency>-->
-            <!--<groupId>javax.json</groupId>-->
-            <!--<artifactId>javax.json-api</artifactId>-->
-            <!--<version>${javax.json-api.version}</version>-->
-        <!--</dependency>-->
+        <!-- java json-p 规范的 glassfish 实现类 org.glassfish.json.JsonProviderImpl -->
+<!--        <dependency>-->
+<!--            <groupId>org.glassfish</groupId>-->
+<!--            <artifactId>javax.json</artifactId>-->
+<!--            <version>${org.glassfish-javax.json.version}</version>-->
+<!--        </dependency>-->
 
-        <!-- java json-p 规范的 glassfish 实现类 -->
+        <!-- yasson jsonb implement from glassfish tag 5.1.0，其不包含 json-p 的实现，需要依赖上面的 org.glassfish:javax.json -->
+<!--        <dependency>-->
+<!--            <groupId>org.eclipse</groupId>-->
+<!--            <artifactId>yasson</artifactId>-->
+<!--            <version>${org.eclipse-yasson.version}</version>-->
+<!--        </dependency>-->
+
+        <!-- java json-p 规范的 api 接口类，这些类在 org.glassfish:javax.json 中有一份相同的打包,但在 johnzon json-p 中没有，使用时需依赖 -->
         <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>${org.glassfish-javax.json.version}</version>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+            <version>${javax.json-api.version}</version>
         </dependency>
 
-        <!-- jsonb implement from glassfish5 -->
+        <!-- java json-b 规范的 api 接口类，这些类在 yasson 中有打包，而在 johnzon-jsonb 中并没有打包 -->
         <dependency>
-            <groupId>org.eclipse</groupId>
-            <artifactId>yasson</artifactId>
-            <version>${org.eclipse-yasson.version}</version>
+            <groupId>jakarta.json.bind</groupId>
+            <artifactId>jakarta.json.bind-api</artifactId>
+            <version>${jakarta.json.bind-api.version}</version>
+        </dependency>
+
+        <!-- johnzon jsonb implement from tomee tag 8.0.13, 其内部传递依赖了 johnzon 实现的 json-p -->
+        <dependency>
+            <groupId>org.apache.johnzon</groupId>
+            <artifactId>johnzon-jsonb</artifactId>
+            <version>${apache-johnzon-jsonb.version}</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/com.caucho/hessian -->

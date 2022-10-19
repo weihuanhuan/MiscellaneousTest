@@ -9,12 +9,23 @@ import java.util.List;
 
 public class SimpleContainerArraySerializer implements JsonbSerializer<List<SimpleContainer>> {
 
+    private final JsonbSerializer<SimpleContainer> simpleContainerSerializer = new SimpleContainerSerializer();
+
     @Override
     public void serialize(List<SimpleContainer> containers, JsonGenerator jsonGenerator, SerializationContext serializationContext) {
+        System.out.println("jsonGenerator.getClass():" + jsonGenerator.getClass());
+        System.out.println("serializationContext.getClass():" + serializationContext.getClass());
+
         jsonGenerator.writeStartArray();
+
         for (SimpleContainer container : containers) {
-            serializationContext.serialize(container, jsonGenerator);
+            if (!SimpleContainerSerializerUtil.isUsingJsonbDeserializer()) {
+                serializationContext.serialize(container, jsonGenerator);
+            } else {
+                simpleContainerSerializer.serialize(container, jsonGenerator, serializationContext);
+            }
         }
+
         jsonGenerator.writeEnd();
     }
 

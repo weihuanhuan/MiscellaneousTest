@@ -108,8 +108,12 @@
         <javax.json-api.version>1.1</javax.json-api.version>
         <org.glassfish-javax.json.version>1.1</org.glassfish-javax.json.version>
 
-        <!-- json-b yasson version same as glassfish5 -->
+        <!-- json-b -->
+        <jakarta.json.bind-api.version>1.0.1</jakarta.json.bind-api.version>
+        <!-- json-b yasson version same as glassfish tag 5.1.0 -->
         <org.eclipse-yasson.version>1.0.3</org.eclipse-yasson.version>
+        <!-- json-b johnzon version same as tomee tag 8.0.13 -->
+        <apache-johnzon-jsonb.version>1.2.19</apache-johnzon-jsonb.version>
 
         <!-- serialize -->
         <caucho.hessian.version>4.0.65</caucho.hessian.version>
