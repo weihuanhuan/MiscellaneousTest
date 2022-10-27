@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.FileTest.watch.FileAdapter;
+import io.FileTest.watch.FileEvent;
+import io.FileTest.watch.FileWatcher;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
