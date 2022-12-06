@@ -32,6 +32,14 @@ public class ExecuteConfig {
         }
     }
 
+    boolean isExecuteMatches(String[] commands) {
+        if (commands == null || commands.length == 0) {
+            return false;
+        }
+
+        return isExecuteMatches(commands[0]);
+    }
+
     boolean isExecuteMatches(String commandName) {
         if (pattern == null) {
             return false;
@@ -50,7 +58,7 @@ public class ExecuteConfig {
             return commandName;
         }
 
-        String[] cmdArray = stringToArray(commandName);
+        String[] cmdArray = new String[]{commandName};
         String[] extendCmdArray = extendExecuteArgs(cmdArray);
 
         String join = String.join(COMMAND_SEPARATOR, extendCmdArray);
@@ -65,8 +73,15 @@ public class ExecuteConfig {
         String[] prefixArray = stringToArray(getArgsPrefix());
         String[] suffixArray = stringToArray(getArgsSuffix());
 
-        Stream<String> concatPrefix = Stream.concat(Arrays.stream(prefixArray), Arrays.stream(commandArray));
-        Stream<String> concatSuffix = Stream.concat(concatPrefix, Arrays.stream(suffixArray));
+        //first element is original command executable file name
+        Stream<String> limit = Arrays.stream(commandArray).limit(1);
+        Stream<String> concatPrefix = Stream.concat(limit, Arrays.stream(prefixArray));
+
+        //remaining elements of this array after discarding the first element is original command args array.
+        Stream<String> skip = Arrays.stream(commandArray).skip(1);
+        Stream<String> concatCommand = Stream.concat(concatPrefix, skip);
+
+        Stream<String> concatSuffix = Stream.concat(concatCommand, Arrays.stream(suffixArray));
 
         String[] concatCommandArray = concatSuffix.toArray(String[]::new);
         return concatCommandArray;
