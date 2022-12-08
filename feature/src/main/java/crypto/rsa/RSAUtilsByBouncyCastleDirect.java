@@ -10,14 +10,18 @@ import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.params.RSAKeyGenerationParameters;
 import org.bouncycastle.crypto.params.RSAKeyParameters;
 import org.bouncycastle.crypto.params.RSAPrivateCrtKeyParameters;
+import org.bouncycastle.crypto.util.PrivateKeyFactory;
 import org.bouncycastle.crypto.util.PrivateKeyInfoFactory;
+import org.bouncycastle.crypto.util.PublicKeyFactory;
 import org.bouncycastle.crypto.util.SubjectPublicKeyInfoFactory;
 import org.bouncycastle.util.encoders.Base64;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class RSAUtilsByBouncyCastleDirect {
 
@@ -54,6 +58,35 @@ public class RSAUtilsByBouncyCastleDirect {
 
         System.out.println("############################ decryptFromJSEncrypt ###########################");
         decryptFromJSEncrypt();
+        
+        System.out.println("############################ generateKeyFromBase64String ###########################");
+        generateKeyFromBase64String(privateKeyString, publicKeyString);
+    }
+
+    public static void generateKeyFromBase64String(String originPrivateKeyString, String originPublicKeyString) throws IOException {
+        AsymmetricKeyParameter privateKeyParameter = PrivateKeyFactory.createKey(Base64.decode(originPrivateKeyString));
+        AsymmetricKeyParameter publicKeyParameter = PublicKeyFactory.createKey(Base64.decode(originPublicKeyString));
+
+        PrintStream originOut = System.out;
+        System.setOut(new PrintStream(originOut) {
+            @Override
+            public void println(String x) {
+                //bypass println for java.lang.System.out temporarily in order to reduce mass information
+                //super.println(x);
+            }
+        });
+
+        String newPrivateKeyString = generateBase64KeyString(privateKeyParameter);
+        String newPublicKeyString = generateBase64KeyString(publicKeyParameter);
+
+        //recover origin stdout in order to see the results below
+        System.setOut(originOut);
+
+        boolean privateKeyEquals = Objects.equals(originPrivateKeyString, newPrivateKeyString);
+        System.out.println("Objects.equals(originPrivateKeyString, newPrivateKeyString)=" + privateKeyEquals);
+
+        boolean publicKeyEquals = Objects.equals(originPublicKeyString, newPublicKeyString);
+        System.out.println("Objects.equals(originPublicKeyString, newPublicKeyString)=" + publicKeyEquals);
     }
 
     public static void selfEncryptAndDecrypt() throws InvalidCipherTextException {
