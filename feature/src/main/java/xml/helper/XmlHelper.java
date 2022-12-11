@@ -54,50 +54,50 @@ public class XmlHelper {
         return documentElement;
     }
 
-    public static boolean compareNodesDirect(Node evaluateToNode, Node expectNode) {
+    public static boolean compareNodesDirect(Node firstNode, Node secondNode) {
         // null reference compare
-        if (evaluateToNode == null) {
-            return expectNode == null;
+        if (firstNode == null) {
+            return secondNode == null;
         }
-        if (expectNode == null) {
+        if (secondNode == null) {
             return false;
         }
 
         // direct node compare
         // compare with jdk java.lang.Object.equals
-        boolean equals = evaluateToNode.equals(expectNode);
+        boolean equals = firstNode.equals(secondNode);
         // compare with xml node object impl
-        boolean sameNode = evaluateToNode.isSameNode(expectNode);
+        boolean sameNode = firstNode.isSameNode(secondNode);
         // compare with xml node object attribute and element value
-        boolean equalNode = evaluateToNode.isEqualNode(expectNode);
+        boolean equalNode = firstNode.isEqualNode(secondNode);
         return equalNode;
     }
 
-    public static boolean compareNodesNormalized(Node evaluateToNode, Node expectNode) {
+    public static boolean compareNodesNormalized(Node firstNode, Node secondNode) {
         // null reference compare
-        if (evaluateToNode == null) {
-            return expectNode == null;
+        if (firstNode == null) {
+            return secondNode == null;
         }
-        if (expectNode == null) {
+        if (secondNode == null) {
             return false;
         }
 
         // The documents need to be cloned as normalization has side-effects
-        evaluateToNode = evaluateToNode.cloneNode(true);
-        expectNode = expectNode.cloneNode(true);
+        firstNode = firstNode.cloneNode(true);
+        secondNode = secondNode.cloneNode(true);
 
         // The documents need to be normalized before comparison takes place to remove any formatting that interfere with comparison
-        if (evaluateToNode instanceof Document && expectNode instanceof Document) {
-            ((Document) evaluateToNode).normalizeDocument();
-            ((Document) expectNode).normalizeDocument();
+        if (firstNode instanceof Document && secondNode instanceof Document) {
+            ((Document) firstNode).normalizeDocument();
+            ((Document) secondNode).normalizeDocument();
         } else {
-            evaluateToNode.normalize();
-            expectNode.normalize();
+            firstNode.normalize();
+            secondNode.normalize();
         }
 
-        String evaluateToNodeString = XmlDocumentParser.transformerToXmlString(evaluateToNode);
-        String expectNodeString = XmlDocumentParser.transformerToXmlString(expectNode);
-        boolean equals = Objects.equals(evaluateToNodeString, expectNodeString);
+        String firstNodeXmlString = XmlDocumentParser.transformerToXmlString(firstNode);
+        String secondNodeXmlString = XmlDocumentParser.transformerToXmlString(secondNode);
+        boolean equals = Objects.equals(firstNodeXmlString, secondNodeXmlString);
         return equals;
     }
 

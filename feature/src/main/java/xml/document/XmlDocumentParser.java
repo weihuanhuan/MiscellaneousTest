@@ -60,7 +60,8 @@ public class XmlDocumentParser {
 
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
             transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-            transformer.setOutputProperty(OutputKeys.INDENT, "no");
+            //保持 org.w3c.dom.NodeList 转换为 xml string 时有正确的缩进关系
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 
             StringWriter stringWriter = new StringWriter();
 
@@ -82,7 +83,6 @@ public class XmlDocumentParser {
             Node item = nodeList.item(i);
             String xmlString = XmlDocumentParser.transformerToXmlString(item);
             stringBuilder.append(xmlString);
-            stringBuilder.append(System.lineSeparator());
         }
 
         String toString = stringBuilder.toString();

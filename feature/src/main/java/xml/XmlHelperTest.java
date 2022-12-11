@@ -55,6 +55,11 @@ public class XmlHelperTest {
         System.out.println("-------" + directExpression4);
         String nodeValueString4 = XmlHelper.getTextString(file, directExpression4);
         System.out.println(nodeValueString4);
+
+        String directExpression5 = "/Tutorials/Tutorial[@tutId='01']/@type";
+        System.out.println("-------" + directExpression5);
+        String nodeValueString5 = XmlHelper.getTextString(file, directExpression5);
+        System.out.println(nodeValueString5);
     }
 
 }

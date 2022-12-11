@@ -29,10 +29,13 @@ public class XmlValidator {
         Node expectNode = XmlHelper.getXmlStringRootNode(expectNodeXmlString);
 
         // simple node compare
-        boolean compareNodesDirect = XmlHelper.compareNodesDirect(evaluateToNode, evaluateToNode);
+        boolean compareNodesDirect = XmlHelper.compareNodesDirect(evaluateToNode, expectNode);
 
-        // complete node compare
+        // complex node compare
         boolean compareNodesNormalized = XmlHelper.compareNodesNormalized(evaluateToNode, expectNode);
+
+        boolean equals = Objects.equals(compareNodesDirect, compareNodesNormalized);
+        System.out.println("Objects.equals(compareNodesDirect, compareNodesNormalized)=" + equals);
         return compareNodesNormalized;
     }
 
