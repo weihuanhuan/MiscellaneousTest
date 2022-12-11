@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<Tutorials>
+    <Tutorial tutId="01" type="java">
+        <title>Guava</title>
+        <description>Introduction to Guava</description>
+        <date>04/04/2016</date>
+        <author>GuavaAuthor</author>
+        <price>3.50</price>
+    </Tutorial>
+    <Tutorial tutId="02" type="java">
+        <title>XML</title>
+        <description>Introduction to XPath</description>
+        <date>04/05/2016</date>
+        <author>XMLAuthor</author>
+        <price>15.95</price>
+    </Tutorial>
+    <Tutorial tutId="03" type="c">
+        <title>C</title>
+        <description>Introduction to C language</description>
+        <date>04/05/2019</date>
+        <author>CAuthor</author>
+        <price>7.95</price>
+    </Tutorial>
+    <Tutorial tutId="04" type="x">
+        <title>
+            <nested nested-attribute="nested-value">nested-text</nested>
+        </title>
+        <description>Introduction to C language</description>
+        <date>04/05/2019</date>
+        <author>CAuthor</author>
+        <price>7.95</price>
+    </Tutorial>
+</Tutorials>
