@@ -39,9 +39,14 @@ public class XmlHelper {
         return XPathExpressionEvaluator.evaluateToNodeSet(xmlDocument, expression);
     }
 
-    public static String getXmlString(File file, String expression) {
+    public static String getNodeXmlString(File file, String expression) {
         Document xmlDocument = getXmlDocument(file);
         return XPathExpressionConvertor.convertNodeToXmlString(xmlDocument, expression);
+    }
+
+    public static String getNodeSetXmlString(File file, String expression) {
+        Document xmlDocument = getXmlDocument(file);
+        return XPathExpressionConvertor.convertNodeSetToXmlString(xmlDocument, expression);
     }
 
     public static Node getXmlStringRootNode(String xmlString) {

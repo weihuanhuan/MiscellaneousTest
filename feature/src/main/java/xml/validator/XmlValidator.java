@@ -19,7 +19,7 @@ public class XmlValidator {
     }
 
     public static boolean equalXmlStringByString(File file, String expression, String expectXmlString) {
-        String xmlString = XmlHelper.getXmlString(file, expression);
+        String xmlString = XmlHelper.getNodeXmlString(file, expression);
         return Objects.equals(xmlString, expectXmlString);
     }
 
