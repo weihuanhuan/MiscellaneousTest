@@ -8,7 +8,7 @@ import java.util.concurrent.TimeoutException;
 
 public class ReadWriteLockResult extends FutureTask<Boolean> {
 
-    private final int waitTimeout = 1500;
+    public final int waitTimeout = ReadWriteLockTest.WAIT_TIMEOUT;
 
     private volatile Boolean result;
 
@@ -38,6 +38,7 @@ public class ReadWriteLockResult extends FutureTask<Boolean> {
         if (result != null) {
             return result;
         }
+        //当在 waitResult 中发生了超时和执行异常的情况，由于没有设置 result 对象，所以我们均默认返回 false
         return false;
     }
 

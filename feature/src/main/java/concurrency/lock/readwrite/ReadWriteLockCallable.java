@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ReadWriteLockCallable implements Callable<Boolean> {
 
-    private final int callTime = 5000;
+    private final int callTime = ReadWriteLockTest.CALL_TIME;
 
     private final long counter;
 
@@ -26,7 +26,7 @@ public class ReadWriteLockCallable implements Callable<Boolean> {
 
         String name = Thread.currentThread().getName();
         long mod = counter % 4;
-        String format = String.format("name=[%s], call, counter=[%s], mod=[%s], duration=[%s]", name, counter, mod, end - start);
+        String format = String.format("name=[%s], call, counter=[%s], mod=[%s], start=[%s], duration=[%s]", name, counter, mod, start, end - start);
         System.out.println(format);
 
         switch ((int) mod) {

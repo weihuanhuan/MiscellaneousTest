@@ -4,15 +4,16 @@ import java.sql.SQLException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class ReadWriteLockChecker {
 
     private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-
     private final Lock readLock = readWriteLock.readLock();
-
     private final Lock writeLock = readWriteLock.writeLock();
+
+    private final Lock lock = new ReentrantLock();
 
     private final AtomicLong counter = new AtomicLong(0L);
 
@@ -35,7 +36,7 @@ public class ReadWriteLockChecker {
     }
 
     private ReadWriteLockResult start() {
-        writeLock.lock();
+        lock.lock();
         try {
             //由于没有 synchronized result ，所以需要在 writeLock 内部在再次确认他是否为 null
             if (result != null) {
@@ -65,12 +66,15 @@ public class ReadWriteLockChecker {
             result = localTask;
             return result;
         } finally {
-            writeLock.unlock();
+            lock.unlock();
         }
     }
 
     private boolean result(ReadWriteLockResult localResult) {
-        readLock.lock();
+        //无需 readLock , 因为我们仅仅在 start 和 reset 中操作 result 对象，而他又仅仅被 writeLock 所控制，
+        // 而在读取 localResult 时，我们也是直接使用的 start 中传递过来的 local copy 实例，所以这里其实可以安全的访问，无需加锁控制。
+        // 这里我们可以替换为更简单的普通 java.util.concurrent.locks.ReentrantLock 就可以了。
+//        readLock.lock();
         try {
             //本地副本，避免在调用该对象的多个方法时，该引用所指的对象实例发生变化，比如其变为了 null
             //但是这个方法依旧会获取到 result 为 null 的情况，这是由于本线程可能恰巧会在其他线程 reset 后，来调用这个方法
@@ -89,12 +93,12 @@ public class ReadWriteLockChecker {
             localResult.waitResult();
             return localResult.queryResult();
         } finally {
-            readLock.unlock();
+//            readLock.unlock();
         }
     }
 
     private void reset() {
-        if (writeLock.tryLock()) {
+        if (lock.tryLock()) {
             try {
                 if (result == null) {
                     return;
@@ -113,7 +117,7 @@ public class ReadWriteLockChecker {
                 }
                 result = null;
             } finally {
-                writeLock.unlock();
+                lock.unlock();
             }
         }
     }
