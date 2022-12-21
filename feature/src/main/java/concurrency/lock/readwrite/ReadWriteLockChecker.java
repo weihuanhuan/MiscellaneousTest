@@ -27,12 +27,25 @@ public class ReadWriteLockChecker {
             localResult = start();
         }
 
-        boolean result = result(localResult);
+        //由于没有使用 readLock 来控制查询状态，所以即使有其他线程在执行 result 时，checker 的 result 也可能被 reset 调。
+        // 因此这里就只能让同时拿到了 local copy result 实例对象的线程共享相同的结果。
+        //     而任何一个线程一旦 reset 了 result ，那么此后的线程就只能看见新的 result 的状态了，
+        //     也就是此时 result 的有效状态时间为任何第一个看见 result 的结果的时候
+        // 这里虽然我们可使用 readLock 做到完美控制只要存在任何线程查询 result 时，都不能让执行 reset 成功。
+        //     但是这会导致在前一个线程执行查询而占用了 readLock 时，而正好本次线程触发了新的 result 对象构建，需要 writeLock
+        //     那么本线程就要等到前一个线程的 readLock 结束才能获取到新的 writeLock， 这使得本线程的等到时间会突破预定的 waitTimeout，比如下面的场景
+        //         thread-1，处于执行 reset 前，他准备清理旧的 result
+        //         thread-2，处于执行 result 前，他持有旧的 local copy result ，然后使用 readLock 并等到 waitTimeout
+        //         thread-3，处于进入 check 后，他需要创建新的 result，此时他需要 writeLock ，故只能等到 thread-2 释放 readLock，
+        //                  并在创建之后再次使用 readLock 并等到 waitTimeout，所以他就变成了等待两次 readLock 的时间。
+        //     为了更加精准的保证 waitTimeout ，所以我们舍弃了使用 readLock 对查询 result 结果的控制，这种处理会导致并发能力将低了不少
+        //     毕竟如果借助 readLock ，我们可以将 result 的有效状态时间延长到在没有任何线程查看 result 结果的时候，那么就有更多的线程可以共享结果了。
+        boolean ok = result(localResult);
 
         if (this.result != null) {
             reset();
         }
-        return result;
+        return ok;
     }
 
     private ReadWriteLockResult start() {
@@ -44,11 +57,11 @@ public class ReadWriteLockChecker {
             }
 
             //本地副本，避免在该实例对象还未完成初始化时，将其提前发布到方法作用域外面，以外放使用错误的对象
-            ReadWriteLockResult localTask;
-            localTask = new ReadWriteLockResult(() -> check((counter)));
+            ReadWriteLockResult localResult;
+            localResult = new ReadWriteLockResult(() -> check((counter)));
 
-            Thread thread = new Thread(localTask);
-            String threadName = String.format("thread-[%s]-[%s]", localTask.getClass()
+            Thread thread = new Thread(localResult);
+            String threadName = String.format("thread-[%s]-[%s]", localResult.getClass()
                     .getSimpleName(), counter.incrementAndGet());
             thread.setName(threadName);
             thread.setDaemon(true);
@@ -63,7 +76,7 @@ public class ReadWriteLockChecker {
             System.out.println(format);
 
             //本地副本，我们在该实例对象完全构造好之后，再将其引用发布到方法作用域外面
-            result = localTask;
+            result = localResult;
             return result;
         } finally {
             lock.unlock();
