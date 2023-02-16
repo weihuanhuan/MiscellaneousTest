@@ -126,6 +126,8 @@
 
         <hsqldb.version>2.3.6</hsqldb.version>
 
+        <mpxj.version>10.11.0</mpxj.version>
+
     </properties>
 
     <dependencyManagement>

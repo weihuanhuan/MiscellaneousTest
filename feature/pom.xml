@@ -274,6 +274,12 @@
             <version>${hsqldb.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>net.sf.mpxj</groupId>
+            <artifactId>mpxj</artifactId>
+            <version>${mpxj.version}</version>
+        </dependency>
+
     </dependencies>
 
     <!--  spigotmc 的仓库      -->
