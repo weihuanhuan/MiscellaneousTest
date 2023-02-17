@@ -62,11 +62,15 @@ public class MpxjConvertTest {
             Integer id = task.getID();
             String name = task.getName();
 
+            // on ms project, it may be null
+            // on projectlibre, it is default to 1970.
             Date constraintDate = task.getConstraintDate();
-            String constraintDateString = constraintDate.toString();
+            String constraintDateString = "<empty-constraint-date>";
+            if (constraintDate != null) {
+                constraintDateString = constraintDate.toString();
+            }
 
-
-            String resourceNames = "<empty>";
+            String resourceNames = "<empty-resource-names>";
             List<ResourceAssignment> resourceAssignments = task.getResourceAssignments();
             if (resourceAssignments != null) {
                 resourceNames = resourceAssignments.stream()

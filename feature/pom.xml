@@ -106,6 +106,13 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
+            <!-- conflict with log4j-api:2.17.2 from mpxj, it is use api interface org.apache.logging.log4j.Logger.atWarn since 2.13.0 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
