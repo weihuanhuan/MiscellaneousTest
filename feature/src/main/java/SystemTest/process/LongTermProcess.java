@@ -20,12 +20,15 @@ public class LongTermProcess {
         //range= 26(A-Z) ,offset = 65(A)
         char[] alphaChars = generateContent(block, 26, 65);
 
-        PrintTask StdoutPrintTask = new PrintTask(block, count, System.out, numChars);
-        Thread stdoutThread = new Thread(StdoutPrintTask, "PrintTask-System.out");
+        PrintTask stdoutPrintTask = new PrintTask(block, count, System.out, numChars);
+        Thread stdoutThread = new Thread(stdoutPrintTask, "PrintTask-System.out");
+        //保证主进程退出后， stdout/stderr 不会继续在运行防止 main 退出，进而导致 process 退出。
+//        stdoutThread.setDaemon(true);
         stdoutThread.start();
 
-        PrintTask StderrPrintTask = new PrintTask(block, count, System.err, alphaChars);
-        Thread stderrThread = new Thread(StderrPrintTask, "PrintTask-System.err");
+        PrintTask stderrPrintTask = new PrintTask(block, count, System.err, alphaChars);
+        Thread stderrThread = new Thread(stderrPrintTask, "PrintTask-System.err");
+//        stderrThread.setDaemon(true);
         stderrThread.start();
 
         try {
