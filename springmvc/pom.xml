@@ -92,6 +92,19 @@
             <artifactId>memcached-session-manager</artifactId>
             <version>${msm.version}</version>
             <scope>provided</scope>
+            <!-- Use the version we specify to avoid dependency conflicts -->
+            <exclusions>
+                <exclusion>
+                    <groupId>redis.clients</groupId>
+                    <artifactId>jedis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>${jedis.version}</version>
         </dependency>
 
         <!-- msm tomcat8支持  -->
@@ -187,6 +200,13 @@
             <groupId>org.quartz-scheduler</groupId>
             <artifactId>quartz</artifactId>
             <version>${quartz.version}</version>
+            <!-- Use a consistent version with jedis specify to avoid dependency conflicts -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- spring integration quartz with org.springframework.scheduling.quartz.SchedulerFactoryBean -->
