@@ -1,6 +1,6 @@
 package spring.jdbc;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlDataSource;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import oracle.jdbc.pool.OracleDataSource;
 
 import java.sql.SQLException;
