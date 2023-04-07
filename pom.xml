@@ -64,6 +64,10 @@
         <beanutils.version>1.9.3</beanutils.version>
         <dbcp2.version>2.9.0</dbcp2.version>
         <hikaricp.version>4.0.3</hikaricp.version>
+        <oceanbase-client.version>1.1.10</oceanbase-client.version>
+        <hsqldb.version>2.3.6</hsqldb.version>
+            <!-- unsupported login timeout -->
+<!--        <hsqldb.version>1.8.0.10</hsqldb.version>-->
         <mysql.jdbc.version>8.0.32</mysql.jdbc.version>
         <derby.version>10.12.1.1</derby.version>
         <jsch.version>0.1.50</jsch.version>
@@ -119,13 +123,8 @@
         <!-- serialize -->
         <caucho.hessian.version>4.0.65</caucho.hessian.version>
 
-        <!-- oceanbase-client -->
-        <oceanbase-client.version>1.1.10</oceanbase-client.version>
-
         <!-- junit -->
         <org.junit.junit-bom.version>5.7.1</org.junit.junit-bom.version>
-
-        <hsqldb.version>2.3.6</hsqldb.version>
 
         <mpxj.version>10.11.0</mpxj.version>
 
