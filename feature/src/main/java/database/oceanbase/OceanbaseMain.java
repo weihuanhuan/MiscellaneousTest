@@ -1,4 +1,4 @@
-package database.datasource.oceanbase;
+package database.oceanbase;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

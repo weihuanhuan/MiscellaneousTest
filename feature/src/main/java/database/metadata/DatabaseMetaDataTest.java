@@ -1,4 +1,4 @@
-package database.datasource;
+package database.metadata;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
