@@ -63,6 +63,7 @@
         <xbean-reflect.version>3.18</xbean-reflect.version>
         <beanutils.version>1.9.3</beanutils.version>
         <dbcp2.version>2.9.0</dbcp2.version>
+        <hikaricp.version>4.0.3</hikaricp.version>
         <mysql.jdbc.version>8.0.32</mysql.jdbc.version>
         <derby.version>10.12.1.1</derby.version>
         <jsch.version>0.1.50</jsch.version>
