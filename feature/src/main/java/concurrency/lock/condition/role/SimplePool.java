@@ -1,6 +1,7 @@
 package concurrency.lock.condition.role;
 
 import concurrency.lock.condition.entity.Entity;
+import concurrency.lock.condition.queue.NoticableLinkedBlockingDeque;
 import concurrency.lock.condition.task.Creator;
 import concurrency.lock.condition.util.ThreadPoolUtility;
 
@@ -43,12 +44,6 @@ public class SimplePool {
     private final Lock createLock = new ReentrantLock();
     private final Condition needCreate = createLock.newCondition();
 
-    // queue condition
-    private Lock queueLock;
-    private Condition notEmpty;
-    private Condition notFull;
-    private Condition notCreate;
-
     public SimplePool(boolean useFairnessLock, boolean useTransferQueue, int creatorThread) {
         this.useFairnessLock = useFairnessLock;
         this.useTransferQueue = useTransferQueue;
@@ -58,11 +53,7 @@ public class SimplePool {
     }
 
     private void initPool() {
-        createdQueue = new LinkedBlockingDeque<>(useFairnessLock);
-        queueLock = createdQueue.getLock();
-        notEmpty = createdQueue.getNotEmpty();
-        notFull = createdQueue.getNotFull();
-        notCreate = createdQueue.getNotCreate();
+        createdQueue = new NoticableLinkedBlockingDeque<>(useFairnessLock);
 
         transferQueue = new LinkedTransferQueue<>();
 
@@ -101,23 +92,17 @@ public class SimplePool {
     }
 
     public void awaitNotCreate() throws InterruptedException {
-        queueLock.lock();
-        try {
-            notCreate.await();
-        } finally {
-            queueLock.unlock();
+        if (createdQueue instanceof NoticableLinkedBlockingDeque) {
+            NoticableLinkedBlockingDeque.class.cast(createdQueue).awaitNotCreate();
         }
     }
 
     public void signalNotCreate() {
-        queueLock.lock();
-        try {
+        if (createdQueue instanceof NoticableLinkedBlockingDeque) {
             //注意 concurrency.lock.condition.queue.LinkedBlockingDeque 类的 poll 方法在 await not empty 前都需要 signal not create
             // 为了方便，我们直接写到对应的方法里面了，不过由于在 poll 这些方法中一般一个调用只是 poll 一个原始，所以里面都写的是 signal ，
             // 而这里由于是为了加快 creator 线程的运行，所以其直接使用了 signal all 来通知所有潜在 await 的线程。
-            notCreate.signalAll();
-        } finally {
-            queueLock.unlock();
+            NoticableLinkedBlockingDeque.class.cast(createdQueue).signalAllNotCreate();
         }
     }
 

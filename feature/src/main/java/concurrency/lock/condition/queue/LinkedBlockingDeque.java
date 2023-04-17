@@ -316,35 +316,17 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
     /**
      * Main lock guarding all access
      */
-    private final InterruptibleReentrantLock lock;
+    protected final InterruptibleReentrantLock lock;
 
     /**
      * Condition for waiting takes
      */
-    private final Condition notEmpty;
+    protected final Condition notEmpty;
 
     /**
      * Condition for waiting puts
      */
-    private final Condition notFull;
-
-    private final Condition notCreate;
-
-    public InterruptibleReentrantLock getLock() {
-        return lock;
-    }
-
-    public Condition getNotEmpty() {
-        return notEmpty;
-    }
-
-    public Condition getNotFull() {
-        return notFull;
-    }
-
-    public Condition getNotCreate() {
-        return notCreate;
-    }
+    protected final Condition notFull;
 
     /**
      * Creates a {@code LinkedBlockingDeque} with a capacity of
@@ -420,7 +402,6 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
         lock = new InterruptibleReentrantLock(fairness);
         notEmpty = lock.newCondition();
         notFull = lock.newCondition();
-        notCreate = lock.newCondition();
     }
 
     /**
@@ -946,7 +927,7 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
      * @return the unlinked element
      * @throws InterruptedException if the current thread is interrupted
      */
-    E pollFirst(final Duration timeout) throws InterruptedException {
+    public E pollFirst(final Duration timeout) throws InterruptedException {
         long nanos = timeout.toNanos();
         lock.lockInterruptibly();
         try {
@@ -955,7 +936,6 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
                 if (nanos <= 0) {
                     return null;
                 }
-                notCreate.signal();
                 nanos = notEmpty.awaitNanos(nanos);
             }
             return x;
@@ -1004,7 +984,6 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
                 if (nanos <= 0) {
                     return null;
                 }
-                notCreate.signal();
                 nanos = notEmpty.awaitNanos(nanos);
             }
             return x;
@@ -1333,7 +1312,6 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
         try {
             E x;
             while ((x = unlinkFirst()) == null) {
-                notCreate.signal();
                 notEmpty.await();
             }
             return x;
@@ -1354,7 +1332,6 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
         try {
             E x;
             while ((x = unlinkLast()) == null) {
-                notCreate.signal();
                 notEmpty.await();
             }
             return x;
@@ -1459,7 +1436,7 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
      *
      * @return The first element or {@code null} if empty
      */
-    private E unlinkFirst() {
+    protected E unlinkFirst() {
         // assert lock.isHeldByCurrentThread();
         final Node<E> f = first;
         if (f == null) {
@@ -1485,7 +1462,7 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
      *
      * @return The first element or {@code null} if empty
      */
-    private E unlinkLast() {
+    protected E unlinkLast() {
         // assert lock.isHeldByCurrentThread();
         final Node<E> l = last;
         if (l == null) {
