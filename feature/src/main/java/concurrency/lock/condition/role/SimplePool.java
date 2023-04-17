@@ -1,10 +1,5 @@
 package concurrency.lock.condition.role;
 
-import concurrency.lock.condition.entity.Entity;
-import concurrency.lock.condition.queue.NoticableLinkedBlockingDeque;
-import concurrency.lock.condition.task.Creator;
-import concurrency.lock.condition.util.ThreadPoolUtility;
-
 import java.util.concurrent.LinkedTransferQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
@@ -15,12 +10,19 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import concurrency.lock.condition.entity.Entity;
+import concurrency.lock.condition.handler.CreatorSignalExecutionHandler;
+import concurrency.lock.condition.handler.CreatorThreadFactory;
+import concurrency.lock.condition.handler.LoggingExecutionHandler;
+import concurrency.lock.condition.util.ThreadPoolUtility;
+
 // jdk 的 LinkedBlockingDeque 不支持配置锁是否公平，无法获取到是否有线程在该队列上等待
 //import java.util.concurrent.LinkedBlockingDeque;
 // dbcp2 的 LinkedBlockingDeque is not public in org.apache.commons.pool2.impl; cannot be accessed from outside package
 //import org.apache.commons.pool2.impl.LinkedBlockingDeque;
 // 所以我们从 dbcp2 的源码直接 copy 了一份，并修改其包可见性为 public
 import concurrency.lock.condition.queue.LinkedBlockingDeque;
+import concurrency.lock.condition.queue.NoticableLinkedBlockingDeque;
 
 public class SimplePool {
 
@@ -55,10 +57,13 @@ public class SimplePool {
     private void initPool() {
         createdQueue = new NoticableLinkedBlockingDeque<>(useFairnessLock);
 
-        transferQueue = new LinkedTransferQueue<>();
+        if (useTransferQueue) {
+            transferQueue = new LinkedTransferQueue<>();
+        }
 
         ThreadFactory threadFactory = new CreatorThreadFactory("creator", true, this);
-        RejectedExecutionHandler handler = new SignalCreateExecutionHandler(this);
+        RejectedExecutionHandler handler = new CreatorSignalExecutionHandler(this);
+        handler = new LoggingExecutionHandler(this);
 
         creatorThreadPoolExecutor = ThreadPoolUtility.createThreadPoolExecutor(1, creatorThread, creatorThread, null, threadFactory, handler);
         creatorThreadPoolExecutor.prestartAllCoreThreads();
@@ -91,21 +96,6 @@ public class SimplePool {
         return entity;
     }
 
-    public void awaitNotCreate() throws InterruptedException {
-        if (createdQueue instanceof NoticableLinkedBlockingDeque) {
-            NoticableLinkedBlockingDeque.class.cast(createdQueue).awaitNotCreate();
-        }
-    }
-
-    public void signalNotCreate() {
-        if (createdQueue instanceof NoticableLinkedBlockingDeque) {
-            //注意 concurrency.lock.condition.queue.LinkedBlockingDeque 类的 poll 方法在 await not empty 前都需要 signal not create
-            // 为了方便，我们直接写到对应的方法里面了，不过由于在 poll 这些方法中一般一个调用只是 poll 一个原始，所以里面都写的是 signal ，
-            // 而这里由于是为了加快 creator 线程的运行，所以其直接使用了 signal all 来通知所有潜在 await 的线程。
-            NoticableLinkedBlockingDeque.class.cast(createdQueue).signalAllNotCreate();
-        }
-    }
-
     private void wakeupCreator() {
         // 这里一定要通知到，
         // 比如只有一个线程创建时，如果他 lock 了锁，并准备调用 await ，
@@ -114,21 +104,15 @@ public class SimplePool {
         signalCreate();
     }
 
-    private boolean trySignalCreate() {
-        if (createLock.tryLock()) {
-            try {
-                needCreate.signalAll();
-            } finally {
-                createLock.unlock();
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     private void signalCreate() {
         //由于 signal 不会阻塞，所以不存在 await 时的【在 needCreate 还是 notCreate 上，哪个比较好，能不能同时考虑这两个情况】 的问题
+        transferSignalNeedCreate();
+
+        //一般 queue 的 poll 方法就会触发该信号了，我们这里可以在 poll 之前额外的发送该信号，加快处理
+        queueSignalNotCreate();
+    }
+
+    private void transferSignalNeedCreate() {
         if (useTransferQueue) {
             createLock.lock();
             try {
@@ -137,9 +121,38 @@ public class SimplePool {
                 createLock.unlock();
             }
         }
+    }
 
-        //一般 queue 的 poll 方法就会触发该信号了，我们这里可以在 poll 之前额外的发送该信号，加快处理
-        signalNotCreate();
+    private void queueSignalNotCreate() {
+        if (createdQueue instanceof NoticableLinkedBlockingDeque) {
+            NoticableLinkedBlockingDeque.class.cast(createdQueue).signalAllNotCreate();
+        }
+    }
+
+    public boolean trySignalCreate() {
+        boolean signaledTransfer = tryTransferSignalCreate();
+        boolean signaledQueue = tryQueueSignalNotCreate();
+        return signaledTransfer || signaledQueue;
+    }
+
+    private boolean tryTransferSignalCreate() {
+        if (createLock.tryLock()) {
+            try {
+                needCreate.signalAll();
+                return true;
+            } finally {
+                createLock.unlock();
+            }
+        } else {
+            return false;
+        }
+    }
+
+    private boolean tryQueueSignalNotCreate() {
+        if (createdQueue instanceof NoticableLinkedBlockingDeque) {
+            return NoticableLinkedBlockingDeque.class.cast(createdQueue).trySignalAllNotCreate();
+        }
+        return false;
     }
 
     // **************** call by creator ****************
@@ -167,21 +180,37 @@ public class SimplePool {
     }
 
     public boolean hasTakeWaiters() {
-        boolean has = false;
-        if (useTransferQueue) {
-            has = transferQueue.hasWaitingConsumer();
-        }
+        // 检测是否有等待的线程时只有 transfer 或 queue 任意一个满足就行了
+        // 由于 creator 也需要依据 transfer 的等候数量来创建 ，所以这里的必要检测 transfer
+        boolean has = transferHasTakeWaiters();
 
         if (!has) {
-            has = createdQueue.hasTakeWaiters();
+            has = queueHasTakeWaiters();
         }
         return has;
     }
 
+    private boolean transferHasTakeWaiters() {
+        if (useTransferQueue) {
+            return transferQueue.hasWaitingConsumer();
+        }
+        return false;
+    }
+
+    private boolean queueHasTakeWaiters() {
+        return createdQueue.hasTakeWaiters();
+    }
+
     public void awaitCreate() throws InterruptedException {
-        //使用 isUseTransferQueue 时才需要 await create
         //JF TODO 这里有个问题，当开启 useTransferQueue 后，由于 await 操作会阻塞，
         //JF TODO 所以到底是 await 在 needCreate 还是 notCreate 上，哪个比较好，能不能同时考虑这两个情况
+        transferAwaitNeedCreate();
+
+        queueAwaitNotCreate();
+    }
+
+    private void transferAwaitNeedCreate() throws InterruptedException {
+        //使用 isUseTransferQueue 时才需要 await create
         if (useTransferQueue) {
             createLock.lock();
             try {
@@ -190,51 +219,18 @@ public class SimplePool {
                 createLock.unlock();
             }
         }
+    }
 
-        // 我们这里期望有 poll 时能够唤醒 creator ，但是
-        // poll 内部仅仅在没有数据时会 await not empty,并没有其他信号了，此时除非其他人 add 时触发 signal not empty 才能唤醒他们
-        // 这里不太适合直接使用队列自身的的 not empty 和 not full 因为他们都有自己的用处。
-        // 所以我们应该给 poll 独立的增加一个 signal not create 来触发对于 creator 线程的调度，然后没有要创建的东西时，他们 await not create 就行了。
-        awaitNotCreate();
+    private void queueAwaitNotCreate() throws InterruptedException {
+        if (createdQueue instanceof NoticableLinkedBlockingDeque) {
+            NoticableLinkedBlockingDeque.class.cast(createdQueue).awaitNotCreate();
+        }
     }
 
     // **************** call by pool ****************
     public void shutdown(long timeout, TimeUnit timeUnit) throws InterruptedException {
         creatorThreadPoolExecutor.shutdown();
         creatorThreadPoolExecutor.awaitTermination(timeout, timeUnit);
-    }
-
-    // **************** inner class for pool ****************
-
-    private static class CreatorThreadFactory extends ThreadPoolUtility.DefaultThreadFactory {
-
-        private final SimplePool simplePool;
-
-        public CreatorThreadFactory(String threadName, boolean daemon, SimplePool simplePool) {
-            super(threadName, daemon);
-            this.simplePool = simplePool;
-        }
-
-        @Override
-        public Thread newThread(Runnable ignored) {
-            Creator creator = new Creator(simplePool);
-            return super.newThread(creator);
-        }
-    }
-
-    private static class SignalCreateExecutionHandler implements RejectedExecutionHandler {
-
-        private final SimplePool simplePool;
-
-        public SignalCreateExecutionHandler(SimplePool simplePool) {
-            this.simplePool = simplePool;
-        }
-
-        @Override
-        public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            simplePool.trySignalCreate();
-        }
-
     }
 
 }

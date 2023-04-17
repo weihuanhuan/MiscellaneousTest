@@ -1,6 +1,7 @@
 package concurrency.lock.condition.role;
 
 import concurrency.lock.condition.task.Invoker;
+import concurrency.lock.condition.handler.LoggingExecutionHandler;
 import concurrency.lock.condition.util.ThreadPoolUtility;
 
 import java.util.concurrent.RejectedExecutionHandler;
@@ -29,7 +30,7 @@ public class SimpleInvoker {
     }
 
     private void initInvoker() {
-        RejectedExecutionHandler handler = new ThreadPoolUtility.Ignore();
+        RejectedExecutionHandler handler = new LoggingExecutionHandler(simplePool);
         invokerThreadPoolExecutor = ThreadPoolUtility.createThreadPoolExecutor(queueLength, 1, maxInvokerThread, "invoker", null, handler);
     }
 
