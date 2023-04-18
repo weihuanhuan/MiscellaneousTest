@@ -10,8 +10,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
-
 public class ThreadPoolUtility {
 
     public static void sleep(long timeout, TimeUnit timeUnit) {
@@ -29,7 +27,7 @@ public class ThreadPoolUtility {
     public static ThreadPoolExecutor createEndlessThreadPoolExecutor(int poolSize, Runnable runnable, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
         EndlessBlockQueue queue = new EndlessBlockQueue(runnable);
 
-        ThreadPoolExecutor threadPoolExecutor = createThreadPoolExecutor(poolSize, poolSize, Integer.MAX_VALUE, SECONDS, queue, threadFactory, handler);
+        ThreadPoolExecutor threadPoolExecutor = createThreadPoolExecutor(poolSize, poolSize, Integer.MAX_VALUE, TimeUnit.SECONDS, queue, threadFactory, handler);
         // MUST BE prestartAllCoreThreads，因为没有人提交任务，所以第一个线程必须通过这个方式来手动触发运行
         threadPoolExecutor.prestartAllCoreThreads();
         threadPoolExecutor.allowCoreThreadTimeOut(false);
@@ -43,7 +41,7 @@ public class ThreadPoolUtility {
 
     public static ThreadPoolExecutor createNormalThreadPoolExecutor(int queueSize, int corePoolSize, int maximumPoolSize, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
         LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<>(queueSize);
-        return createThreadPoolExecutor(corePoolSize, maximumPoolSize, 5L, SECONDS, queue, threadFactory, handler);
+        return createThreadPoolExecutor(corePoolSize, maximumPoolSize, 5L, TimeUnit.SECONDS, queue, threadFactory, handler);
     }
 
     public static ThreadPoolExecutor createThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit timeUnit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {

@@ -1,9 +1,7 @@
 package concurrency.lock.condition.multiple.manager;
 
 import concurrency.lock.condition.queue.NoticableLinkedBlockingDeque;
-import concurrency.lock.condition.util.ThreadPoolUtility;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -15,12 +13,11 @@ public class SharedLockConditionWaiter<E> implements Runnable {
     private final SharedLockConditionManager<E> manager;
 
     private final NoticableLinkedBlockingDeque<E> queue;
-    private final AtomicBoolean hasWork;
+    private final AtomicBoolean hasWork = new AtomicBoolean(false);
 
-    public SharedLockConditionWaiter(SharedLockConditionManager<E> manager, NoticableLinkedBlockingDeque<E> queue, AtomicBoolean hasWork) {
+    public SharedLockConditionWaiter(SharedLockConditionManager<E> manager, NoticableLinkedBlockingDeque<E> queue) {
         this.manager = manager;
         this.queue = queue;
-        this.hasWork = hasWork;
     }
 
     @Override
@@ -43,15 +40,16 @@ public class SharedLockConditionWaiter<E> implements Runnable {
                     String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], signalAllIterators=[%s], more than 2.", index, name, hasWork.get(), signalAllIterators);
                     System.out.println(format);
                     throw new RuntimeException(format);
+                } else {
+                    ++signalAllIterators;
                 }
 
-                hasWork.set(true);
-                manager.sharedSignalAll();
-                ++signalAllIterators;
-
-                String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], sharedSignalAll.", index, name, hasWork.get());
-                System.out.println(format);
-                ThreadPoolUtility.sleep(1, TimeUnit.SECONDS);
+                while (queue.hasTakeWaiters()) {
+                    hasWork.set(true);
+                    String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], sharedSignalAll.", index, name, hasWork.get());
+                    System.out.println(format);
+                    manager.sharedSignalAll();
+                }
             } catch (Throwable throwable) {
                 String message = throwable.getMessage();
                 if (throwable instanceof InterruptedException) {
@@ -69,11 +67,17 @@ public class SharedLockConditionWaiter<E> implements Runnable {
                     String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], ignored Throwable=[%s].", index, name, hasWork.get(), message);
                     System.out.println(format);
                 }
+            } finally {
+                hasWork.set(false);
             }
         } while (!Thread.currentThread().isInterrupted());
 
         String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], finish.", index, name, hasWork.get());
         System.out.println(format);
+    }
+
+    public boolean hasWork() {
+        return hasWork.get();
     }
 
 }

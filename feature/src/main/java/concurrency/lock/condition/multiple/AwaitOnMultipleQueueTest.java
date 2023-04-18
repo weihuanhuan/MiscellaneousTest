@@ -35,7 +35,7 @@ public class AwaitOnMultipleQueueTest {
         Thread invokeTaskThread = new RunTaskThread(invokeTask, "invokeTask");
         invokeTaskThread.start();
 
-        ThreadPoolUtility.sleep(20, TimeUnit.SECONDS);
+        ThreadPoolUtility.sleep(15, TimeUnit.SECONDS);
 
         System.out.println("shutdown");
         manager.shutdown();
