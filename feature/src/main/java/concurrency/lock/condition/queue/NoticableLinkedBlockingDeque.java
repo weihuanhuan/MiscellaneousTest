@@ -8,8 +8,7 @@ public class NoticableLinkedBlockingDeque<E> extends LinkedBlockingDeque<E> {
     private final Condition notCreate;
 
     public NoticableLinkedBlockingDeque(boolean fairness) {
-        super(fairness);
-        notCreate = lock.newCondition();
+        this(Integer.MAX_VALUE, fairness);
     }
 
     public NoticableLinkedBlockingDeque(int capacity, boolean fairness) {

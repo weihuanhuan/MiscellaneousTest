@@ -67,6 +67,7 @@ public class SimplePool {
 
         creatorThreadPoolExecutor = ThreadPoolUtility.createThreadPoolExecutor(1, creatorThread, creatorThread, null, threadFactory, handler);
         creatorThreadPoolExecutor.prestartAllCoreThreads();
+        creatorThreadPoolExecutor.allowCoreThreadTimeOut(false);
     }
 
     // **************** call by invoker ****************

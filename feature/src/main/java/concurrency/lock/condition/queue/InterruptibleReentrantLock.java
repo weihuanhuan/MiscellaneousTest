@@ -29,7 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @since 2.0
  */
-class InterruptibleReentrantLock extends ReentrantLock {
+public class InterruptibleReentrantLock extends ReentrantLock {
 
     private static final long serialVersionUID = 1L;
 
