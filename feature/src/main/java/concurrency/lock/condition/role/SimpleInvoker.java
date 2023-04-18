@@ -31,7 +31,7 @@ public class SimpleInvoker {
 
     private void initInvoker() {
         RejectedExecutionHandler handler = new LoggingExecutionHandler(simplePool);
-        invokerThreadPoolExecutor = ThreadPoolUtility.createThreadPoolExecutor(queueLength, 1, maxInvokerThread, "invoker", null, handler);
+        invokerThreadPoolExecutor = ThreadPoolUtility.createNormalThreadPoolExecutor(queueLength, 1, maxInvokerThread, "invoker", handler);
     }
 
     // **************** call by invoker ****************

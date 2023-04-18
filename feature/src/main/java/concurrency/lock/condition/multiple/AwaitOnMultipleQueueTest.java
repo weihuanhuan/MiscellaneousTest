@@ -3,6 +3,7 @@ package concurrency.lock.condition.multiple;
 import concurrency.lock.condition.multiple.manager.SharedLockConditionManager;
 import concurrency.lock.condition.queue.NoticableLinkedBlockingDeque;
 import concurrency.lock.condition.task.BaseTask;
+import concurrency.lock.condition.util.ThreadPoolUtility;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,7 +20,7 @@ public class AwaitOnMultipleQueueTest {
         manager.addDeque(two);
         manager.start();
 
-        wasteTime(2, TimeUnit.SECONDS);
+        ThreadPoolUtility.sleep(2, TimeUnit.SECONDS);
 
         statisticTimeHook();
 
@@ -34,7 +35,7 @@ public class AwaitOnMultipleQueueTest {
         Thread invokeTaskThread = new RunTaskThread(invokeTask, "invokeTask");
         invokeTaskThread.start();
 
-        wasteTime(15, TimeUnit.SECONDS);
+        ThreadPoolUtility.sleep(20, TimeUnit.SECONDS);
 
         System.out.println("shutdown");
         manager.shutdown();
@@ -47,14 +48,6 @@ public class AwaitOnMultipleQueueTest {
             long duration = System.currentTimeMillis() - startTime;
             System.out.println("Total Running Time:" + TimeUnit.MILLISECONDS.toSeconds(duration));
         }));
-    }
-
-    public static void wasteTime(long timeout, TimeUnit timeUnit) {
-        try {
-            timeUnit.sleep(timeout);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private static class PoolTask implements Runnable {
@@ -84,7 +77,7 @@ public class AwaitOnMultipleQueueTest {
             String format = String.format("Task: name=[%s], run once, sum=[%s].", name, sum);
             System.out.println(format);
 
-            wasteTime(1, TimeUnit.SECONDS);
+            ThreadPoolUtility.sleep(1, TimeUnit.SECONDS);
         }
     }
 

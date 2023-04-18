@@ -18,6 +18,8 @@ public class Creator extends BaseTask {
     public void run() {
         processCount.incrementAndGet();
 
+        int waitCreateIterators = 0;
+
         do {
             //每次被唤醒时的所添加的对象，并不是批量重试的
             boolean retry = false;
@@ -34,11 +36,26 @@ public class Creator extends BaseTask {
                     }
                 }
 
+                //测试线程意外终止的情况
+                if (waitCreateIterators > 10_000) {
+                    String simpleName = this.getClass().getSimpleName();
+                    String name = Thread.currentThread().getName();
+                    String format = String.format("interrupted:name=[%s], threadName=[%s], index=[%s], waitCreateIterators=[%s], more than 2", simpleName, name, getIndex(), waitCreateIterators);
+                    throw new RuntimeException(format);
+                }
+
                 simplePool.awaitCreate();
+                ++waitCreateIterators;
             } catch (Throwable throwable) {
-                throwable.printStackTrace();
+                if (throwable instanceof InterruptedException) {
+                    Thread.currentThread().interrupt();
+                } else if (throwable instanceof RuntimeException) {
+                    throw (RuntimeException) throwable;
+                } else {
+                    throwable.printStackTrace();
+                }
             }
-        } while (true);
+        } while (!Thread.currentThread().isInterrupted());
     }
 
 }

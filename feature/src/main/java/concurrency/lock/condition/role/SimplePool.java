@@ -12,8 +12,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import concurrency.lock.condition.entity.Entity;
 import concurrency.lock.condition.handler.CreatorSignalExecutionHandler;
-import concurrency.lock.condition.handler.CreatorThreadFactory;
-import concurrency.lock.condition.handler.LoggingExecutionHandler;
+import concurrency.lock.condition.task.Creator;
 import concurrency.lock.condition.util.ThreadPoolUtility;
 
 // jdk 的 LinkedBlockingDeque 不支持配置锁是否公平，无法获取到是否有线程在该队列上等待
@@ -61,13 +60,10 @@ public class SimplePool {
             transferQueue = new LinkedTransferQueue<>();
         }
 
-        ThreadFactory threadFactory = new CreatorThreadFactory("creator", true, this);
+        Creator creator = new Creator(this);
+        ThreadFactory threadFactory = new ThreadPoolUtility.DefaultThreadFactory("creator", true);
         RejectedExecutionHandler handler = new CreatorSignalExecutionHandler(this);
-        handler = new LoggingExecutionHandler(this);
-
-        creatorThreadPoolExecutor = ThreadPoolUtility.createThreadPoolExecutor(1, creatorThread, creatorThread, null, threadFactory, handler);
-        creatorThreadPoolExecutor.prestartAllCoreThreads();
-        creatorThreadPoolExecutor.allowCoreThreadTimeOut(false);
+        creatorThreadPoolExecutor = ThreadPoolUtility.createEndlessThreadPoolExecutor(creatorThread, creator, threadFactory, handler);
     }
 
     // **************** call by invoker ****************

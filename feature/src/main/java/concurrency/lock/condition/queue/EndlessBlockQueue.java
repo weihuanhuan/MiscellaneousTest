@@ -1,29 +1,30 @@
-package concurrency.lock.condition.multiple.manager;
+package concurrency.lock.condition.queue;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-public class SharedLockConditionQueue extends LinkedBlockingQueue<Runnable> {
+public class EndlessBlockQueue extends ArrayBlockingQueue<Runnable> {
 
-    private final Runnable waiter;
+    private final Runnable runnable;
 
-    public SharedLockConditionQueue(Runnable waiter) {
-        this.waiter = waiter;
+    public EndlessBlockQueue(Runnable runnable) {
+        super(1);
+        this.runnable = runnable;
     }
 
     @Override
     public Runnable take() throws InterruptedException {
-        return waiter;
+        return runnable;
     }
 
     @Override
     public Runnable poll(long timeout, TimeUnit unit) throws InterruptedException {
-        return waiter;
+        return runnable;
     }
 
     @Override
     public Runnable poll() {
-        return waiter;
+        return runnable;
     }
 
     @Override
@@ -43,7 +44,7 @@ public class SharedLockConditionQueue extends LinkedBlockingQueue<Runnable> {
 
     @Override
     public boolean offer(Runnable runnable, long timeout, TimeUnit unit) throws InterruptedException {
-        if (runnable != waiter) {
+        if (runnable != this.runnable) {
             return false;
         }
         return true;
@@ -51,7 +52,7 @@ public class SharedLockConditionQueue extends LinkedBlockingQueue<Runnable> {
 
     @Override
     public boolean offer(Runnable runnable) {
-        if (runnable != waiter) {
+        if (runnable != this.runnable) {
             return false;
         }
         return true;
@@ -59,7 +60,7 @@ public class SharedLockConditionQueue extends LinkedBlockingQueue<Runnable> {
 
     @Override
     public Runnable peek() {
-        return waiter;
+        return runnable;
     }
 
 }

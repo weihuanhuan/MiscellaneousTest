@@ -1,11 +1,16 @@
 package concurrency.lock.condition.multiple.manager;
 
 import concurrency.lock.condition.queue.NoticableLinkedBlockingDeque;
+import concurrency.lock.condition.util.ThreadPoolUtility;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SharedLockConditionWaiter<E> implements Runnable {
+
+    private static final AtomicInteger counter = new AtomicInteger(0);
+    private final int index = counter.incrementAndGet();
 
     private final SharedLockConditionManager<E> manager;
 
@@ -28,14 +33,14 @@ public class SharedLockConditionWaiter<E> implements Runnable {
             try {
                 while (!queue.hasTakeWaiters()) {
                     hasWork.set(false);
-                    String format = String.format("Waiter: name=[%s], hasWork=[%s], awaitNotCreate.", name, hasWork.get());
+                    String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], awaitNotCreate.", index, name, hasWork.get());
                     System.out.println(format);
                     queue.awaitNotCreate();
                 }
 
                 //测试线程意外终止的情况
                 if (signalAllIterators > 2) {
-                    String format = String.format("Waiter: name=[%s], hasWork=[%s], signalAllIterators=[%s], more than 2.", name, hasWork.get(), signalAllIterators);
+                    String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], signalAllIterators=[%s], more than 2.", index, name, hasWork.get(), signalAllIterators);
                     System.out.println(format);
                     throw new RuntimeException(format);
                 }
@@ -44,15 +49,15 @@ public class SharedLockConditionWaiter<E> implements Runnable {
                 manager.sharedSignalAll();
                 ++signalAllIterators;
 
-                String format = String.format("Waiter: name=[%s], hasWork=[%s], sharedSignalAll.", name, hasWork.get());
+                String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], sharedSignalAll.", index, name, hasWork.get());
                 System.out.println(format);
-                wasteTime(1, TimeUnit.SECONDS);
+                ThreadPoolUtility.sleep(1, TimeUnit.SECONDS);
             } catch (Throwable throwable) {
                 String message = throwable.getMessage();
                 if (throwable instanceof InterruptedException) {
                     // restore the interrupt message from awaitNotCreate to make the Waiter finish
                     Thread.currentThread().interrupt();
-                    String format = String.format("Waiter: name=[%s], hasWork=[%s], restore interrupt mark with InterruptedException=[%s].", name, hasWork.get(), message);
+                    String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], restore interrupt mark with InterruptedException=[%s].", index, name, hasWork.get(), message);
                     System.out.println(format);
                 } else if (throwable instanceof RuntimeException) {
                     //注意线程不能被终止，
@@ -61,22 +66,14 @@ public class SharedLockConditionWaiter<E> implements Runnable {
                     // 所以即使在线程意外结束了，也不需要手动使用 Executor.execute 添加 Waiter 了。
                     throw (RuntimeException) throwable;
                 } else {
-                    String format = String.format("Waiter: name=[%s], hasWork=[%s], ignored Throwable=[%s].", name, hasWork.get(), message);
+                    String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], ignored Throwable=[%s].", index, name, hasWork.get(), message);
                     System.out.println(format);
                 }
             }
         } while (!Thread.currentThread().isInterrupted());
 
-        String format = String.format("Waiter: name=[%s], hasWork=[%s], finish.", name, hasWork.get());
+        String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], finish.", index, name, hasWork.get());
         System.out.println(format);
-    }
-
-    private void wasteTime(long timeout, TimeUnit timeUnit) {
-        try {
-            timeUnit.sleep(timeout);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

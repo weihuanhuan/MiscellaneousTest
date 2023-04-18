@@ -2,15 +2,13 @@ package concurrency.lock.condition.multiple.manager;
 
 import concurrency.lock.condition.queue.InterruptibleReentrantLock;
 import concurrency.lock.condition.queue.NoticableLinkedBlockingDeque;
+import concurrency.lock.condition.util.ThreadPoolUtility;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 public class SharedLockConditionManager<E> {
 
@@ -43,16 +41,11 @@ public class SharedLockConditionManager<E> {
             AtomicBoolean atomicBoolean = new AtomicBoolean(false);
             SharedLockConditionWaiter<E> waiter = new SharedLockConditionWaiter<>(this, deque, atomicBoolean);
 
-            SharedLockConditionQueue queue = new SharedLockConditionQueue(waiter);
-            SharedLockConditionThreadFactory threadFactory = new SharedLockConditionThreadFactory();
-            RejectedExecutionHandler handler = new ThreadPoolExecutor.DiscardPolicy();
-
-            ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(1, 1, 5L, SECONDS, queue, threadFactory, handler);
-            threadPoolExecutor.prestartAllCoreThreads();
-            threadPoolExecutor.allowCoreThreadTimeOut(false);
+            SharedLockConditionThreadFactory threadFactory = new SharedLockConditionThreadFactory("monitor", true);
+            ThreadPoolExecutor endlessThreadPoolExecutor = ThreadPoolUtility.createEndlessThreadPoolExecutor(1, waiter, threadFactory);
 
             atomicBooleans.add(atomicBoolean);
-            threadPoolExecutors.add(threadPoolExecutor);
+            threadPoolExecutors.add(endlessThreadPoolExecutor);
         }
     }
 

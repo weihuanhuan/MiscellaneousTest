@@ -1,5 +1,8 @@
 package concurrency.lock.condition.util;
 
+import concurrency.lock.condition.queue.EndlessBlockQueue;
+
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
@@ -14,28 +17,42 @@ public class ThreadPoolUtility {
     public static void sleep(long timeout, TimeUnit timeUnit) {
         try {
             timeUnit.sleep(timeout);
-        } catch (InterruptedException e) {
-            String name = Thread.currentThread().getName();
-            String format = String.format("interrupted:name=[%s], index=[%s], exception:%n%s", name, e);
-            System.out.println(format);
-
-            Thread.currentThread().interrupt();
+        } catch (InterruptedException ignored) {
         }
     }
 
-    public static ThreadPoolExecutor createThreadPoolExecutor(final int queueSize, final int corePoolSize, final int maximumPoolSize, final String threadName, ThreadFactory threadFactory, final RejectedExecutionHandler policy) {
-        if (threadFactory == null) {
-            threadFactory = new DefaultThreadFactory(threadName, true);
-        }
+    public static ThreadPoolExecutor createEndlessThreadPoolExecutor(int poolSize, Runnable runnable, ThreadFactory threadFactory) {
+        RejectedExecutionHandler handler = new ThreadPoolExecutor.DiscardPolicy();
+        return createEndlessThreadPoolExecutor(poolSize, runnable, threadFactory, handler);
+    }
 
+    public static ThreadPoolExecutor createEndlessThreadPoolExecutor(int poolSize, Runnable runnable, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
+        EndlessBlockQueue queue = new EndlessBlockQueue(runnable);
+
+        ThreadPoolExecutor threadPoolExecutor = createThreadPoolExecutor(poolSize, poolSize, Integer.MAX_VALUE, SECONDS, queue, threadFactory, handler);
+        // MUST BE prestartAllCoreThreads，因为没有人提交任务，所以第一个线程必须通过这个方式来手动触发运行
+        threadPoolExecutor.prestartAllCoreThreads();
+        threadPoolExecutor.allowCoreThreadTimeOut(false);
+        return threadPoolExecutor;
+    }
+
+    public static ThreadPoolExecutor createNormalThreadPoolExecutor(int queueSize, int corePoolSize, int maximumPoolSize, String threadName, RejectedExecutionHandler handler) {
+        ThreadFactory threadFactory = new DefaultThreadFactory(threadName, true);
+        return createNormalThreadPoolExecutor(queueSize, corePoolSize, maximumPoolSize, threadFactory, handler);
+    }
+
+    public static ThreadPoolExecutor createNormalThreadPoolExecutor(int queueSize, int corePoolSize, int maximumPoolSize, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
         LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<>(queueSize);
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, 5L, SECONDS, queue, threadFactory, policy);
-        return executor;
+        return createThreadPoolExecutor(corePoolSize, maximumPoolSize, 5L, SECONDS, queue, threadFactory, handler);
+    }
+
+    public static ThreadPoolExecutor createThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit timeUnit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
+        return new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, timeUnit, workQueue, threadFactory, handler);
     }
 
     public static class DefaultThreadFactory implements ThreadFactory {
 
-        public static AtomicInteger createCount = new AtomicInteger(0);
+        private final AtomicInteger createCount = new AtomicInteger(0);
 
         private final String threadName;
         private final boolean daemon;
@@ -47,12 +64,17 @@ public class ThreadPoolUtility {
 
         @Override
         public Thread newThread(Runnable r) {
-            Thread thread = new Thread(r, threadName);
-            thread.setDaemon(daemon);
+            String nextThreadName = getNextThreadName();
 
-            createCount.incrementAndGet();
+            Thread thread = new Thread(r, nextThreadName);
+            thread.setDaemon(daemon);
             return thread;
         }
+
+        protected String getNextThreadName() {
+            return threadName + "-" + createCount.incrementAndGet();
+        }
+
     }
 
 }

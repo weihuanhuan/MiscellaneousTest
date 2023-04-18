@@ -34,13 +34,11 @@ public class SimplePoolTest {
         statisticTimeHook();
 
         //keeping main alive some time.
-        wasteTime(10, TimeUnit.SECONDS);
+        ThreadPoolUtility.sleep(10, TimeUnit.SECONDS);
 
         simpleInvoker.shutdown(10, TimeUnit.SECONDS);
         simplePool.shutdown(10, TimeUnit.SECONDS);
 
-        String threadFormat = String.format("DefaultThreadFactory: createCount=[%s].", ThreadPoolUtility.DefaultThreadFactory.createCount);
-        System.out.println(threadFormat);
         String invokerFormat = String.format("Invoker: executeCount=[%s], processCount=[%s], retryCount=[%s].", Invoker.executeCount, Invoker.processCount, Invoker.retryCount);
         System.out.println(invokerFormat);
         String creatorFormat = String.format("Creator: executeCount=[%s], processCount=[%s], retryCount=[%s].", Creator.executeCount, Creator.processCount, Creator.retryCount);
@@ -58,14 +56,6 @@ public class SimplePoolTest {
             long duration = System.currentTimeMillis() - startTime;
             System.out.println("Total Running Time:" + TimeUnit.MILLISECONDS.toSeconds(duration));
         }));
-    }
-
-    private static void wasteTime(long timeout, TimeUnit timeUnit) {
-        try {
-            timeUnit.sleep(timeout);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

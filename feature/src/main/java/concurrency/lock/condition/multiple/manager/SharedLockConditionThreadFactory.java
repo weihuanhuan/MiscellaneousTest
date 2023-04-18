@@ -1,22 +1,23 @@
 package concurrency.lock.condition.multiple.manager;
 
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
+import concurrency.lock.condition.util.ThreadPoolUtility;
 
-public class SharedLockConditionThreadFactory implements ThreadFactory {
+public class SharedLockConditionThreadFactory extends ThreadPoolUtility.DefaultThreadFactory {
 
-    private static final AtomicInteger counter = new AtomicInteger(0);
+    public SharedLockConditionThreadFactory(String threadName, boolean daemon) {
+        super(threadName, daemon);
+    }
 
     @Override
     public Thread newThread(Runnable r) {
-        String name = "monitor-" + counter.incrementAndGet();
+        String nextThreadName = getNextThreadName();
 
         //另外 ThreadPoolExecutor 自身的 java.util.concurrent.ThreadPoolExecutor.Worker.run 方法才会自动的在线程宕机时，进行补充线程
         //所以如果我们这里替换成了我们的 Waiter ，那么线程宕机后，就不会补充线程了。
         //但是 jdk 的 java.util.concurrent.ThreadPoolExecutor.addWorker 需要保证 queue 不是空才会添加线程，
         //另外在其 java.util.concurrent.ThreadPoolExecutor.getTask 时又需要从队列中获取用户的 Runnable ，这里即我们的 Waiter
         //所以这里如果没有人向线程池的队列中提交任务就会导致，不会有新的线程被调度执行了。
-        Monitor monitor = new Monitor(r, name);
+        Monitor monitor = new Monitor(r, nextThreadName);
         monitor.setDaemon(true);
         return monitor;
     }
