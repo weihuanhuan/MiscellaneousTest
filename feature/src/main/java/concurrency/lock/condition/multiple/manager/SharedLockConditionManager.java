@@ -18,8 +18,8 @@ public class SharedLockConditionManager<E> {
     private final List<ThreadPoolExecutor> threadPoolExecutors = new ArrayList<>();
 
     private final InterruptibleReentrantLock sharedLock = new InterruptibleReentrantLock(false);
-    private final Condition noWork = sharedLock.newCondition();
-    private final Condition noWaiter = sharedLock.newCondition();
+    private final Condition allowRun = sharedLock.newCondition();
+    private final Condition checkWork = sharedLock.newCondition();
 
     private boolean isShutdown = false;
 
@@ -69,8 +69,8 @@ public class SharedLockConditionManager<E> {
 
             //注意之类调用 interrupt 时，可能 sharedRun 正在运行，还没 await ，就会导致这个信号丢失了。
             //在其没有 await 时，我们这里使用 isShutdown 来标记 sharedRun 还是否应该 await 了。
-            sharedLock.interruptWaiters(noWork);
-            sharedLock.interruptWaiters(noWaiter);
+            sharedLock.interruptWaiters(allowRun);
+            sharedLock.interruptWaiters(checkWork);
         } finally {
             sharedLock.unlock();
         }
@@ -79,8 +79,8 @@ public class SharedLockConditionManager<E> {
     public void sharedSignalAll() throws InterruptedException {
         sharedLock.lock();
         try {
-            noWork.signalAll();
-            noWaiter.await();
+            allowRun.signalAll();
+            checkWork.await();
         } finally {
             sharedLock.unlock();
         }
@@ -128,8 +128,8 @@ public class SharedLockConditionManager<E> {
                 throw new InterruptedException("noWork: sharedAwait, manager is shutdown");
             }
 
-            noWaiter.signalAll();
-            noWork.await();
+            checkWork.signalAll();
+            allowRun.await();
         } catch (InterruptedException e) {
             // MUST be throw to propagate InterruptedException make the sharedRun finish
             throw e;

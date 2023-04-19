@@ -30,9 +30,9 @@ public class SharedLockConditionWaiter<E> implements Runnable {
             try {
                 while (!queue.hasTakeWaiters()) {
                     hasWork.set(false);
-                    String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], awaitNotCreate.", index, name, hasWork.get());
+                    String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], awaitAllowCreate.", index, name, hasWork.get());
                     System.out.println(format);
-                    queue.awaitNotCreate();
+                    queue.awaitAllowCreate();
                 }
 
                 //测试线程意外终止的情况
@@ -53,7 +53,7 @@ public class SharedLockConditionWaiter<E> implements Runnable {
             } catch (Throwable throwable) {
                 String message = throwable.getMessage();
                 if (throwable instanceof InterruptedException) {
-                    // restore the interrupt message from awaitNotCreate to make the Waiter finish
+                    // restore the interrupt message from awaitAllowCreate to make the Waiter finish
                     Thread.currentThread().interrupt();
                     String format = String.format("Waiter: index=[%s], name=[%s], hasWork=[%s], restore interrupt mark with InterruptedException=[%s].", index, name, hasWork.get(), message);
                     System.out.println(format);

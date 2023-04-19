@@ -102,11 +102,11 @@ public class SimplePool {
     }
 
     private void signalCreate() {
-        //由于 signal 不会阻塞，所以不存在 await 时的【在 needCreate 还是 notCreate 上，哪个比较好，能不能同时考虑这两个情况】 的问题
+        //由于 signal 不会阻塞，所以不存在 await 时的【在 needCreate 还是 AllowCreate 上，哪个比较好，能不能同时考虑这两个情况】 的问题
         transferSignalNeedCreate();
 
         //一般 queue 的 poll 方法就会触发该信号了，我们这里可以在 poll 之前额外的发送该信号，加快处理
-        queueSignalNotCreate();
+        queueSignalAllowCreate();
     }
 
     private void transferSignalNeedCreate() {
@@ -120,15 +120,15 @@ public class SimplePool {
         }
     }
 
-    private void queueSignalNotCreate() {
+    private void queueSignalAllowCreate() {
         if (createdQueue instanceof NoticableLinkedBlockingDeque) {
-            NoticableLinkedBlockingDeque.class.cast(createdQueue).signalAllNotCreate();
+            NoticableLinkedBlockingDeque.class.cast(createdQueue).signalAllAllowCreate();
         }
     }
 
     public boolean trySignalCreate() {
         boolean signaledTransfer = tryTransferSignalCreate();
-        boolean signaledQueue = tryQueueSignalNotCreate();
+        boolean signaledQueue = tryQueueSignalAllowCreate();
         return signaledTransfer || signaledQueue;
     }
 
@@ -145,9 +145,9 @@ public class SimplePool {
         }
     }
 
-    private boolean tryQueueSignalNotCreate() {
+    private boolean tryQueueSignalAllowCreate() {
         if (createdQueue instanceof NoticableLinkedBlockingDeque) {
-            return NoticableLinkedBlockingDeque.class.cast(createdQueue).trySignalAllNotCreate();
+            return NoticableLinkedBlockingDeque.class.cast(createdQueue).trySignalAllAllowCreate();
         }
         return false;
     }
@@ -200,10 +200,10 @@ public class SimplePool {
 
     public void awaitCreate() throws InterruptedException {
         //JF TODO 这里有个问题，当开启 useTransferQueue 后，由于 await 操作会阻塞，
-        //JF TODO 所以到底是 await 在 needCreate 还是 notCreate 上，哪个比较好，能不能同时考虑这两个情况
+        //JF TODO 所以到底是 await 在 needCreate 还是 AllowCreate 上，哪个比较好，能不能同时考虑这两个情况
         transferAwaitNeedCreate();
 
-        queueAwaitNotCreate();
+        queueAwaitAllowCreate();
     }
 
     private void transferAwaitNeedCreate() throws InterruptedException {
@@ -218,9 +218,9 @@ public class SimplePool {
         }
     }
 
-    private void queueAwaitNotCreate() throws InterruptedException {
+    private void queueAwaitAllowCreate() throws InterruptedException {
         if (createdQueue instanceof NoticableLinkedBlockingDeque) {
-            NoticableLinkedBlockingDeque.class.cast(createdQueue).awaitNotCreate();
+            NoticableLinkedBlockingDeque.class.cast(createdQueue).awaitAllowCreate();
         }
     }
 
