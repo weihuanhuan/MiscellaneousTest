@@ -12,6 +12,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class ThreadPoolUtility {
 
+    public static void statisticTimeHook() {
+        long startTime = System.currentTimeMillis();
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            long duration = System.currentTimeMillis() - startTime;
+            System.out.println("Total Running Time:" + TimeUnit.MILLISECONDS.toSeconds(duration));
+        }));
+    }
+
     public static void sleep(long timeout, TimeUnit timeUnit) {
         try {
             timeUnit.sleep(timeout);

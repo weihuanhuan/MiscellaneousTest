@@ -31,7 +31,7 @@ public class SimplePoolTest {
         simpleInvoker.addInvokerWithInterval(0, TimeUnit.MICROSECONDS);
 
         //running time statistic
-        statisticTimeHook();
+        ThreadPoolUtility.statisticTimeHook();
 
         //keeping main alive some time.
         ThreadPoolUtility.sleep(10, TimeUnit.SECONDS);
@@ -48,14 +48,6 @@ public class SimplePoolTest {
         String poolFormat = String.format("SimplePool: transferAddCount=[%s], transferBorrowCount=[%s].", SimplePool.transferAddCount, SimplePool.transferBorrowCount);
         System.out.println(poolFormat);
 
-    }
-
-    private static void statisticTimeHook() {
-        long startTime = System.currentTimeMillis();
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            long duration = System.currentTimeMillis() - startTime;
-            System.out.println("Total Running Time:" + TimeUnit.MILLISECONDS.toSeconds(duration));
-        }));
     }
 
 }

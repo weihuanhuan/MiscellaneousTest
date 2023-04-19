@@ -329,6 +329,13 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
     protected final Condition notFull;
 
     /**
+     * invoke by concrete child class to notice some addition condition
+     */
+    protected void notice() {
+        //do nothing
+    }
+
+    /**
      * Creates a {@code LinkedBlockingDeque} with a capacity of
      * {@link Integer#MAX_VALUE}.
      */
@@ -936,6 +943,7 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
                 if (nanos <= 0) {
                     return null;
                 }
+                notice();
                 nanos = notEmpty.awaitNanos(nanos);
             }
             return x;
@@ -984,6 +992,7 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
                 if (nanos <= 0) {
                     return null;
                 }
+                notice();
                 nanos = notEmpty.awaitNanos(nanos);
             }
             return x;
@@ -1312,6 +1321,7 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
         try {
             E x;
             while ((x = unlinkFirst()) == null) {
+                notice();
                 notEmpty.await();
             }
             return x;
@@ -1332,6 +1342,7 @@ public class LinkedBlockingDeque<E> extends AbstractQueue<E> implements Deque<E>
         try {
             E x;
             while ((x = unlinkLast()) == null) {
+                notice();
                 notEmpty.await();
             }
             return x;
