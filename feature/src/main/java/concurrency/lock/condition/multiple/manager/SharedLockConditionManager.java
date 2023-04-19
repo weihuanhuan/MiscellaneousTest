@@ -14,14 +14,13 @@ public class SharedLockConditionManager<E> {
 
     private final List<NoticableLinkedBlockingDeque<E>> deques = new ArrayList<>();
 
-    private final List<SharedLockConditionWaiter<E>> waiters = new ArrayList<>();
+    private final SharedLockConditionRunner<E> runner = new SharedLockConditionRunner<>(this);
+    private final List<SharedLockConditionChecker<E>> checkers = new ArrayList<>();
     private final List<ThreadPoolExecutor> threadPoolExecutors = new ArrayList<>();
 
     private final InterruptibleReentrantLock sharedLock = new InterruptibleReentrantLock(false);
     private final Condition allowRun = sharedLock.newCondition();
     private final Condition checkWork = sharedLock.newCondition();
-
-    private boolean isShutdown = false;
 
     public void addDeque(NoticableLinkedBlockingDeque<E> deque) {
         if (deque == null) {
@@ -41,14 +40,15 @@ public class SharedLockConditionManager<E> {
 
     public void start() {
         for (NoticableLinkedBlockingDeque<E> deque : deques) {
-            SharedLockConditionWaiter<E> waiter = new SharedLockConditionWaiter<>(this, deque);
-            SharedLockConditionThreadFactory threadFactory = new SharedLockConditionThreadFactory("waiter", true);
-            ThreadPoolExecutor endlessThreadPoolExecutor = ThreadPoolUtility.createEndlessThreadPoolExecutor(1, waiter, threadFactory);
+            SharedLockConditionChecker<E> checker = new SharedLockConditionChecker<>(this, deque);
+            SharedLockConditionThreadFactory threadFactory = new SharedLockConditionThreadFactory("checker", true);
+            ThreadPoolExecutor endlessThreadPoolExecutor = ThreadPoolUtility.createEndlessThreadPoolExecutor(1, checker, threadFactory);
 
-            waiters.add(waiter);
+            checkers.add(checker);
             threadPoolExecutors.add(endlessThreadPoolExecutor);
         }
     }
+
 
     public void shutdown() {
         for (ThreadPoolExecutor threadPoolExecutor : threadPoolExecutors) {
@@ -65,10 +65,6 @@ public class SharedLockConditionManager<E> {
     private void sharedInterruptWaiters() {
         sharedLock.lock();
         try {
-            isShutdown = true;
-
-            //注意之类调用 interrupt 时，可能 sharedRun 正在运行，还没 await ，就会导致这个信号丢失了。
-            //在其没有 await 时，我们这里使用 isShutdown 来标记 sharedRun 还是否应该 await 了。
             sharedLock.interruptWaiters(allowRun);
             sharedLock.interruptWaiters(checkWork);
         } finally {
@@ -76,7 +72,15 @@ public class SharedLockConditionManager<E> {
         }
     }
 
-    public void sharedSignalAll() throws InterruptedException {
+    /*************************** call by user ***************************/
+
+    public void sharedRun(Runnable runnable) {
+        runner.sharedRun(runnable);
+    }
+
+    /*************************** call by checker ***************************/
+
+    public void signalAllowRunAndAwaitCheckWork() throws InterruptedException {
         sharedLock.lock();
         try {
             allowRun.signalAll();
@@ -86,34 +90,10 @@ public class SharedLockConditionManager<E> {
         }
     }
 
-    public void sharedRun(Runnable runnable) {
-        String name = Thread.currentThread().getName();
+    /*************************** call by runner ***************************/
 
-        do {
-            try {
-                while (!anyDequeHasWork()) {
-                    String format = String.format("sharedRun: name=[%s], sharedAwait.", name);
-                    System.out.println(format);
-                    sharedAwait();
-                }
-
-                while (anyDequeHasWork()) {
-                    runnable.run();
-                }
-            } catch (InterruptedException e) {
-                // restore the interrupt message from sharedAwait to make the sharedRun finish
-                Thread.currentThread().interrupt();
-                String format = String.format("sharedRun: name=[%s], restore interrupt mark with InterruptedException=[%s].", name, e.getMessage());
-                System.out.println(format);
-            }
-        } while (!Thread.currentThread().isInterrupted());
-
-        String format = String.format("sharedRun: name=[%s], finish.", name);
-        System.out.println(format);
-    }
-
-    private boolean anyDequeHasWork() {
-        for (SharedLockConditionWaiter<E> waiter : waiters) {
+    public boolean anyDequeHasWork() {
+        for (SharedLockConditionChecker<E> waiter : checkers) {
             if (waiter.hasWork()) {
                 return true;
             }
@@ -121,13 +101,9 @@ public class SharedLockConditionManager<E> {
         return false;
     }
 
-    private void sharedAwait() throws InterruptedException {
+    public void signalCheckWorkAndAwaitAllowRun() throws InterruptedException {
         sharedLock.lock();
         try {
-            if (isShutdown) {
-                throw new InterruptedException("noWork: sharedAwait, manager is shutdown");
-            }
-
             checkWork.signalAll();
             allowRun.await();
         } catch (InterruptedException e) {
