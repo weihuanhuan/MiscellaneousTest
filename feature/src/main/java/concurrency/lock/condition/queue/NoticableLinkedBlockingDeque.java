@@ -92,7 +92,11 @@ public class NoticableLinkedBlockingDeque<E> extends LinkedBlockingDeque<E> {
         // 所以我们应该给 poll 独立的增加一个 signal not create 来触发对于 creator 线程的调度，然后没有要创建的东西时，他们 await not create 就行了。
         lock.lock();
         try {
-            allowCreate.await();
+            //确保我们真正的需要进入 allowCreate.await();
+            // 防止由于整个操作没有被至于 queue lock 中时，由于丢失业务线程 poll 的 allowCreate signal 而使得线程进入假死
+            if (!hasTakeWaiters()) {
+                allowCreate.await();
+            }
         } finally {
             lock.unlock();
         }
