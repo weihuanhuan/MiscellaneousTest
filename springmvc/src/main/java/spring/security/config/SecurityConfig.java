@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import spring.security.basic.CustomBasicAuthenticationEntryPoint;
 import spring.security.digest.CustomDigestAuthenticationEntryPoint;
@@ -71,12 +72,19 @@ public class SecurityConfig {
     public class DigestSecurityConfig extends WebSecurityConfigurerAdapter {
         @Override
         protected void configure(HttpSecurity http) throws Exception {
+
+            //使用 SecurityContextHolderRepository 来修改默认的 SecurityContextRepository.saveContext 行为，防止其创建 session
+            SecurityContextRepository securityContextHolderRepository = new SecurityContextHolderRepository();
+
             //认证配置
             http.antMatcher("/spring-security/digest/**").addFilter(getDigestAuthenticationFilter())
                     //授权配置
                     .authorizeRequests().antMatchers("/spring-security/digest/**").authenticated()
                     //异常处理
-                    .and().exceptionHandling().authenticationEntryPoint(customDigestAuthenticationEntryPoint);
+                    .and().exceptionHandling().authenticationEntryPoint(customDigestAuthenticationEntryPoint)
+                    .and().sessionManagement().disable()
+                    .securityContext().securityContextRepository(securityContextHolderRepository);
+
         }
 
         private DigestAuthenticationFilter getDigestAuthenticationFilter() throws Exception {
