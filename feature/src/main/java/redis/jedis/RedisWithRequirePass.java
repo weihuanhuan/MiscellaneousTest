@@ -1,4 +1,4 @@
-package redis;
+package redis.jedis;
 
 import redis.clients.jedis.Jedis;
 

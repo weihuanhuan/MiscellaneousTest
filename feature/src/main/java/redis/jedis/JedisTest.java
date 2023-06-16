@@ -1,4 +1,4 @@
-package redis;
+package redis.jedis;
 
 import java.io.BufferedReader;
 import java.io.IOException;
