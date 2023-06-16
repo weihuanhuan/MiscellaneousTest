@@ -73,6 +73,8 @@
         <jsch.version>0.1.50</jsch.version>
         <jersey.version>2.27</jersey.version>
         <jedis.version>4.3.2</jedis.version>
+        <redisson.version>3.22.0</redisson.version>
+        <netty.version>4.1.93.Final</netty.version>
 
         <log4j.version>2.11.1</log4j.version>
         <disruptor.version>3.4.2</disruptor.version>
