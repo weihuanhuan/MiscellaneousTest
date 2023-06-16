@@ -241,6 +241,17 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>de.qaware.maven</groupId>
+                <artifactId>go-offline-maven-plugin</artifactId>
+                <version>1.2.8</version>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadoc>true</downloadJavadoc>
+                </configuration>
+            </plugin>
+            
         </plugins>
 
 
