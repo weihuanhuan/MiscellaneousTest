@@ -272,6 +272,8 @@
                 <includes>
                     <include>**/spring-*.xml</include>
                     <include>**/spring-*.properties</include>
+                    <!-- 增加对 hsqldb 的 sql 资源文件打包 -->
+                    <include>**/*.sql</include>
                 </includes>
             </resource>
 
