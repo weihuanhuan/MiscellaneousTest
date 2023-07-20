@@ -1,4 +1,4 @@
-package spring.jdbc.db.hsqldb;
+package spring.jdbc.db.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -30,11 +30,12 @@ public class HsqldbConfig {
                 .build();
 
         recordDataSource = db;
+        System.out.println("recordDataSource=" + recordDataSource);
         return db;
     }
 
     @Bean
-    public JdbcTemplate getJdbcTemplate(@Autowired DataSource autowiredDataSource) {
+    public JdbcTemplate jdbcTemplate(@Autowired DataSource autowiredDataSource) {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(autowiredDataSource);
         DataSource jdbcTemplateDataSource = jdbcTemplate.getDataSource();
 

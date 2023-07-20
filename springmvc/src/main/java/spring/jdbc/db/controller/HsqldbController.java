@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 public class HsqldbController {
 
     @Autowired
-    JdbcTemplate jdbcTemplate;
+    private JdbcTemplate jdbcTemplate;
 
     @RequestMapping("/hsqldb-query-all")
     @ResponseBody

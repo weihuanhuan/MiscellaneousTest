@@ -256,6 +256,19 @@
             <version>${hsqldb.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis-spring -->
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis-spring</artifactId>
+            <version>${mybatis-spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>${mybatis.version}</version>
+        </dependency>
+
     </dependencies>
 
 
@@ -276,7 +289,13 @@
                     <include>**/*.sql</include>
                 </includes>
             </resource>
-
+            <!-- 默认情况下 src/main/java 中的 xml 不属于工程的资源文件，故我们手动指定其中的 mapper xml 为工程的 main resource -->
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
         </resources>
 
         <plugins>

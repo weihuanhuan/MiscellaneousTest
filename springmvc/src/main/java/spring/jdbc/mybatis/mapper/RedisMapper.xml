@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="spring.jdbc.mybatis.mapper.RedisMapper">
+
+    <resultMap id="redisResultMap" type="spring.jdbc.mybatis.bean.MybatisRedis">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="group_name" property="groupName" jdbcType="VARCHAR"/>
+        <result column="mode" property="mode" jdbcType="VARCHAR"/>
+        <result column="role" property="role" jdbcType="VARCHAR"/>
+        <result column="master_name" property="masterName" jdbcType="VARCHAR"/>
+        <result column="node" property="node" jdbcType="VARCHAR"/>
+        <result column="config_template" property="configTemplate" jdbcType="VARCHAR"/>
+        <result column="config_text" property="configText" jdbcType="VARCHAR"/>
+        <result column="install_path" property="installPath" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="VARCHAR"/>
+        <result column="status_version" property="statusVersion" jdbcType="INTEGER"/>
+        <result column="old_server_host" property="oldServerHost" jdbcType="VARCHAR"/>
+        <result column="old_server_port" property="oldServerPort" jdbcType="INTEGER"/>
+        <result column="old_require_pass" property="oldRequirePass" jdbcType="VARCHAR"/>
+        <result column="version" property="version" jdbcType="VARCHAR"/>
+        <result column="properties" property="properties" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="redisColumnData">
+        name, group_name, mode, role, master_name, node, config_template, config_text, install_path
+    </sql>
+
+    <sql id="redisColumnAll">
+        id,
+        <include refid="redisColumnData"/>,
+        status, status_version, old_server_host, old_server_port, old_require_pass, version, properties
+    </sql>
+
+    <select id="selectRedisByName" parameterType="java.lang.String" resultMap="redisResultMap">
+        SELECT *
+        FROM redis
+        WHERE name = #{name}
+    </select>
+
+    <select id="listRedis" resultMap="redisResultMap">
+        SELECT
+        <include refid="redisColumnAll"/>
+        FROM redis
+        ORDER BY id DESC
+    </select>
+
+    <select id="findRedisByGroupNameAndCondition" resultMap="redisResultMap">
+        SELECT
+        <include refid="redisColumnAll"/>
+        FROM redis
+        WHERE group_name = #{groupName}
+        <!-- 可以使用 dot (paramName.propertyName) 的方式来获取 对象 或 map 集合某个属性值 -->
+        <!-- 属性值为 null 的情况不应该作为查询条件拼接到追踪的 sql 语句中 -->
+        <if test="condition.name != null">
+            and name = #{condition.name}
+        </if>
+        <if test="condition.role != null">
+            and role = #{condition.role}
+        </if>
+        ORDER BY id DESC
+    </select>
+
+    <insert id="insertRedis" parameterType="spring.jdbc.mybatis.bean.MybatisRedis">
+        INSERT INTO redis
+        (
+        <include refid="redisColumnData"/>
+        )
+        VALUES
+        (
+        #{name,jdbcType=VARCHAR},
+        #{groupName,jdbcType=VARCHAR},
+        #{mode,jdbcType=VARCHAR},
+        #{role,jdbcType=VARCHAR},
+        #{masterName,jdbcType=VARCHAR},
+        #{node,jdbcType=VARCHAR},
+        #{configTemplate,jdbcType=VARCHAR},
+        #{configText,jdbcType=VARCHAR},
+        #{installPath,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <delete id="deleteRedisByName" parameterType="spring.jdbc.mybatis.bean.MybatisRedis">
+        DELETE FROM redis WHERE name = #{name}
+    </delete>
+
+    <update id="updateRedisByName" parameterType="spring.jdbc.mybatis.bean.MybatisRedis">
+        UPDATE redis SET
+        group_name = #{groupName,jdbcType=VARCHAR},
+        mode = #{mode,jdbcType=VARCHAR},
+        role = #{role,jdbcType=VARCHAR},
+        master_name = #{masterName,jdbcType=VARCHAR},
+        node = #{node,jdbcType=VARCHAR},
+        config_template = #{configTemplate,jdbcType=VARCHAR},
+        config_text = #{configText,jdbcType=VARCHAR},
+        install_path = #{installPath,jdbcType=VARCHAR}
+        WHERE name = #{name,jdbcType=VARCHAR}
+    </update>
+
+</mapper>
