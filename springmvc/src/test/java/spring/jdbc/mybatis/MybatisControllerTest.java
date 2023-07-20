@@ -40,6 +40,7 @@ public class MybatisControllerTest {
     // 所以我们需要使用类级别的 static 域来记录当前是否执行了 mybatisRedisInsertTest ，
     // 以防止直接在 class-level 一次性执行这些测试用例时多次重复执行 insert 用例。
     private static boolean mybatisRedisInsertTestExecuted = false;
+    private static boolean mybatisRedisUpdateTestExecuted = false;
 
     @BeforeEach
     void configureTest() {
@@ -76,12 +77,15 @@ public class MybatisControllerTest {
 
         perform.andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
                 .andExpect(MockMvcResultMatchers.content().string("update-config-3"));
+
+        mybatisRedisUpdateTestExecuted = true;
+        System.out.println("mybatisRedisUpdateTestExecuted=" + mybatisRedisUpdateTestExecuted);
     }
 
     @Test
     @Order(4)
     void mybatisRedisDeleteTest() throws Exception {
-        mybatisRedisUpdateTest();
+        tryExecuteMybatisRedisUpdateTest();
 
         ResultActions perform = mockMvc.perform(MockMvcRequestBuilders.get("/mybatisRedis/delete"));
 
@@ -92,6 +96,12 @@ public class MybatisControllerTest {
     private void tryExecuteMybatisRedisInsertTest() throws Exception {
         if (!mybatisRedisInsertTestExecuted) {
             mybatisRedisInsertTest();
+        }
+    }
+
+    private void tryExecuteMybatisRedisUpdateTest() throws Exception {
+        if (!mybatisRedisUpdateTestExecuted) {
+            mybatisRedisUpdateTest();
         }
     }
 
