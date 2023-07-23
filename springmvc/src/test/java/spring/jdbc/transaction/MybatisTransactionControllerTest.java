@@ -38,9 +38,9 @@ public class MybatisTransactionControllerTest {
 
     @Test
     @Order(1)
-    void mybatisRedisInsertFailWithTransactionalTest() throws Exception {
+    void insertFailWithTransactional() throws Exception {
         try {
-            mockMvc.perform(MockMvcRequestBuilders.get("/mybatisRedis/insert-fail-with-transactional"));
+            mockMvc.perform(MockMvcRequestBuilders.get("/mybatisTransaction/insert-fail-with-transactional"));
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -51,9 +51,9 @@ public class MybatisTransactionControllerTest {
 
     @Test
     @Order(2)
-    void mybatisRedisInsertFailWithoutTransactionalTest() throws Exception {
+    void insertFailWithoutTransactional() throws Exception {
         try {
-            mockMvc.perform(MockMvcRequestBuilders.get("/mybatisRedis/insert-fail-without-transactional"));
+            mockMvc.perform(MockMvcRequestBuilders.get("/mybatisTransaction/insert-fail-without-transactional"));
         } catch (Exception exception) {
             exception.printStackTrace();
         }

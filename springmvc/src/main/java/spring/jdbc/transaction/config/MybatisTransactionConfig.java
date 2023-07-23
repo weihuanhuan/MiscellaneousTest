@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = {"spring.jdbc.transaction.controller"})
+@ComponentScan(basePackages = {"spring.jdbc.transaction.service", "spring.jdbc.transaction.controller"})
 public class MybatisTransactionConfig {
 
     @Bean
