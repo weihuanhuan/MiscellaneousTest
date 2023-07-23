@@ -1,10 +1,12 @@
 package spring.jdbc.transaction.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import spring.jdbc.mybatis.bean.MybatisRedis;
 import spring.jdbc.mybatis.service.RedisService;
+import spring.jdbc.transaction.event.MybatisRedisInsertedEvent;
 
 import java.util.List;
 
@@ -14,6 +16,12 @@ public class MybatisTransactionService {
     @Autowired
     private RedisService<MybatisRedis> redisService;
 
+    private final ApplicationEventPublisher applicationEventPublisher;
+
+    public MybatisTransactionService(ApplicationEventPublisher applicationEventPublisher) {
+        this.applicationEventPublisher = applicationEventPublisher;
+    }
+
     @Transactional(rollbackFor = RuntimeException.class)
     public void mybatisInsertFailWithTransactional() {
         System.out.println("\noldRedisList:");
@@ -22,6 +30,7 @@ public class MybatisTransactionService {
 
         System.out.println("\ninsertRedis:");
         MybatisRedis newMybatisRedis = redisService.insertRedis();
+        applicationEventPublisher.publishEvent(new MybatisRedisInsertedEvent(newMybatisRedis));
 
         System.out.println("\nnewRedisList:");
         List<MybatisRedis> newRedisList = redisService.listRedis();
