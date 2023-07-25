@@ -4,13 +4,11 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 import spring.jdbc.mybatis.bean.MybatisRedis;
 
 @Component
 @Aspect
-class AopUpdateAspect extends TransactionSynchronizationAdapter {
+class AopUpdateAspect {
 
     @Pointcut("execution(int spring.jdbc.mybatis.service.impl.RedisServiceImpl.updateRedisByName(..)) && args(updateMybatisRedis)")
     private void updateRedisByNamePointcut(MybatisRedis updateMybatisRedis) {
@@ -27,25 +25,8 @@ class AopUpdateAspect extends TransactionSynchronizationAdapter {
     // 第四, 进而也使得 @Before advice 中也需要传递同名的该参数，否则会提示如下的异常
     //Caused by: java.lang.IllegalArgumentException: warning no match for this type name: updateMybatisRedis [Xlint:invalidAbsoluteTypeName]
     @Before("spring.jdbc.aop.aspect.AopUpdateAspect.updateRedisByNamePointcut(updateMybatisRedis)")
-    public void registerSynchronization(MybatisRedis updateMybatisRedis) {
-        System.out.println(this.getClass().getSimpleName() + ": registerSynchronization");
-
-        System.out.println("updateMybatisRedis=" + updateMybatisRedis);
-
-        boolean synchronizationActive = TransactionSynchronizationManager.isSynchronizationActive();
-        if (synchronizationActive) {
-            TransactionSynchronizationManager.registerSynchronization(this);
-        }
-    }
-
-    @Override
-    public void afterCommit() {
-        System.out.println(this.getClass().getSimpleName() + ": afterCommit");
-    }
-
-    @Override
-    public void afterCompletion(int status) {
-        System.out.println(this.getClass().getSimpleName() + ": afterCompletion, status=" + status);
+    public void printUpdateMybatisRedis(MybatisRedis updateMybatisRedis) {
+        System.out.println(this.getClass().getSimpleName() + ": updateMybatisRedis=" + updateMybatisRedis);
     }
 
 }
