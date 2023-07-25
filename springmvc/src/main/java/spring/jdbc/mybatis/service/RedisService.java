@@ -14,4 +14,8 @@ public interface RedisService<T extends MybatisRedis> {
 
     T deleteRedisByName();
 
+    T selectRedisByName(String name);
+
+    int updateRedisByName(T mybatisRedis);
+
 }

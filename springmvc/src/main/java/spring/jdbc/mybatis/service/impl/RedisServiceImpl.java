@@ -71,4 +71,15 @@ public class RedisServiceImpl implements RedisService<MybatisRedis> {
         return selectRedisByName;
     }
 
+    @Override
+    public MybatisRedis selectRedisByName(String name) {
+        return redisMapper.selectRedisByName(name);
+    }
+
+    @Override
+    public int updateRedisByName(MybatisRedis mybatisRedis) {
+        int i = redisMapper.updateRedisByName(mybatisRedis);
+        return i;
+    }
+
 }
