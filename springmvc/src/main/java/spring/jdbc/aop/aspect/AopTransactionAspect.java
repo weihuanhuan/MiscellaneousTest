@@ -12,18 +12,18 @@ class AopTransactionAspect extends TransactionSynchronizationAdapter {
 
     @Before("@annotation(org.springframework.transaction.annotation.Transactional)")
     public void registerSynchronization() {
-        System.out.println("registerSynchronization");
+        System.out.println(this.getClass().getSimpleName() + ": registerSynchronization");
         TransactionSynchronizationManager.registerSynchronization(this);
     }
 
     @Override
     public void afterCommit() {
-        System.out.println("afterCommit");
+        System.out.println(this.getClass().getSimpleName() + ": afterCommit");
     }
 
     @Override
     public void afterCompletion(int status) {
-        System.out.println("afterCompletion, status=" + status);
+        System.out.println(this.getClass().getSimpleName() + ": afterCompletion, status=" + status);
     }
 
 }
