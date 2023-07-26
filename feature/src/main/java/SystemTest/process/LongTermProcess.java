@@ -31,8 +31,10 @@ public class LongTermProcess {
 //        stderrThread.setDaemon(true);
         stderrThread.start();
 
+        //防止主进程退出，使得该进程即使没有打印任务时，也能够维持运行状态
         try {
-            System.in.read();
+            int read = System.in.read();
+            System.out.println(LongTermProcess.class.getSimpleName() + ": read=" + read);
         } catch (IOException e) {
             e.printStackTrace();
         }

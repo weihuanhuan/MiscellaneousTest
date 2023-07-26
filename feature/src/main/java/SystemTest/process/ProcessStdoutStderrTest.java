@@ -1,37 +1,25 @@
 package SystemTest.process;
 
-import SystemTest.process.task.ParentProcessExit;
 import SystemTest.process.task.ProcessMonitor;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class ProcessStdoutStderrTest {
+public class ProcessStdoutStderrTest extends ProcessBaseTest {
 
     public static void main(String[] args) throws InterruptedException {
-        List<String> finalCMD = ParentProcessCommand.parseCommand(args);
-        File workDirFile = new File(ParentProcessCommand.WORK_DIR);
+        ProcessBuilder processBuilder = childProcessBuilderPrepare(args);
 
+        System.out.println("################################ ProcessStdoutStderrTest ################################");
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(finalCMD);
-
-            processBuilder.directory(workDirFile);
-
-            List<String> command = processBuilder.command();
-            System.out.println("processBuilder.command()=" + command);
             File directory = processBuilder.directory();
-            System.out.println("processBuilder.directory()=" + directory);
-            String property = System.getProperty("java.io.tmpdir");
-            System.out.println("System.getProperty(\"java.io.tmpdir\")=" + property);
-
             if (ParentProcessCommand.redirect) {
                 //directory 是 null 安全的，其为 null 时，内部使用 java.io.File.TempDirectory.location 来获取 "java.io.tmpdir" 的值
                 File tempStdoutFile = File.createTempFile("process-", "-stdout.log", directory);
@@ -46,6 +34,10 @@ public class ProcessStdoutStderrTest {
                 System.out.println(tempStderrFile.canWrite());
                 processBuilder.redirectError(ProcessBuilder.Redirect.to(tempStderrFile));
 
+                //默认情况下 SystemTest.process.stream.ProcessStreamRedirect.redirectIn 为 false, 但这里手动对其 redirectInput 了
+                // 这使得 SystemTest.process.LongTermProcess.main 中的 java.io.InputStream.read() 方法是可以有 input 来读取的。
+                // 只不过该文件的内容为 0 byte 大小，所以其读到的值为 -1，即 input 结束了 ，故其会使得该 child process 的 main 线程也跟着结束
+                // 再加之其 stdout/stderr 的线程的执行，都是非 daemon 的，所以一旦其输出任务完成，整个 child process 就会结束
                 File tempStdinFile = File.createTempFile("process-", "-stdin.log", directory);
                 System.out.println(tempStdinFile);
                 System.out.println(tempStdinFile.canRead());
@@ -71,18 +63,8 @@ public class ProcessStdoutStderrTest {
                 e.printStackTrace();
             }
 
-            if (ParentProcessCommand.autoExit) {
-                ParentProcessExit parentProcessExit = new ParentProcessExit(executorService, ParentProcessCommand.seconds, ParentProcessCommand.shutdownExecutor);
-                executorService.submit(parentProcessExit);
-            }
-
-            //控制主进程的退出与否
-            System.in.read();
-
-            //关闭现场池以结束进程，否则在 read 后，但是由于线程池中还有线程在运行，导致主线程无法退出
-            executorService.shutdown();
-        } catch (
-                IOException e) {
+            parentProcessExit(executorService);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

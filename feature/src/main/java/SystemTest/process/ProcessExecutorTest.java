@@ -4,12 +4,10 @@ import SystemTest.process.helper.ReadFileLastLine;
 import SystemTest.process.helper.ReadStringLastLine;
 import SystemTest.process.stream.ProcessBuilderExecutor;
 import SystemTest.process.stream.ProcessStreamRedirect;
-import SystemTest.process.task.ParentProcessExit;
 import SystemTest.process.task.ProcessMonitor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -17,59 +15,36 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-public class ProcessExecutorTest {
+public class ProcessExecutorTest extends ProcessBaseTest {
 
     public static void main(String[] args) throws InterruptedException {
-        List<String> finalCMD = ParentProcessCommand.parseCommand(args);
-        File workDirFile = new File(ParentProcessCommand.WORK_DIR);
+        ProcessBuilder processBuilder = childProcessBuilderPrepare(args);
+
+        System.out.println("################################ ProcessExecutorTest ################################");
+        //使用 ProcessBuilderExecutor 运行
+        ProcessBuilderExecutor processBuilderExecutor = new ProcessBuilderExecutor("process", processBuilder);
+        //控制 ProcessBuilderExecutor 的行为
+        processBuilderExecutor.setRedirectStream(ParentProcessCommand.redirect);
+        processBuilderExecutor.setRedirectStream(ParentProcessCommand.capture);
+
+        ExecutorService executorService = Executors.newFixedThreadPool(5);
+
+        Future<Process> submit = executorService.submit(processBuilderExecutor);
 
         try {
-            ProcessBuilder processBuilder = new ProcessBuilder(finalCMD);
+            Process process = submit.get();
+            System.out.println(process);
 
-            //指定 process 的 work dir 防止生成的 redirect log file 默认占用 temp 目录的空间
-            processBuilder.directory(workDirFile);
+            ProcessMonitor processMonitor = new ProcessMonitor(process);
+            executorService.submit(processMonitor);
 
-            List<String> command = processBuilder.command();
-            System.out.println("processBuilder.command()=" + command);
-            File directory = processBuilder.directory();
-            System.out.println("processBuilder.directory()=" + directory);
-
-            //使用 ProcessBuilderExecutor 运行
-            ProcessBuilderExecutor processBuilderExecutor = new ProcessBuilderExecutor("process", processBuilder);
-            //控制 ProcessBuilderExecutor 的行为
-            processBuilderExecutor.setRedirectStream(ParentProcessCommand.redirect);
-            processBuilderExecutor.setRedirectStream(ParentProcessCommand.capture);
-
-            ExecutorService executorService = Executors.newFixedThreadPool(5);
-
-            Future<Process> submit = executorService.submit(processBuilderExecutor);
-
-            try {
-                Process process = submit.get();
-                System.out.println(process);
-
-                ProcessMonitor processMonitor = new ProcessMonitor(process);
-                executorService.submit(processMonitor);
-
-                ProcessBuilderExecutorOperate processBuilderExecutorOperate = new ProcessBuilderExecutorOperate(processBuilderExecutor);
-                executorService.submit(processBuilderExecutorOperate);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-
-            if (ParentProcessCommand.autoExit) {
-                ParentProcessExit parentProcessExit = new ParentProcessExit(executorService, ParentProcessCommand.seconds, ParentProcessCommand.shutdownExecutor);
-                executorService.submit(parentProcessExit);
-            }
-
-            //控制主进程的退出与否
-            System.in.read();
-
-            //关闭现场池以结束进程，否则在 read 后，但是由于线程池中还有线程在运行，导致主线程无法退出
-            executorService.shutdown();
-        } catch (IOException e) {
+            ProcessBuilderExecutorOperate processBuilderExecutorOperate = new ProcessBuilderExecutorOperate(processBuilderExecutor);
+            executorService.submit(processBuilderExecutorOperate);
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
+
+        parentProcessExit(executorService);
     }
 
     private static class ProcessBuilderExecutorOperate implements Runnable {
@@ -89,6 +64,10 @@ public class ProcessExecutorTest {
                 ProcessStreamRedirect processStreamRedirect = processBuilderExecutor.getProcessStreamRedirect();
                 System.out.println("##########################################################");
                 if (processStreamRedirect != null) {
+                    //默认情况下 SystemTest.process.stream.ProcessStreamRedirect.redirectIn 为 false, 所以这里的 stdinFile 为 null ，
+                    // 这使得 SystemTest.process.LongTermProcess.main 中的 java.io.InputStream.read() 方法依旧重 parent 中进行读取数据，
+                    // 只要当 parent process 不向 child process 的 input 中写数据，那么其就会阻塞在 read 上，并使得 child process 的 main 线程无法结束，
+                    // 再加之其 stdout/stderr 的线程的执行，都是非 daemon 的，所以即使其输出任务完成，整个 child process 也不会结束
                     File stdinFile = processStreamRedirect.getStdinFile();
                     System.out.println("processStreamRedirect.getStdinFile()=" + stdinFile);
                     File stdoutFile = processStreamRedirect.getStdoutFile();

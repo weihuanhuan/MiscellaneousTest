@@ -9,6 +9,8 @@ public class ParentProcessCommand {
 
     public static String WORK_DIR = System.getProperty("user.dir");
 
+    public static String TMP_DIR = System.getProperty("java.io.tmpdir");
+
     public static boolean autoExit = false;
 
     public static int seconds = 3;
@@ -20,6 +22,10 @@ public class ParentProcessCommand {
     public static boolean capture = true;
 
     public static List<String> parseCommand(String[] args) {
+        System.out.println("################################ ParentProcessCommand ################################");
+        System.out.println("System.getProperty(\"user.dir\")=" + WORK_DIR);
+        System.out.println("System.getProperty(\"java.io.tmpdir\")=" + TMP_DIR);
+
         File workDirFile = new File(WORK_DIR);
 
         File featureJar = new File(workDirFile, "feature/target/feature.jar");
@@ -38,7 +44,7 @@ public class ParentProcessCommand {
         cmds.add("capture");
         cmds.add(String.valueOf(capture));
         cmds.add("java");
-//            cmds.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=28031");
+//        cmds.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=28031");
         cmds.add("-cp");
         cmds.add(featureJarAbsolutePath);
         cmds.add("SystemTest.process.LongTermProcess");
@@ -90,7 +96,6 @@ public class ParentProcessCommand {
                 , autoExit, seconds, shutdownExecutor, redirect, capture);
         System.out.println(argumentFormat);
         System.out.println("finalCMD=" + finalCMD);
-        System.out.println("################################ ParentProcessCommand ################################");
         return finalCMD;
     }
 

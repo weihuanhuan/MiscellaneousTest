@@ -22,6 +22,7 @@ public class ParentProcessExit implements Runnable {
         try {
             TimeUnit.SECONDS.sleep(seconds);
 
+            //这里需要考虑是否关闭线程池，否则在 SECONDS 后，但是由于线程池中还有线程在运行，导致启动该线程池的进行依旧无法退出
             if (shutdownExecutor) {
                 executorService.shutdown();
             }
