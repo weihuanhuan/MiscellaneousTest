@@ -73,25 +73,36 @@ public class ProcessStreamCollector implements Runnable {
             //     * a buffer intended to hold all data in this stream.
             int available = inputStream.available();
             if (available > 0) {
-                int read = read(available);
-
-                //the total number of bytes read into the buffer, or
-                //-1 if there is no more data because the end of the stream has been reached.
-                if (read < 0) {
-                    stop();
-                    return;
-                }
-
-                if (!readOnly) {
-                    write(read);
-                }
+                tryReadAndWrite(available);
             } else {
-                TimeUnit.MILLISECONDS.sleep(readInterval);
+                if (readInterval > 0) {
+                    // using sleep to wait data
+                    TimeUnit.MILLISECONDS.sleep(readInterval);
+                } else {
+                    // using read one byte with block read to avoid cpu idle execute
+                    //TODO 这个方案存在问题，就是 read 操作是不可中断的阻塞调用，如果流中一直没有数据，那么这个线程就会永远卡住了，这里需要超时处理
+                    tryReadAndWrite(1);
+                }
             }
         } catch (IOException e) {
             throw new ProcessStreamException(e);
         } catch (InterruptedException ignored) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    private void tryReadAndWrite(int count) throws IOException {
+        int read = read(count);
+
+        //the total number of bytes read into the buffer, or
+        //-1 if there is no more data because the end of the stream has been reached.
+        if (read < 0) {
+            stop();
+            return;
+        }
+
+        if (!readOnly) {
+            write(read);
         }
     }
 

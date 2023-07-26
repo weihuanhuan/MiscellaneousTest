@@ -21,6 +21,10 @@ public class ParentProcessCommand {
 
     public static boolean capture = true;
 
+    public static int block = 128;
+
+    public static int count = 8 * 1024 * 8; //mb
+
     public static List<String> parseCommand(String[] args) {
         System.out.println("################################ ParentProcessCommand ################################");
         System.out.println("System.getProperty(\"user.dir\")=" + WORK_DIR);
@@ -48,8 +52,8 @@ public class ParentProcessCommand {
         cmds.add("-cp");
         cmds.add(featureJarAbsolutePath);
         cmds.add("SystemTest.process.LongTermProcess");
-        cmds.add(String.valueOf(128));
-        cmds.add(String.valueOf(8 * 1024 * 8));//mb
+        cmds.add(String.valueOf(block));
+        cmds.add(String.valueOf(count));
 
         // using config value from args value
         if (args != null && args.length > 0) {

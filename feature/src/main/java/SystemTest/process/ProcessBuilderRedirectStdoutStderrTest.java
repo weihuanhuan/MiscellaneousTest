@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class ProcessStdoutStderrTest extends ProcessBaseTest {
+public class ProcessBuilderRedirectStdoutStderrTest extends ProcessBaseTest {
 
     public static void main(String[] args) throws InterruptedException {
         ProcessBuilder processBuilder = childProcessBuilderPrepare(args);
