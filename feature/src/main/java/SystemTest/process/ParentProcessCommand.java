@@ -25,6 +25,7 @@ public class ParentProcessCommand {
         File featureJar = new File(workDirFile, "feature/target/feature.jar");
         String featureJarAbsolutePath = featureJar.getAbsolutePath();
 
+        // using default value from field value
         List<String> cmds = new ArrayList<>();
         cmds.add("autoExit");
         cmds.add(String.valueOf(autoExit));
@@ -34,6 +35,8 @@ public class ParentProcessCommand {
         cmds.add(String.valueOf(shutdownExecutor));
         cmds.add("redirect");
         cmds.add(String.valueOf(redirect));
+        cmds.add("capture");
+        cmds.add(String.valueOf(capture));
         cmds.add("java");
 //            cmds.add("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=28031");
         cmds.add("-cp");
@@ -42,19 +45,26 @@ public class ParentProcessCommand {
         cmds.add(String.valueOf(128));
         cmds.add(String.valueOf(8 * 1024 * 8));//mb
 
-        if (args != null && args.length >= 3) {
+        // using config value from args value
+        if (args != null && args.length > 0) {
             cmds = Arrays.asList(args);
         }
+        System.out.println("args=" + Arrays.deepToString(args));
+        System.out.println("cmds=" + cmds);
 
         //just test, rough handle parent process auto exit config
         int offset = 0;
         List<String> finalCMD = cmds;
-        if (cmds.size() > 4 && "autoExit".equals(cmds.get(0))) {
+        if ("autoExit".equals(cmds.get(0))) {
             String autoExitStr = cmds.get(1);
             autoExit = Boolean.parseBoolean(autoExitStr);
-            String secondsStr = cmds.get(3);
-            seconds = Integer.parseInt(secondsStr);
-            offset = offset + 4;
+            offset = offset + 2;
+
+            if ("seconds".equals(cmds.get(2))) {
+                String shutdownThreadPoolStr = cmds.get(3);
+                seconds = Integer.parseInt(shutdownThreadPoolStr);
+                offset = offset + 2;
+            }
 
             if ("shutdownExecutor".equals(cmds.get(4))) {
                 String shutdownThreadPoolStr = cmds.get(5);
@@ -75,6 +85,12 @@ public class ParentProcessCommand {
             }
         }
         finalCMD = cmds.subList(offset, cmds.size());
+
+        String argumentFormat = String.format("autoExit=[%s], seconds=[%s], shutdownExecutor=[%s], redirect=[%s], capture=[%s]"
+                , autoExit, seconds, shutdownExecutor, redirect, capture);
+        System.out.println(argumentFormat);
+        System.out.println("finalCMD=" + finalCMD);
+        System.out.println("################################ ParentProcessCommand ################################");
         return finalCMD;
     }
 
