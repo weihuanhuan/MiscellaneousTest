@@ -189,10 +189,7 @@ public class MybatisRedis implements Serializable {
         return "Redis{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", groupName='" + groupName + '\'' +
-                ", mode='" + mode + '\'' +
-                ", role='" + role + '\'' +
-                ", masterName='" + masterName + '\'' +
+                ", configText='" + configText + '\'' +
                 '}';
     }
 }
