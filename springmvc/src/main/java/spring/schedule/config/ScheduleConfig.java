@@ -64,6 +64,11 @@ public class ScheduleConfig implements SchedulingConfigurer {
     public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
         taskRegistrar.setScheduler(scheduleTaskThreadPoolTaskScheduler());
 
+        //TODO 这里存在初始化顺序的问题，如果 ScheduleTaskAutoManager.getAutoUpdateTask 内部使用的 db service 还没有初始化完成，
+        // 那么这里 autoUpdateTask 所触发的自动调用就可能在 db service 可用前被调用，使得业务出错。
+        // 不过我们这里的测试场景由于存在 initialUpdateDelay 的延迟调用，所以测试时，是不会出现这个情况的。
+        // 理论上，我们应该将这些方法移动到 scheduler 初始化之外，并使用 spring context 的 @EventListener 机制，保证在 ioc 容器完全初始化后在调用这些任务
+        // 对于传统的 web 环境我们可以使用 ContextLoaderListener.contextInitialized 来 AbstractApplicationContext.publishEvent(java.lang.Object) 事件
         Optional.ofNullable(autoManagers).orElse(Collections.emptyList()).forEach(service -> {
             if (autoUpdateTask) {
                 taskRegistrar.addFixedDelayTask(service.getAutoUpdateTask());
