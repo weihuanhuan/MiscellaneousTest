@@ -5,14 +5,16 @@ public class UpdatedConfig {
     private final String name;
     private final String mode;
     private final String role;
+    private final String status;
 
     private String oldConfigText;
     private String newConfigText;
 
-    public UpdatedConfig(String name, String mode, String role) {
+    public UpdatedConfig(String name, String mode, String role, String status) {
         this.name = name;
         this.mode = mode;
         this.role = role;
+        this.status = status;
     }
 
     public String getName() {
@@ -25,6 +27,10 @@ public class UpdatedConfig {
 
     public String getRole() {
         return role;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public String getOldConfigText() {
@@ -49,6 +55,7 @@ public class UpdatedConfig {
                 "name='" + name + '\'' +
                 ", mode='" + mode + '\'' +
                 ", role='" + role + '\'' +
+                ", status='" + status + '\'' +
                 ", oldConfigText='" + oldConfigText + '\'' +
                 ", newConfigText='" + newConfigText + '\'' +
                 '}';

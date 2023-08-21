@@ -30,7 +30,8 @@ public class UpdatedConfigRecorder {
 
             String mode = newMybatisRedis.getMode();
             String role = newMybatisRedis.getRole();
-            updatedConfig = new UpdatedConfig(name, mode, role);
+            String status = oldMybatisRedis.getStatus();
+            updatedConfig = new UpdatedConfig(name, mode, role, status);
             updatedConfigMap.put(name, updatedConfig);
 
             String oldConfigText = oldMybatisRedis.getConfigText();

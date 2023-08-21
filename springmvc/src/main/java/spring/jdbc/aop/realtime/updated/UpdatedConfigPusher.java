@@ -35,6 +35,8 @@ public class UpdatedConfigPusher {
     }
 
     private void pushUpdatedConfig(UpdatedConfig updatedConfig) {
+        //TODO combine the old status value to update the final status value
+        String status = updatedConfig.getStatus();
         String format = String.format("push updated config for [%s].", updatedConfig);
         System.out.println(format);
     }
