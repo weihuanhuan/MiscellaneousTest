@@ -30,6 +30,7 @@ target/
 dbembedded/
 logs/
 tomcat.*/
+tmp/
 
 **/*.iml
 **/*~

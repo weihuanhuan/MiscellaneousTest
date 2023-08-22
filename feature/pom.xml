@@ -319,6 +319,7 @@
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>${hsqldb.version}</version>
+            <classifier>jdk6debug</classifier>
         </dependency>
 
         <dependency>

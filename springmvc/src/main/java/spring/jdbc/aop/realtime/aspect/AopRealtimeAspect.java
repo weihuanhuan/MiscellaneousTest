@@ -61,6 +61,10 @@ class AopRealtimeAspect extends TransactionSynchronizationAdapter {
     public void afterCommit() {
         System.out.println(this.getClass().getSimpleName() + ": afterCommit");
         UpdatedConfigRecorder updatedConfigRecorder = RECORDER_THREAD_LOCAL.get();
+        
+        // 另外注意，默认的 hsqldb 事务模型是 locks ，其会在存在事务未提交时，锁住整个数据库，使得其他连接无法执行任何 sql 语句，包括 select 也不行
+        // 关于这个场景的测试，可以见 feature 模块的 HSQLDBTransactionHangTest.selectWhenExistUncommittedTransactionTest 测试过程。
+        // 所以如果不改事务模型的话，我们一定不能在事务 commit 之前，触发一个远程的会回调到 service 的数据库调用接口，这会导致数据库锁死。
         PUSHER.pushUpdatedConfig(updatedConfigRecorder);
     }
 
