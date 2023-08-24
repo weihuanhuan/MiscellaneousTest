@@ -10,6 +10,7 @@ import org.springframework.web.servlet.config.annotation.DelegatingWebMvcConfigu
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.validation.MessageInterpolator;
+import javax.validation.TraversableResolver;
 
 //该类的相关背景具体见 @EnableWebMvc 的 java doc,
 //而 @EnableWebMvc 则相当于是 xml 配置模式中的 <mvc:annotation-driven> 元素
@@ -46,6 +47,10 @@ public class WebMvcValidatorConfig extends DelegatingWebMvcConfiguration {
     protected Validator getValidator() {
         LocalValidatorFactoryBean localValidatorFactoryBean = new LocalValidatorFactoryBean();
         localValidatorFactoryBean.setMessageInterpolator(messageInterpolator());
+
+        // 自定义 javax.validation.TraversableResolver 实现，防止使用默认的实现，以避免执行其内部的自动检测 JPA 实现的机制。
+        TraversableResolver bypassJPADetectWithDefaultTraversableResolver = new BypassJPADetectWithDefaultTraversableResolver();
+        localValidatorFactoryBean.setTraversableResolver(bypassJPADetectWithDefaultTraversableResolver);
         return localValidatorFactoryBean;
     }
 
