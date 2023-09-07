@@ -137,6 +137,7 @@
         <mpxj.version>10.11.0</mpxj.version>
 
         <swagger2.version>2.9.2</swagger2.version>
+        <jsonassert.version>1.5.1</jsonassert.version>
 
     </properties>
 
