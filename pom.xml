@@ -139,6 +139,8 @@
         <swagger2.version>2.9.2</swagger2.version>
         <jsonassert.version>1.5.1</jsonassert.version>
 
+        <pulsar-client.verison>3.1.0</pulsar-client.verison>
+
     </properties>
 
     <dependencyManagement>

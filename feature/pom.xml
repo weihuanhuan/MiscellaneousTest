@@ -328,6 +328,13 @@
             <version>${mpxj.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.pulsar/pulsar-client -->
+        <dependency>
+            <groupId>org.apache.pulsar</groupId>
+            <artifactId>pulsar-client</artifactId>
+            <version>${pulsar-client.verison}</version>
+        </dependency>
+
     </dependencies>
 
     <!--  spigotmc 的仓库      -->
