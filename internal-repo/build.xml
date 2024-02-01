@@ -108,7 +108,12 @@
              否则被调 mvn 操纵的 repository 和调用 ant 的 maven 仓库不一致，会导致安装后的依赖被安装到系统的 maven repo 中了，
              进而使得 主maven 中无法在其自身的仓库中找见我们这里 install 的依赖，产生依赖解析的问题。
         -->
-        <!-- 这是由于我们在 ant 中使用 exec 任务调用了 mvn，而后者是独立启动的 maven 进程  -->
+        <!--
+            这是由于我们在 ant 中使用 exec 任务调用了 mvn，而后者是独立启动的 maven 进程
+            而对于独立启动的内部 maven 进程来说，其不会看见外部 maven 在执行命令时通过选项 【mvn -s settings.xml】 所注定的配置文件。
+            此时为了保证内部 maven 能够正常查找 install 插件来执行命令，我们要保证内部 maven 执行时，其仓库 settings.xml 配置可以访问到中央库，以下载依赖
+            这里由于我们的 【${mvn.executable}】 没有指定 【-s】 ， 此时他默认使用系统环境变量【$M2_HOME】 所指定的,要保证其中的 settings.xml 可用就行了
+        -->
         <exec dir="${basedir}" executable="${shell.executable}">
             <arg value="${shell.args}"/>
             <arg value="${mvn.executable}"/>
