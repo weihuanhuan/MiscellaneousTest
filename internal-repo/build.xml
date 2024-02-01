@@ -118,7 +118,16 @@
             <arg value="-DartifactId=${mvn.artifactId}"/>
             <arg value="-Dversion=${mvn.version}"/>
             <arg value="-Dpackaging=${mvn.packaging}"/>
-            <arg value="-Dmvn.repo.local=${mvn.repo.local}"/>
+            <!--
+                注意这里是要给内部的 ant 所调用的内部 maven 提供自定义本地仓库，
+                所以要使用 mvn 标准的【-Dmaven.repo.local】 而 不是我们自己定义的属性 【-Dmvn.repo.local】
+                我们自己在 pom.xml 中定义的【<property name="mvn.repo.local" value="${settings.localRepository}"/>】名字是专门和标准不同的
+                目的是为了可以通过不同的属性名来分别配置他们的值，使得外部 maven 和 内部 maven 可以使用不同本地仓库
+                另外对于 <property> 来说其 【value】 是默认值的意思，其值 【${settings.localRepository}】 指 settings 文件中的 <localRepository>
+                如果我们在调用外部 maven 时，使用命令行设置系统属性 【-Dmvn.repo.local】 就可以覆盖他的值
+                mvn clean install -DskipTests  -Dmvn.repo.local="E:\Temporary\repository-by-ant-called-mvn"
+             -->
+            <arg value="-Dmaven.repo.local=${mvn.repo.local}"/>
         </exec>
     </target>
 
